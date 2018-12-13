@@ -4,7 +4,7 @@ from tkinter import *
 import numpy as np
 import pandas as pd
 import math
-from pygments.lexers.templates import VelocityHtmlLexer
+import datetime
 
 
 class Ship():
@@ -17,9 +17,9 @@ class Ship():
         
         self.position = position
         self.velocity = velocity
-
+        
     def setID(self):
-        return self.id
+        return datetime.datetime.now().strftime("%Y%m%d")
     
     def getVelocity(self):
         return self.velocity
@@ -31,13 +31,16 @@ class Ship():
         theta = math.atan2(dy, dx)
         angle = math.degrees(theta)
         return angle
-
+    
+    def toString(self):
+        return "id:" + self.id + ", position" + self.position + ", velocity" + self.velocity
 
 class Env():
     def __init__(self):
         pass
     
-
+    def step(self):
+        pass
 
 
 
