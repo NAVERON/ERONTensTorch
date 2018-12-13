@@ -59,7 +59,7 @@ class Env():
         self.tk = Tk()
         self.canvas=Canvas(self.tk, width=500, height=500)
         self.canvas.pack()
-        self.canvas.create_oval()
+        self.canvas.create_oval(20, 20, 50, 50)
     
     def step(self):
         for i in range(0,60):    #建立一个60次的循环 ，循环区间[0,59）
