@@ -13,7 +13,7 @@ class Ship():
     K = 0.0785
     T = 3.12
     
-    def __init__(self, position, velocity):  # 以字典形式传入数据
+    def __init__(self, position, velocity):  # 矩阵
         self.id = self.setID()
         self.rudder = 0
         
@@ -24,17 +24,18 @@ class Ship():
         return datetime.datetime.now().strftime("%d%H%M%S%f")
     def courseTurn(self, dc):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
-        pass
-    def speedChange(self, dv): # 根据dv  修改原速度矢量
+        dc_radius = np.radians(dc)  # 转换成弧度
+        c, s = np.cos(dc_radius), np.sin(dc_radius)
+        R = np.array([ [c, -s], [s, c] ])
+        self.velocity = np.dot(R, self.velocity.T).T
         
-        pass
+    def velocityChange(self, dv): # 根据dv  修改原速度矢量
+        self.velocity += dv
     
-    def getVelocity(self):
-        return self.velocity
     def getSpeed(self):  # 速度大小
-        return math.sqrt(self.velocity[0] * self.velocity[0] + self.velocity[1] * self.velocity[1])
-    def getCourse(self):
-        return self.calAngle(self.velocity["vx"], self.velocity["vy"])
+        return np.linalg.norm(self.velocity)
+    def getCourse(self): # 运动方向
+        return self.calAngle(self.velocity[0], self.velocity[1])
         
     def calAngle(self, dx, dy):   # 计算的角度按照顺时针旋转，正向向上是0度角
         theta = math.atan2(dx, dy)
@@ -44,6 +45,7 @@ class Ship():
         return angle
     
     def goAhead(self):
+        
         pass
     
     def toString(self):
@@ -53,40 +55,25 @@ class Ship():
 
 from tkinter import *
 
-class Env():
+class Viewer():
     
     def __init__(self):
         self.tk = Tk()
         self.canvas=Canvas(self.tk, width=1000, height=800)
         self.canvas.pack()
-        self.canvas.create_oval(20, 20, 50, 50)
+        self.canvas.create_oval(20, 20, 50, 50, fill="#476042")
     
     def step(self):
-        for i in range(0,60):    #建立一个60次的循环 ，循环区间[0,59）
-            self.canvas.move(1,5,0)    #canvas对象中的编号“1”图形调用移动函数，x轴5个像素点，y轴不变
-            self.tk.update()           #更新框架，强制显示改变
-            time.sleep(0.01)       #睡眠0.05秒，制造帧与帧间的间隔时间
-        for i in range(0,60):
-            self.canvas.move(1,0,5)
-            self.tk.update()
-            time.sleep(0.02)
-        for i in range(0,60):
-            self.canvas.move(1,-5,0)
-            self.tk.update()
-            time.sleep(0.02)
-        for i in range(0,60):
-            self.canvas.move(1,0,-5)
-            self.tk.update()
-            time.sleep(0.02)
+        pass
 
 
 if __name__ == "__main__":
-    ship = Ship(np.array([23, 19]), np.array([2, 5]) )
-    print( ship.toString() )
-    print( ship.getSpeed() )
-    env = Env()
+    ship = Ship( np.array([23, 19]), np.array([0, 10]) )
+    ship.courseTurn(45)
+    print(ship.velocity)
+    env = Viewer()
     env.step()
-
+    
 
 
 
