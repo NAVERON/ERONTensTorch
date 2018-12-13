@@ -1,7 +1,6 @@
 
 
 import time
-from tkinter import *
 import numpy as np
 import pandas as pd
 import math
@@ -23,13 +22,20 @@ class Ship():
     
     def setID(self):
         return datetime.datetime.now().strftime("%d%H%M%S%f")
+    def courseTurn(self, dc):  # dc代表变化的方向
+        # 返回 新的速度矢量，将事例的速度重新设置
+        pass
+    def speedChange(self, dv): # 根据dv  修改原速度矢量
+        
+        pass
     
     def getVelocity(self):
         return self.velocity
-    
-    def getSpeed(self):
+    def getSpeed(self):  # 速度大小
         return math.sqrt(self.velocity["vx"] * self.velocity["vx"] + self.velocity["vy"] * self.velocity["vy"])
-    
+    def getCourse(self):
+        return self.calAngle(self.velocity["vx"], self.velocity["vy"])
+        
     def calAngle(self, dx, dy):   # 计算的角度按照顺时针旋转，正向向上是0度角
         theta = math.atan2(dx, dy)
         angle = math.degrees(theta)
@@ -37,11 +43,15 @@ class Ship():
             angle += 360
         return angle
     
+    def goAhead(self):
+        pass
+    
     def toString(self):
-        return "id:" + self.id + " , position:" + str(self.position["x"]) + " , velocity:" + str(self.velocity["vx"])
+        return "id:" + self.id + " , position:" + str(self.position[0]) + " , velocity:" + str(self.velocity[0])
 
 # 总体调用部件
 
+from tkinter import *
 
 class Env():
     
@@ -49,7 +59,7 @@ class Env():
         self.tk = Tk()
         self.canvas=Canvas(self.tk, width=500, height=500)
         self.canvas.pack()
-        self.canvas.create_polygon(10,10,20,10,20,40,10,40)
+        self.canvas.create_oval()
     
     def step(self):
         for i in range(0,60):    #建立一个60次的循环 ，循环区间[0,59）
@@ -71,9 +81,9 @@ class Env():
 
 
 if __name__ == "__main__":
-    ship = Ship( {"x":23, "y":19}, {"vx":2, "vy":5} )
+    ship = Ship(np.array([23, 19]), np.array([2, 5]) )
     print( ship.toString() )
-    print(ship.getSpeed())
+    print( ship.getSpeed() )
     env = Env()
     env.step()
 
