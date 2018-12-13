@@ -40,6 +40,11 @@ class Critic(object):
         pass
 
 
+class Rnn():
+    
+    def __init__(self):
+        pass
+    
 
 
 
