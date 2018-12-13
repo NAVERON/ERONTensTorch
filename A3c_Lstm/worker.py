@@ -5,7 +5,7 @@ import tensorflow as tf
 import scipy.signal
 import numpy as np
 import gym
-from ac_network import AC_Network
+from A3c_Lstm.ac_network import AC_Network
 
 # Size of mini batches to run training on
 MINI_BATCH = 30

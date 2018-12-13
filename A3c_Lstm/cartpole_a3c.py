@@ -19,8 +19,8 @@ import multiprocessing
 import numpy as np
 import tensorflow as tf
 
-from worker import Worker
-from ac_network import AC_Network
+from A3c_Lstm.worker import Worker
+from A3c_Lstm.ac_network import AC_Network
 
 # ===========================
 #   Gym Utility Parameters
