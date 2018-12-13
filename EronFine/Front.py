@@ -32,7 +32,7 @@ class Ship():
     def getVelocity(self):
         return self.velocity
     def getSpeed(self):  # 速度大小
-        return math.sqrt(self.velocity["vx"] * self.velocity["vx"] + self.velocity["vy"] * self.velocity["vy"])
+        return math.sqrt(self.velocity[0] * self.velocity[0] + self.velocity[1] * self.velocity[1])
     def getCourse(self):
         return self.calAngle(self.velocity["vx"], self.velocity["vy"])
         
@@ -57,7 +57,7 @@ class Env():
     
     def __init__(self):
         self.tk = Tk()
-        self.canvas=Canvas(self.tk, width=500, height=500)
+        self.canvas=Canvas(self.tk, width=1000, height=800)
         self.canvas.pack()
         self.canvas.create_oval(20, 20, 50, 50)
     
