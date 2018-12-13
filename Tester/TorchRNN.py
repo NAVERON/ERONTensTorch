@@ -13,8 +13,8 @@ class Rnn(nn.Module):
         
         self.rnn = nn.RNN(
             input_size=INPUT_SIZE,
-            hidden_size=32,
-            num_layers=1,
+            hidden_size=32,  # 隐藏态h中的特征数量
+            num_layers=1,  # RNN层数
             batch_first=True
         )
         self.out = nn.Linear(32, 1)
