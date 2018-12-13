@@ -28,7 +28,16 @@ import torch
 from torch import nn
 
 
-
+class Actor(object):
+    
+    def __init__(self):
+        pass
+    
+    
+class Critic(object):
+    
+    def __init__(self):
+        pass
 
 
 
