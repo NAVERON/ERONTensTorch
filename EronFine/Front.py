@@ -10,13 +10,13 @@ import datetime
 
 class Ship():  # 训练对象的属性
     
+    K = 0.0785
+    T = 3.12
     
     def __init__(self, position=np.array([500, 400], dtype=np.float), velocity=np.array([2, 4], dtype=np.float)):  # 矩阵
         self.id = self.setID()
-        self.K = 0.0785
-        self.T = 3.12
-        self.rudder = 0
         
+        self.rudder = 0
         self.position = position
         self.velocity = velocity
         
@@ -32,13 +32,13 @@ class Ship():  # 训练对象的属性
         
     def velocityChange(self, dv): # 根据dv  修改原速度矢量
         self.velocity += dv
-    def rudderChange(self, dr):
+    def rudderChange(self, dr):  # 舵角变化    范围为每次一度
         self.rudder += dr
     def getSpeed(self):  # 速度大小
         return np.linalg.norm(self.velocity)
     def getCourse(self): # 运动方向
         return self.calAngle(self.velocity[0], self.velocity[1])
-        
+    
     def calAngle(self, dx, dy):   # 计算的角度按照顺时针旋转，正向向上是0度角
         theta = math.atan2(dx, dy)
         angle = math.degrees(theta)
@@ -46,12 +46,26 @@ class Ship():  # 训练对象的属性
             angle += 360
         return angle
     
-    def goAhead(self):
+    def goAhead(self, viewer):
+        # 边界判断    设置为不能超越边界
+        if self.position[0] < 0:
+            self.position[0] = viewer.winfo_width()
+        elif self.position[0] > viewer.winfo_width():
+            self.position[0] = 0
+        elif self.position[1] < 0:
+            self.position = viewer.winfo_height()
+        elif self.position[1] > viewer.winfo_height():
+            self.position[1] = 0
+        
         delta = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1 / self.T))
         self.courseTurn(delta)
         self.position += self.velocity  # 这样就更新位置了
     def isCollision(self, other):
-        pass
+        dis = np.linalg.norm(other.position-self.position)
+        if dis < 20:
+            return False
+        
+        return True
     
     
     def toString(self):
@@ -65,42 +79,57 @@ class Viewer():
     
     def __init__(self):
         self.tk = Tk()
-        self.canvas=Canvas(self.tk, width=1000, height=800)
-        self.canvas.pack()
-        # 创建好绘制面板后 需要添加Entity实体运动物
+        self.canvas = Canvas(self.tk, width=1000, height=600)
+        
         self.ships = []
         for _ in range(10):
             self.ships.append(self.createRandomEntity())
+        self.canvas.pack()
         
+        self.render()
+        
+    
     def createRandomEntity(self):
         position = np.multiply([np.random.rand(), np.random.rand()], 600)
-        velocity = np.multiply([np.random.rand(), np.random.rand()], 4)
+        velocity = np.multiply([np.random.rand(), np.random.rand()], 2)
         entity = Ship(np.array(position), np.array(velocity))
         time.sleep(0.001)
         return entity
     
-    def step(self):
+    drawer_ships = []
+    def render(self):  # 根据当前状况绘制
+        for entity in self.drawer_ships:
+            self.canvas.delete(entity)
+        self.drawer_ships.clear()
+        
         for s in self.ships:
-            print(s.toString())
-            s.goAhead()
-            
+            self.drawer_ships.append(self.canvas.create_oval(s.position[0]-5, s.position[1]-5, s.position[0]+5, s.position[1]+5, fill="black"))
+        self.tk.update()
+        
+    def step(self):
+        self.tk.update()
+        for s in self.ships:
+            s.goAhead(self.tk)
         pass
     def reset(self):
         pass
-    def render(self):
-        pass
+    
     def sampleAction(self):
         pass
     def getState(self):
         pass
     
 if __name__ == "__main__":
-    ship = Ship( np.array([23, 19], dtype=np.float), np.array([0, 10], dtype=np.float) )
-    ship.goAhead()
     
     view = Viewer()
-    view.step()
-
+    
+    while True:
+        view.render()
+        view.step()
+        time.sleep(0.01)
+        
+    
+    
 
 
 
