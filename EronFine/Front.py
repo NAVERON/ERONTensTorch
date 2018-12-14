@@ -8,13 +8,14 @@ import datetime
 
 
 
-class Ship():
+class Ship():  # 训练对象的属性
     
-    K = 0.0785
-    T = 3.12
+    
     
     def __init__(self, position, velocity):  # 矩阵
         self.id = self.setID()
+        self.K = 0.0785
+        self.T = 3.12
         self.rudder = 0
         
         self.position = position
@@ -46,8 +47,9 @@ class Ship():
         return angle
     
     def goAhead(self):
-        
-        pass
+        delta = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1 / self.T))
+        self.courseTurn(delta)
+        self.position += self.velocity  # 这样就更新位置了
     
     def toString(self):
         return "id:" + self.id + " , position:" + str(self.position[0]) + " , velocity:" + str(self.velocity[0])
@@ -69,8 +71,10 @@ class Viewer():
 
 
 if __name__ == "__main__":
-    ship = Ship( np.array([23, 19]), np.array([0, 10]) )
-    
+    ship = Ship( np.array([23, 19], dtype=np.float), np.array([0, 10], dtype=np.float) )
+    print(ship.position)
+    ship.goAhead()
+    print(ship.position)
     env = Viewer()
     env.step()
     
