@@ -11,8 +11,7 @@ import datetime
 class Ship():  # 训练对象的属性
     
     
-    
-    def __init__(self, position, velocity):  # 矩阵
+    def __init__(self, position=np.array([500, 300], dtype=np.float), velocity=np.array([2, 4], dtype=np.float)):  # 矩阵
         self.id = self.setID()
         self.K = 0.0785
         self.T = 3.12
@@ -20,7 +19,7 @@ class Ship():  # 训练对象的属性
         
         self.position = position
         self.velocity = velocity
-    
+        
     def setID(self):
         return datetime.datetime.now().strftime("%d%H%M%S%f")
     def courseTurn(self, dc):  # dc代表变化的方向
@@ -52,7 +51,7 @@ class Ship():  # 训练对象的属性
         self.position += self.velocity  # 这样就更新位置了
     
     def toString(self):
-        return "id:" + self.id + " , position:" + str(self.position[0]) + " , velocity:" + str(self.velocity[0])
+        return "id:" + self.id + " , position:" + str(self.position) + " , velocity:" + str(self.velocity)
 
 # 总体调用部件
 
@@ -64,20 +63,33 @@ class Viewer():
         self.tk = Tk()
         self.canvas=Canvas(self.tk, width=1000, height=800)
         self.canvas.pack()
-        self.canvas.create_oval(20, 20, 50, 50, fill="#476042")
+        # 创建好绘制面板后 需要添加Entity实体运动物
+        self.ships = []
+        for _ in range(10):
+            self.ships.append(self.createRandomEntity())
+        print("生成随机的10个Ship")
+        
+    def createRandomEntity(self):
+        position = np.multiply([np.random.rand(), np.random.rand()], 600)
+        velocity = np.multiply([np.random.rand(), np.random.rand()], 4)
+        entity = Ship(np.array(position), np.array(velocity))
+        time.sleep(0.001)
+        return entity
     
     def step(self):
+        for s in self.ships:
+            print(s.toString())
+            s.goAhead()
+            print(s.toString())
         pass
 
-
+i=0
 if __name__ == "__main__":
     ship = Ship( np.array([23, 19], dtype=np.float), np.array([0, 10], dtype=np.float) )
-    print(ship.position)
     ship.goAhead()
-    print(ship.position)
+    
     env = Viewer()
     env.step()
-    
 
 
 
