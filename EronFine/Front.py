@@ -2,10 +2,9 @@
 
 import time
 import numpy as np
-import pandas as pd
 import math
 import datetime
-
+import queue
 
 
 class Ship():  # 训练对象的属性
@@ -19,6 +18,8 @@ class Ship():  # 训练对象的属性
         self.rudder = 0
         self.position = position
         self.velocity = velocity
+        
+        self.q = queue.Queue(maxsize=10)
         
     def setID(self):
         return datetime.datetime.now().strftime("%d%H%M%S%f")
@@ -57,12 +58,17 @@ class Ship():  # 训练对象的属性
         elif self.position[1] > viewer.winfo_height():
             self.position[1] = 0
         
+        if self.q.full():  # 如果队列满了，就取出
+            self.q.get()
+        self.q.put(self.position)
+        
         delta = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1 / self.T))
         self.courseTurn(delta)
-        self.position += self.velocity  # 这样就更新位置了
+        self.position += self.velocity  # 这样就更新位置了    ====  可以把界面更新放到数据更新里面同步，更好
+        
     def isCollision(self, other):
         dis = np.linalg.norm(other.position-self.position)
-        if dis < 20:
+        if dis < 30:
             return False
         
         return True
@@ -75,19 +81,30 @@ class Ship():  # 训练对象的属性
 
 from tkinter import *
 
+press_x, press_y = 0, 0
+release_x, release_y = 0, 0
+def pressed(event):
+    press_x = event.x
+    press_y = event.y
+    pass
+def released(event):
+    release_x = event.x
+    release_y = event.y
+    pass
+
 class Viewer():
     
     def __init__(self):
         self.tk = Tk()
         self.canvas = Canvas(self.tk, width=1000, height=600)
-        
         self.ships = []
         for _ in range(10):
             self.ships.append(self.createRandomEntity())
         self.canvas.pack()
         
         self.render()
-        
+        self.canvas.bind("<Button-1>", pressed)
+        self.canvas.bind("<ButtonRelease-1>", released)
     
     def createRandomEntity(self):
         position = np.multiply([np.random.rand(), np.random.rand()], 600)
@@ -103,11 +120,12 @@ class Viewer():
         self.drawer_ships.clear()
         
         for s in self.ships:
-            self.drawer_ships.append(self.canvas.create_oval(s.position[0]-5, s.position[1]-5, s.position[0]+5, s.position[1]+5, fill="black"))
+            self.drawer_ships.append(self.canvas.create_oval(s.position[0]-10, s.position[1]-10, s.position[0]+10, s.position[1]+10, fill="black"))
+        
         self.tk.update()
         
     def step(self):
-        self.tk.update()
+        # 这里先做动作，舵角，速度变化等
         for s in self.ships:
             s.goAhead(self.tk)
         pass
