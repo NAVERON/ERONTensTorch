@@ -24,9 +24,10 @@ class Ship():
         return datetime.datetime.now().strftime("%d%H%M%S%f")
     def courseTurn(self, dc):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
-        dc_radius = np.radians(dc)  # 转换成弧度
+        dc_radius = np.radians(-dc)  # 转换成弧度
         c, s = np.cos(dc_radius), np.sin(dc_radius)
         R = np.array([ [c, -s], [s, c] ])
+        # print(R)
         self.velocity = np.dot(R, self.velocity.T).T
         
     def velocityChange(self, dv): # 根据dv  修改原速度矢量
@@ -69,8 +70,7 @@ class Viewer():
 
 if __name__ == "__main__":
     ship = Ship( np.array([23, 19]), np.array([0, 10]) )
-    ship.courseTurn(45)
-    print(ship.velocity)
+    
     env = Viewer()
     env.step()
     
