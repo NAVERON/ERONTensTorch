@@ -11,7 +11,7 @@ import datetime
 class Ship():  # 训练对象的属性
     
     
-    def __init__(self, position=np.array([500, 300], dtype=np.float), velocity=np.array([2, 4], dtype=np.float)):  # 矩阵
+    def __init__(self, position=np.array([500, 400], dtype=np.float), velocity=np.array([2, 4], dtype=np.float)):  # 矩阵
         self.id = self.setID()
         self.K = 0.0785
         self.T = 3.12
@@ -32,7 +32,8 @@ class Ship():  # 训练对象的属性
         
     def velocityChange(self, dv): # 根据dv  修改原速度矢量
         self.velocity += dv
-    
+    def rudderChange(self, dr):
+        self.rudder += dr
     def getSpeed(self):  # 速度大小
         return np.linalg.norm(self.velocity)
     def getCourse(self): # 运动方向
@@ -49,6 +50,9 @@ class Ship():  # 训练对象的属性
         delta = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1 / self.T))
         self.courseTurn(delta)
         self.position += self.velocity  # 这样就更新位置了
+    def isCollision(self, other):
+        pass
+    
     
     def toString(self):
         return "id:" + self.id + " , position:" + str(self.position) + " , velocity:" + str(self.velocity)
@@ -67,7 +71,6 @@ class Viewer():
         self.ships = []
         for _ in range(10):
             self.ships.append(self.createRandomEntity())
-        print("生成随机的10个Ship")
         
     def createRandomEntity(self):
         position = np.multiply([np.random.rand(), np.random.rand()], 600)
@@ -80,16 +83,23 @@ class Viewer():
         for s in self.ships:
             print(s.toString())
             s.goAhead()
-            print(s.toString())
+            
         pass
-
-i=0
+    def reset(self):
+        pass
+    def render(self):
+        pass
+    def sampleAction(self):
+        pass
+    def getState(self):
+        pass
+    
 if __name__ == "__main__":
     ship = Ship( np.array([23, 19], dtype=np.float), np.array([0, 10], dtype=np.float) )
     ship.goAhead()
     
-    env = Viewer()
-    env.step()
+    view = Viewer()
+    view.step()
 
 
 
