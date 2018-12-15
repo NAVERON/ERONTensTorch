@@ -31,6 +31,8 @@ class Ship():  # 训练对象的属性
         # print(R)
         self.velocity = np.dot(R, self.velocity.T).T
         
+        #print(self.id, "id:", self.velocity)
+        
     def velocityChange(self, dv): # 根据dv  修改原速度矢量
         self.velocity += dv
     def rudderChange(self, dr):  # 舵角变化    范围为每次一度
@@ -81,18 +83,10 @@ class Ship():  # 训练对象的属性
 
 from tkinter import *
 
-press_x, press_y = 0, 0
-release_x, release_y = 0, 0
-def pressed(event):
-    press_x = event.x
-    press_y = event.y
-    pass
-def released(event):
-    release_x = event.x
-    release_y = event.y
-    pass
 
 class Viewer():
+    
+    running = True
     
     def __init__(self):
         self.tk = Tk()
@@ -103,8 +97,13 @@ class Viewer():
         self.canvas.pack()
         
         self.render()
-        self.canvas.bind("<Button-1>", pressed)
-        self.canvas.bind("<ButtonRelease-1>", released)
+        self.tk.protocol("WM_DELETE_WINDOW", self.on_closing)
+    
+    def on_closing(self):
+        self.running = False
+        self.tk.update()
+        time.sleep(0.01)
+        #self.tk.destroy()
     
     def createRandomEntity(self):
         position = np.multiply([np.random.rand(), np.random.rand()], 600)
@@ -126,6 +125,7 @@ class Viewer():
         
     def step(self):
         # 这里先做动作，舵角，速度变化等
+        
         for s in self.ships:
             s.goAhead(self.tk)
         pass
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     
     view = Viewer()
     
-    while True:
+    while view.running:
         view.render()
         view.step()
         time.sleep(0.01)
