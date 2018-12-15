@@ -129,8 +129,12 @@ class Viewer():
         
         for s in self.ships:
             s.goAhead(self.tk)
+        time.sleep(0.01)
+        
+        return 0, 0, False
         pass
     def reset(self):  # 重置环境和变量的条件
+        return 0
         pass
     
     def sampleAction(self):
@@ -145,7 +149,6 @@ if __name__ == "__main__":
     
     while view.running:
         view.step(0)
-        time.sleep(0.01)
         
     
     
