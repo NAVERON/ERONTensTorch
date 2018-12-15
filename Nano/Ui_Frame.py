@@ -59,7 +59,7 @@ class CarEnv(object):
         r = -1 if self.terminal else 0
         time.sleep(0.001)
         return s, r, self.terminal
-    
+        
     def reset(self):
         self.terminal = False
         self.car_info[:3] = np.array([*self.start_point, -np.pi])

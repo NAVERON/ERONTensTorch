@@ -29,6 +29,15 @@ import torch
 from torch import nn
 import time
 
+class DDPG(object):
+    
+    def __init__(self):
+        pass
+    
+    def select_action(self, observation):
+        pass
+    
+    
 
 class Actor(object):
     
