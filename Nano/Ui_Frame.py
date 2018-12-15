@@ -17,7 +17,7 @@ class CarEnv(object):
     state_dim = n_sensor
     viewer = None
     viewer_xy = (1000, 600)    #窗口宽高
-    sensor_max = 50.
+    sensor_max = 50.   # 相当于探测距离
     start_point = [500, 300]   #小车初始位置
     speed = 50.
     dt = 0.1
