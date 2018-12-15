@@ -67,7 +67,7 @@ class Ship():  # 训练对象的属性
         delta = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1 / self.T))
         self.courseTurn(delta)
         self.position += self.velocity  # 这样就更新位置了    ====  可以把界面更新放到数据更新里面同步，更好
-        
+    
     def isCollision(self, other):
         dis = np.linalg.norm(other.position-self.position)
         if dis < 30:
