@@ -123,13 +123,14 @@ class Viewer():
         
         self.tk.update()
         
-    def step(self):
+    def step(self, action):
         # 这里先做动作，舵角，速度变化等
+        self.render()  #渲染当前画面
         
         for s in self.ships:
             s.goAhead(self.tk)
         pass
-    def reset(self):
+    def reset(self):  # 重置环境和变量的条件
         pass
     
     def sampleAction(self):
@@ -143,8 +144,7 @@ if __name__ == "__main__":
     view = Viewer()
     
     while view.running:
-        view.render()
-        view.step()
+        view.step(0)
         time.sleep(0.01)
         
     
