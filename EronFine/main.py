@@ -1,6 +1,7 @@
 
 from EronFine.EndCompute import *
 from EronFine.Front import *
+from evaluator import Evaluator
 
 
 def train(agent, env, num_iterations):
@@ -31,7 +32,6 @@ def train(agent, env, num_iterations):
         if step % 50 == 0:
             policy = lambda x: agent.select_action(x, decay_epsilon=False)
             validate_reward = evaluate(env, policy, debug=False, visualize=False)
-            if debug: prYellow('[Evaluate] Step_{:07d}: mean_reward:{}'.format(step, validate_reward))
 
         # [optional] save intermideate model
         if step % int(num_iterations/3) == 0:
