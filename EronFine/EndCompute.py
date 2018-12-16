@@ -1,17 +1,11 @@
 
 
-# Tools LiClipse
-# Time 2018
-# Author ERON
-
-
-
-
 import torch
 import torch.nn as nn
 from torch.optim import Adam
-from memory import SequentialMemory
-from util import *
+from EronFine.memory import SequentialMemory
+from EronFine.util import *
+import numpy as np
 import time
 
 
@@ -29,12 +23,12 @@ class DDPG(object):
             'hidden2':hidden2, 
             'init_w':init_w
         }
-        self.actor = Actor(self.nb_states, self.nb_actions, **net_cfg)
-        self.actor_target = Actor(self.nb_states, self.nb_actions, **net_cfg)
+        self.actor = Actor(self.states_dim, self.actions_dim, **net_cfg)
+        self.actor_target = Actor(self.states_dim, self.actions_dim, **net_cfg)
         self.actor_optim  = Adam(self.actor.parameters(), lr=0.001)
 
-        self.critic = Critic(self.nb_states, self.nb_actions, **net_cfg)
-        self.critic_target = Critic(self.nb_states, self.nb_actions, **net_cfg)
+        self.critic = Critic(self.states_dim, self.actions_dim, **net_cfg)
+        self.critic_target = Critic(self.states_dim, self.actions_dim, **net_cfg)
         self.critic_optim  = Adam(self.critic.parameters(), lr=0.001)
         
         hard_update(self.actor_target, self.actor) # Make sure target is with the same weight
@@ -76,7 +70,7 @@ class DDPG(object):
 
         q_batch = self.critic([ to_tensor(state_batch), to_tensor(action_batch) ])
         
-        value_loss = criterion(q_batch, target_q_batch)
+        value_loss = nn.MSELoss(q_batch, target_q_batch)
         value_loss.backward()
         self.critic_optim.step()
 
@@ -159,6 +153,10 @@ class DDPG(object):
     def seed(self,s):
         torch.manual_seed(s)
     
+def fanin_init(size, fanin=None):
+    fanin = fanin or size[0]
+    v = 1. / np.sqrt(fanin)
+    return torch.Tensor(size).uniform_(-v, v)
 
 class Actor(nn.Module):
     

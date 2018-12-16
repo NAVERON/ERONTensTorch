@@ -17,8 +17,9 @@ def to_numpy(var):
     return var.data.numpy()
 
 def to_tensor(ndarray, volatile=False, requires_grad=False, dtype=torch.Tensor):
+    #ndarray = torch.from_numpy(ndarray)
     return Variable(
-        torch.from_numpy(ndarray), volatile=volatile, requires_grad=requires_grad
+        ndarray, volatile=volatile, requires_grad=requires_grad
     ).type(dtype)
     
 def soft_update(target, source, tau):

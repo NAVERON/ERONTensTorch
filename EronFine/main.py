@@ -1,8 +1,9 @@
 
 from EronFine.EndCompute import *
 from EronFine.Front import *
-from evaluator import Evaluator
+from EronFine.evaluator import Evaluator
 
+evaluate = Evaluator(20, 2000, "output", 500)
 
 def train(agent, env, num_iterations):
     
@@ -35,17 +36,16 @@ def train(agent, env, num_iterations):
 
         # [optional] save intermideate model
         if step % int(num_iterations/3) == 0:
-            agent.save_model(output)
+            agent.save_model("output")
 
         # update 
         step += 1
         episode_steps += 1
         episode_reward += reward
-        observation = deepcopy(observation2)
+        observation = observation2
 
         if done: # end of episode
-            if debug: prGreen('#{}: episode_reward:{} steps:{}'.format(episode,episode_reward,step))
-
+            
             agent.memory.append(
                 observation,
                 agent.select_action(observation),

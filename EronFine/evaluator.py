@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import savemat
 
-from util import *
+from EronFine.util import *
 
 class Evaluator(object):
 
@@ -68,3 +68,16 @@ class Evaluator(object):
         ax.errorbar(x, y, yerr=error, fmt='-o')
         plt.savefig(fn+'.png')
         savemat(fn+'.mat', {'reward':self.results})
+        
+
+
+
+
+
+
+
+
+
+
+
+
