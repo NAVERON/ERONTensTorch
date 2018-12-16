@@ -1,6 +1,6 @@
 
-from EronFine.EndCompute import *
-from EronFine.Front import *
+from EronFine.EndCompute import DDPG, Actor, Critic
+from EronFine.Front import Viewer
 from EronFine.evaluator import Evaluator
 
 evaluate = Evaluator(20, 2000, "output", 500)
@@ -11,7 +11,7 @@ def train(agent, env):
     step = episode = episode_steps = 0
     episode_reward = 0.
     observation = None
-    num_iterations = 1000
+    num_iterations = 10000
     
     while step < num_iterations:
         # reset if it is the start of episode
@@ -19,33 +19,31 @@ def train(agent, env):
             observation = env.reset()
             agent.reset(observation)
 
-        # agent pick action ...
         action = agent.select_action(observation)
         
         # env response with next_observation, reward, terminate_info
         observation2, reward, done = env.step(action)
-        if episode_steps >= 100 -1:
+        if episode_steps >= 100:
             done = True
-
-        # agent observe and update policy
+        
         agent.observe(reward, observation2, done)
         agent.update_policy()
         
         # [optional] evaluate
         if step % 50 == 0:
             policy = lambda x: agent.select_action(x, decay_epsilon=False)
-            validate_reward = evaluate(env, policy, debug=False, visualize=False)
-
+            evaluate(env, policy, debug=False, visualize=False)
+            
         # [optional] save intermideate model
         if step % int(num_iterations/3) == 0:
             agent.save_model("output")
-
-        # update 
+        
+        # update
         step += 1
         episode_steps += 1
         episode_reward += reward
         observation = observation2
-
+        
         if done: # end of episode
             
             agent.memory.append(

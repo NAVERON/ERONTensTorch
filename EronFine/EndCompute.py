@@ -1,12 +1,12 @@
 
 
-import torch
+#import torch
 import torch.nn as nn
 from torch.optim import Adam
 from EronFine.memory import SequentialMemory
 from EronFine.util import *
 import numpy as np
-import time
+#import time
 
 
 class DDPG(object):
@@ -42,8 +42,7 @@ class DDPG(object):
         self.tau = 0.001
         self.discount = 0.99
         self.depsilon = 1.0 / 50000
-
-        # 
+        
         self.epsilon = 1.0
         self.s_t = None # Most recent state
         self.a_t = None # Most recent action
@@ -54,16 +53,15 @@ class DDPG(object):
         # Sample batch
         state_batch, action_batch, reward_batch, \
         next_state_batch, terminal_batch = self.memory.sample_and_split(self.batch_size)
-
+        
         # Prepare for the target q batch
         next_q_values = self.critic_target([
             to_tensor(next_state_batch, volatile=True),
             self.actor_target(to_tensor(next_state_batch, volatile=True)),
         ])
         next_q_values.volatile=False
-
-        target_q_batch = to_tensor(reward_batch) + \
-            self.discount*to_tensor(terminal_batch.astype(np.float))*next_q_values
+        
+        target_q_batch = to_tensor(reward_batch) + self.discount*to_tensor(terminal_batch.astype(np.float))*next_q_values
 
         # Critic update
         self.critic.zero_grad()
@@ -96,12 +94,6 @@ class DDPG(object):
         self.critic.eval()
         self.critic_target.eval()
 
-    def cuda(self):
-        self.actor.cuda()
-        self.actor_target.cuda()
-        self.critic.cuda()
-        self.critic_target.cuda()
-
     def observe(self, r_t, s_t1, done):
         if self.is_training:
             self.memory.append(self.s_t, self.a_t, r_t, done)
@@ -118,7 +110,7 @@ class DDPG(object):
         ).squeeze(0)
         action += self.is_training*max(self.epsilon, 0)*self.random_process.sample()
         action = np.clip(action, -1., 1.)
-
+        
         if decay_epsilon:
             self.epsilon -= self.depsilon
         
@@ -194,7 +186,7 @@ class Critic(object):
         self.init_weights(init_w)
     
     def init_weights(self, init_w):
-        self.fc1.weight.data = fanin_init(self.fc1.weight.data.size())    # 实现在model里面
+        self.fc1.weight.data = fanin_init(self.fc1.weight.data.size())
         self.fc2.weight.data = fanin_init(self.fc2.weight.data.size())
         self.fc3.weight.data.uniform_(-init_w, init_w)
     

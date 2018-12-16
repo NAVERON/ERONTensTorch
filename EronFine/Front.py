@@ -96,12 +96,6 @@ class Viewer():
         self.canvas.pack()
         
         self.render()
-        self.tk.protocol("WM_DELETE_WINDOW", self.on_closing)
-    
-    def on_closing(self):
-        self.tk.update()
-        time.sleep(0.01)
-        #self.tk.destroy()
     
     def createRandomEntity(self):
         position = np.multiply([np.random.rand(), np.random.rand()], 600)
@@ -127,6 +121,7 @@ class Viewer():
         
         for s in self.ships:
             s.goAhead(self.tk)
+        
         time.sleep(0.01)
         
         return [0, 0, 0, 0, 0], 0, False
@@ -144,10 +139,11 @@ class Viewer():
 
 if __name__ == "__main__":
     
-    view = Viewer()
-    
-    while True:
-        view.step(0)
+    env = Viewer()
+    step = 0
+    while step < 1000:
+        env.step(0)
+        step += 1
         
     
     

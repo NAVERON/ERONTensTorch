@@ -17,7 +17,7 @@ def to_numpy(var):
     return var.data.numpy()
 
 def to_tensor(ndarray, volatile=False, requires_grad=False, dtype=torch.Tensor):
-    #ndarray = torch.from_numpy(ndarray)
+    ndarray = torch.from_numpy(ndarray)
     return Variable(
         ndarray, volatile=volatile, requires_grad=requires_grad
     ).type(dtype)
