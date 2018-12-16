@@ -86,7 +86,6 @@ from tkinter import *
 
 class Viewer():
     
-    running = True
     
     def __init__(self):
         self.tk = Tk()
@@ -100,7 +99,6 @@ class Viewer():
         self.tk.protocol("WM_DELETE_WINDOW", self.on_closing)
     
     def on_closing(self):
-        self.running = False
         self.tk.update()
         time.sleep(0.01)
         #self.tk.destroy()
@@ -131,10 +129,11 @@ class Viewer():
             s.goAhead(self.tk)
         time.sleep(0.01)
         
-        return 0, 0, False
+        return [0, 0, 0, 0, 0], 0, False
         pass
     def reset(self):  # 重置环境和变量的条件
-        return 0
+        
+        return 0, 0, 0, 0, 0
         pass
     
     def sampleAction(self):
@@ -147,7 +146,7 @@ if __name__ == "__main__":
     
     view = Viewer()
     
-    while view.running:
+    while True:
         view.step(0)
         
     

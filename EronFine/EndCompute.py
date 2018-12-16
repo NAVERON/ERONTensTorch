@@ -208,10 +208,7 @@ class Critic(object):
         out = self.fc3(out)
         return out
 
-class Model():
-    
-    def __init__(self):
-        pass
+
     
     
 

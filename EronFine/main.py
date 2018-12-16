@@ -5,12 +5,14 @@ from EronFine.evaluator import Evaluator
 
 evaluate = Evaluator(20, 2000, "output", 500)
 
-def train(agent, env, num_iterations):
+def train(agent, env):
     
     agent.is_training = True
     step = episode = episode_steps = 0
     episode_reward = 0.
     observation = None
+    num_iterations = 1000
+    
     while step < num_iterations:
         # reset if it is the start of episode
         if observation is None:
@@ -63,9 +65,8 @@ if __name__ == "__main__":
     
     env = Viewer()
     agent = DDPG(5, 4)   # 环境和动作的维度
-    num_iterations = 1000
     
-    train(agent, env, num_iterations)
+    train(agent, env)
     print("train over")
     
 
