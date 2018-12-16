@@ -5,31 +5,58 @@ from EronFine.Front import *
 
 def train(agent, env, num_iterations):
     
+    agent.is_training = True
     step = episode = episode_steps = 0
-    episode_reward = 0.  # 最终所有的奖励
-    observation = None  # 避碰中的环境量
-    
+    episode_reward = 0.
+    observation = None
     while step < num_iterations:
+        # reset if it is the start of episode
         if observation is None:
             observation = env.reset()
             agent.reset(observation)
-        
+
+        # agent pick action ...
         action = agent.select_action(observation)
-        next_observation, reward, done = env.step(action)
-        # 需要存储当前状态    observation, action, reward, next_observation
         
+        # env response with next_observation, reward, terminate_info
+        observation2, reward, done = env.step(action)
+        if episode_steps >= 100 -1:
+            done = True
+
+        # agent observe and update policy
+        agent.observe(reward, observation2, done)
+        agent.update_policy()
+        
+        # [optional] evaluate
+        if step % 50 == 0:
+            policy = lambda x: agent.select_action(x, decay_epsilon=False)
+            validate_reward = evaluate(env, policy, debug=False, visualize=False)
+            if debug: prYellow('[Evaluate] Step_{:07d}: mean_reward:{}'.format(step, validate_reward))
+
+        # [optional] save intermideate model
+        if step % int(num_iterations/3) == 0:
+            agent.save_model(output)
+
+        # update 
         step += 1
-        episode += 1
+        episode_steps += 1
         episode_reward += reward
-        observation = next_observation
-        
-        if done:  # 一个回合结束
-            
+        observation = deepcopy(observation2)
+
+        if done: # end of episode
+            if debug: prGreen('#{}: episode_reward:{} steps:{}'.format(episode,episode_reward,step))
+
+            agent.memory.append(
+                observation,
+                agent.select_action(observation),
+                0., False
+            )
+
+            # reset
             observation = None
             episode_steps = 0
             episode_reward = 0.
             episode += 1
-            pass
         
 
 if __name__ == "__main__":
