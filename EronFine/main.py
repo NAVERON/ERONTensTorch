@@ -33,7 +33,7 @@ def train(agent, env):
         if step % 50 == 0:
             policy = lambda x: agent.select_action(x, decay_epsilon=False)
             evaluate(env, policy, debug=False, visualize=False)
-            
+        
         # [optional] save intermideate model
         if step % int(num_iterations/3) == 0:
             agent.save_model("output")

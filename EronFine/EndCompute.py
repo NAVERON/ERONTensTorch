@@ -5,6 +5,7 @@ import torch.nn as nn
 from torch.optim import Adam
 from EronFine.memory import SequentialMemory
 from EronFine.util import *
+from EronFine.random_process import OrnsteinUhlenbeckProcess
 import numpy as np
 #import time
 
@@ -36,7 +37,7 @@ class DDPG(object):
         
         #Create replay buffer
         self.memory = SequentialMemory(limit=6000000, window_length=1)
-
+        self.random_process = OrnsteinUhlenbeckProcess(size=self.actions_dim, theta=0.15, mu=0.0, sigma=0.2)
         # Hyper-parameters
         self.batch_size = 64
         self.tau = 0.001
@@ -51,8 +52,7 @@ class DDPG(object):
     
     def update_policy(self):
         # Sample batch
-        state_batch, action_batch, reward_batch, \
-        next_state_batch, terminal_batch = self.memory.sample_and_split(self.batch_size)
+        state_batch, action_batch, reward_batch, next_state_batch, terminal_batch = self.memory.sample_and_split(self.batch_size)
         
         # Prepare for the target q batch
         next_q_values = self.critic_target([
@@ -175,7 +175,7 @@ class Actor(nn.Module):
         out = self.tanh(out)
         return out
     
-class Critic(object):
+class Critic(nn.Module):
     
     def __init__(self, states_dim, actions_dim, hidden1=400, hidden2=300, init_w=3e-3):
         super(Critic, self).__init__()
