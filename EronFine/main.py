@@ -14,11 +14,11 @@ def train(agent, env):
     num_iterations = 10000
     
     while step < num_iterations:
-        # reset if it is the start of episode
+        
         if observation is None:
             observation = env.reset()
             agent.reset(observation)
-
+            
         action = agent.select_action(observation)
         
         # env response with next_observation, reward, terminate_info
