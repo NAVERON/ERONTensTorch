@@ -83,7 +83,7 @@ class DDPG(object):
         policy_loss = policy_loss.mean()
         policy_loss.backward()
         self.actor_optim.step()
-
+        
         # Target update
         util.soft_update(self.actor_target, self.actor, self.tau)
         util.soft_update(self.critic_target, self.critic, self.tau)
