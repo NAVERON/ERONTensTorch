@@ -41,6 +41,8 @@ class Ship():  # 训练对象的属性
         return np.linalg.norm(self.velocity)
     def getCourse(self): # 运动方向
         return self.calAngle(self.velocity[0], self.velocity[1])
+    def distance(self, other_ship):
+        return np.linalg.norm(other_ship.position - self.position)
     
     def calAngle(self, dx, dy):   # 计算的角度按照顺时针旋转，正向向上是0度角
         theta = math.atan2(dx, dy)
@@ -86,11 +88,17 @@ from tkinter import *
 
 class Viewer():
     
+    state_dim = 4
+    action_dim = 5
+    action_bound = [-1, 1]
+    num_iterations = 10000
     
     def __init__(self):
         self.tk = Tk()
         self.canvas = Canvas(self.tk, width=1000, height=600)
         self.ships = []
+        self.drawer_ships = []
+        
         for _ in range(10):
             self.ships.append(self.createRandomEntity())
         self.canvas.pack()
@@ -103,8 +111,17 @@ class Viewer():
         entity = Ship(np.array(position), np.array(velocity))
         time.sleep(0.001)
         return entity
+    def getRear(self, this_ship, dis):  # 传入查找对象的引用this_ship，以及距离范围 dis
+        near = []
+        for item_ship in self.ships:
+            if this_ship.id == item_ship.id:
+                continue
+            if this_ship.distance(item_ship) < dis:
+                near.append(item_ship)
+        return near
+        pass
     
-    drawer_ships = []
+    
     def render(self):  # 根据当前状况绘制
         for entity in self.drawer_ships:
             self.canvas.delete(entity)
@@ -117,7 +134,7 @@ class Viewer():
         
     def step(self, action):
         # 这里先做动作，舵角，速度变化等
-        self.render()  #渲染当前画面
+        self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
         
         for s in self.ships:
             s.goAhead(self.tk)

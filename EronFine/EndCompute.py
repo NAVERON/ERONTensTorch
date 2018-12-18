@@ -31,7 +31,7 @@ class DDPG(object):
         self.critic = Critic(self.states_dim, self.actions_dim, **net_cfg)
         self.critic_target = Critic(self.states_dim, self.actions_dim, **net_cfg)
         self.critic_optim  = Adam(self.critic.parameters(), lr=0.001)
-        
+        # 确认网络中参数是一样的，再DDPG网络中，会有两套网络，一个现实，一个虚拟
         hard_update(self.actor_target, self.actor) # Make sure target is with the same weight
         hard_update(self.critic_target, self.critic)
         

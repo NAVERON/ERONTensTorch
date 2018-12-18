@@ -11,7 +11,7 @@ def train(agent, env):
     step = episode = episode_steps = 0
     episode_reward = 0.
     observation = None
-    num_iterations = 10000
+    num_iterations = env.num_iterations
     
     while step < num_iterations:
         
@@ -20,13 +20,11 @@ def train(agent, env):
             agent.reset(observation)
             
         action = agent.select_action(observation)
-        
-        # env response with next_observation, reward, terminate_info
-        observation2, reward, done = env.step(action)
+        next_observation, reward, done = env.step(action)
         if episode_steps >= 100:
             done = True
         
-        agent.observe(reward, observation2, done)
+        agent.observe(reward, next_observation, done)
         agent.update_policy()
         
         # [optional] evaluate
@@ -42,10 +40,9 @@ def train(agent, env):
         step += 1
         episode_steps += 1
         episode_reward += reward
-        observation = observation2
+        observation = next_observation
         
         if done: # end of episode
-            
             agent.memory.append(
                 observation,
                 agent.select_action(observation),
@@ -56,13 +53,13 @@ def train(agent, env):
             observation = None
             episode_steps = 0
             episode_reward = 0.
-            episode += 1
+            episode += 1  #   总体的循环
         
 
 if __name__ == "__main__":
     
     env = Viewer()
-    agent = DDPG(5, 4)   # 环境和动作的维度
+    agent = DDPG(env.state_dim, env.action_dim)   # 环境和动作的维度
     
     train(agent, env)
     print("train over")
