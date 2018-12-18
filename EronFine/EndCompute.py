@@ -1,11 +1,13 @@
 
 
 import torch
+import torch.nn as nn
+from torch.optim import Adam
 import numpy as np
 
 from EronFine.memory import SequentialMemory
-from EronFine.util import to_numpy, to_tensor, soft_update, hard_update
-from EronFine.random_process import OrnsteinUhlenbeckProcess
+from EronFine import util
+from EronFine import random_process
 
 
 class DDPG(object):
@@ -24,18 +26,18 @@ class DDPG(object):
         }
         self.actor = Actor(self.states_dim, self.actions_dim, **net_cfg)
         self.actor_target = Actor(self.states_dim, self.actions_dim, **net_cfg)
-        self.actor_optim  = torch.optim.Adam(self.actor.parameters(), lr=0.001)
-
+        self.actor_optim  = Adam(self.actor.parameters(), lr=0.001)
+        
         self.critic = Critic(self.states_dim, self.actions_dim, **net_cfg)
         self.critic_target = Critic(self.states_dim, self.actions_dim, **net_cfg)
-        self.critic_optim  = torch.optim.Adam(self.critic.parameters(), lr=0.001)
+        self.critic_optim  = Adam(self.critic.parameters(), lr=0.001)
         # 确认网络中参数是一样的，再DDPG网络中，会有两套网络，一个现实，一个虚拟
-        hard_update(self.actor_target, self.actor) # Make sure target is with the same weight
-        hard_update(self.critic_target, self.critic)
+        util.hard_update(self.actor_target, self.actor) # Make sure target is with the same weight
+        util.hard_update(self.critic_target, self.critic)
         
         #Create replay buffer
         self.memory = SequentialMemory(limit=6000000, window_length=1)
-        self.random_process = OrnsteinUhlenbeckProcess(size=self.actions_dim, theta=0.15, mu=0.0, sigma=0.2)
+        self.random_process = random_process.OrnsteinUhlenbeckProcess(size=self.actions_dim, theta=0.15, mu=0.0, sigma=0.2)
         # Hyper-parameters
         self.batch_size = 64
         self.tau = 0.001
@@ -54,19 +56,19 @@ class DDPG(object):
         
         # Prepare for the target q batch
         next_q_values = self.critic_target([
-            to_tensor(next_state_batch, volatile=True),
-            self.actor_target(to_tensor(next_state_batch, volatile=True)),
+            util.to_tensor(next_state_batch, volatile=True),
+            self.actor_target( util.to_tensor(next_state_batch, volatile=True) )
         ])
         next_q_values.volatile=False
         
-        target_q_batch = to_tensor(reward_batch) + self.discount*to_tensor(terminal_batch.astype(np.float))*next_q_values
+        target_q_batch = util.to_tensor(reward_batch) + self.discount* util.to_tensor(terminal_batch.astype(np.float))*next_q_values
 
         # Critic update
         self.critic.zero_grad()
 
-        q_batch = self.critic([ to_tensor(state_batch), to_tensor(action_batch) ])
+        q_batch = self.critic([ util.to_tensor(state_batch), util.to_tensor(action_batch) ])
         
-        value_loss = torch.nn.MSELoss(q_batch, target_q_batch)
+        value_loss = nn.MSELoss(q_batch, target_q_batch)
         value_loss.backward()
         self.critic_optim.step()
 
@@ -74,8 +76,8 @@ class DDPG(object):
         self.actor.zero_grad()
 
         policy_loss = -self.critic([
-            to_tensor(state_batch),
-            self.actor(to_tensor(state_batch))
+            util.to_tensor(state_batch),
+            self.actor( util.to_tensor(state_batch) )
         ])
 
         policy_loss = policy_loss.mean()
@@ -83,8 +85,8 @@ class DDPG(object):
         self.actor_optim.step()
 
         # Target update
-        soft_update(self.actor_target, self.actor, self.tau)
-        soft_update(self.critic_target, self.critic, self.tau)
+        util.soft_update(self.actor_target, self.actor, self.tau)
+        util.soft_update(self.critic_target, self.critic, self.tau)
 
     def eval(self):
         self.actor.eval()
@@ -103,8 +105,8 @@ class DDPG(object):
         return action
 
     def select_action(self, s_t, decay_epsilon=True):
-        action = to_numpy(
-            self.actor(to_tensor(np.array([s_t])))
+        action = util.to_numpy(
+            self.actor( util.to_tensor( np.array([s_t]) ) )    # 这里修改了[s_t]   ###################################
         ).squeeze(0)
         action += self.is_training*max(self.epsilon, 0)*self.random_process.sample()
         action = np.clip(action, -1., 1.)
@@ -148,15 +150,15 @@ def fanin_init(size, fanin=None):
     v = 1. / np.sqrt(fanin)
     return torch.Tensor(size).uniform_(-v, v)
 
-class Actor(torch.nn.Module):
+class Actor(nn.Module):
     
     def __init__(self, states_dim, actions_dim, hidden1=400, hidden2=300, init_w=3e-3):
         super(Actor, self).__init__()
-        self.fc1 = torch.nn.Linear(states_dim, hidden1)
-        self.fc2 = torch.nn.Linear(hidden1, hidden2)
-        self.fc3 = torch.nn.Linear(hidden2, actions_dim)
-        self.relu = torch.nn.ReLU()
-        self.tanh = torch.nn.Tanh()
+        self.fc1 = nn.Linear(states_dim, hidden1)
+        self.fc2 = nn.Linear(hidden1, hidden2)
+        self.fc3 = nn.Linear(hidden2, actions_dim)
+        self.relu = nn.ReLU()
+        self.tanh = nn.Tanh()
         self.init_weights(init_w)
     
     def init_weights(self, init_w):
@@ -173,14 +175,14 @@ class Actor(torch.nn.Module):
         out = self.tanh(out)
         return out
     
-class Critic(torch.nn.Module):
+class Critic(nn.Module):
     
     def __init__(self, states_dim, actions_dim, hidden1=400, hidden2=300, init_w=3e-3):
         super(Critic, self).__init__()
-        self.fc1 = torch.nn.Linear(states_dim, hidden1)
-        self.fc2 = torch.nn.Linear(hidden1 + actions_dim, hidden2)
-        self.fc3 = torch.nn.Linear(hidden2, 1)
-        self.relu = torch.nn.ReLU()
+        self.fc1 = nn.Linear(states_dim, hidden1)
+        self.fc2 = nn.Linear(hidden1 + actions_dim, hidden2)
+        self.fc3 = nn.Linear(hidden2, 1)
+        self.relu = nn.ReLU()
         self.init_weights(init_w)
     
     def init_weights(self, init_w):
@@ -195,10 +197,10 @@ class Critic(torch.nn.Module):
         print("out:", out)
         print("a:", a)
         # debug()
-        out = self.fc2(torch.cat( [out, a], 1) )  # 按列拼接
-        out = self.fc2()
-        out = self.relu(out)
-        out = self.fc3(out)
+#         out = self.fc2(torch.cat( [out, a], 1) )  # 按列拼接
+#         out = self.fc2()
+#         out = self.relu(out)
+#         out = self.fc3(out)
         return out
 
 

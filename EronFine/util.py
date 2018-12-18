@@ -16,11 +16,9 @@ def prBlack(prt): print("\033[98m {}\033[00m" .format(prt))
 def to_numpy(var):
     return var.data.numpy()
 
-def to_tensor(ndarray, volatile=False, requires_grad=False, dtype=torch.Tensor):
-    ndarray = torch.from_numpy(ndarray)
-    return Variable(
-        ndarray, volatile=volatile, requires_grad=requires_grad
-    ).type(dtype)
+def to_tensor(numpy_ndarray, volatile=False, requires_grad=False, dtype=torch.Tensor):    # 这里传进来的是一个observation
+    print("numpy data : ", numpy_ndarray)
+    return Variable(torch.from_numpy(numpy_ndarray), volatile=volatile, requires_grad=requires_grad).type(dtype)
     
 def soft_update(target, source, tau):
     for target_param, param in zip(target.parameters(), source.parameters()):

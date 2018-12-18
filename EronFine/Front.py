@@ -68,7 +68,7 @@ class Viewer():
         pass
     def reset(self):  # 重置环境和变量的条件
         
-        return 0, 0, 0, 0, 0
+        return [0, 0, 0, 0, 0], 0, False
         pass
     
     def sampleAction(self):
