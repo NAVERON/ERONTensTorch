@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import savemat
 
-from EronFine.util import *
+from EronFine import util
 
 class Evaluator(object):
 

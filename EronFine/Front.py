@@ -13,7 +13,7 @@ class Viewer():
     state_dim = 4
     action_dim = 5
     action_bound = [-1, 1]
-    num_iterations = 10000
+    # num_iterations = 10000
     
     def __init__(self):
         self.tk = Tk()
@@ -68,7 +68,7 @@ class Viewer():
         pass
     def reset(self):  # 重置环境和变量的条件
         
-        return [0, 0, 0, 0, 0], 0, False
+        return [0, 0, 0, 0, 0]
         pass
     
     def sampleAction(self):
