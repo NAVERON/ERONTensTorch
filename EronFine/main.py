@@ -1,5 +1,5 @@
 
-from EronFine.EndCompute import DDPG, Actor, Critic
+from EronFine.EndCompute import DDPG
 from EronFine.Front import Viewer
 from EronFine.evaluator import Evaluator
 
