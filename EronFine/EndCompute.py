@@ -1,12 +1,10 @@
 
 
 import torch
-import torch.nn as nn
-from torch.optim import Adam
 import numpy as np
 
 from EronFine.memory import SequentialMemory
-from EronFine.util import to_numpy, to_tensor, soft_update, hard_update, get_output_folder
+from EronFine.util import to_numpy, to_tensor, soft_update, hard_update
 from EronFine.random_process import OrnsteinUhlenbeckProcess
 
 
@@ -26,11 +24,11 @@ class DDPG(object):
         }
         self.actor = Actor(self.states_dim, self.actions_dim, **net_cfg)
         self.actor_target = Actor(self.states_dim, self.actions_dim, **net_cfg)
-        self.actor_optim  = Adam(self.actor.parameters(), lr=0.001)
+        self.actor_optim  = torch.optim.Adam(self.actor.parameters(), lr=0.001)
 
         self.critic = Critic(self.states_dim, self.actions_dim, **net_cfg)
         self.critic_target = Critic(self.states_dim, self.actions_dim, **net_cfg)
-        self.critic_optim  = Adam(self.critic.parameters(), lr=0.001)
+        self.critic_optim  = torch.optim.Adam(self.critic.parameters(), lr=0.001)
         # 确认网络中参数是一样的，再DDPG网络中，会有两套网络，一个现实，一个虚拟
         hard_update(self.actor_target, self.actor) # Make sure target is with the same weight
         hard_update(self.critic_target, self.critic)
@@ -68,7 +66,7 @@ class DDPG(object):
 
         q_batch = self.critic([ to_tensor(state_batch), to_tensor(action_batch) ])
         
-        value_loss = nn.MSELoss(q_batch, target_q_batch)
+        value_loss = torch.nn.MSELoss(q_batch, target_q_batch)
         value_loss.backward()
         self.critic_optim.step()
 
@@ -150,15 +148,15 @@ def fanin_init(size, fanin=None):
     v = 1. / np.sqrt(fanin)
     return torch.Tensor(size).uniform_(-v, v)
 
-class Actor(nn.Module):
+class Actor(torch.nn.Module):
     
     def __init__(self, states_dim, actions_dim, hidden1=400, hidden2=300, init_w=3e-3):
         super(Actor, self).__init__()
-        self.fc1 = nn.Linear(states_dim, hidden1)
-        self.fc2 = nn.Linear(hidden1, hidden2)
-        self.fc3 = nn.Linear(hidden2, actions_dim)
-        self.relu = nn.ReLU()
-        self.tanh = nn.Tanh()
+        self.fc1 = torch.nn.Linear(states_dim, hidden1)
+        self.fc2 = torch.nn.Linear(hidden1, hidden2)
+        self.fc3 = torch.nn.Linear(hidden2, actions_dim)
+        self.relu = torch.nn.ReLU()
+        self.tanh = torch.nn.Tanh()
         self.init_weights(init_w)
     
     def init_weights(self, init_w):
@@ -175,14 +173,14 @@ class Actor(nn.Module):
         out = self.tanh(out)
         return out
     
-class Critic(nn.Module):
+class Critic(torch.nn.Module):
     
     def __init__(self, states_dim, actions_dim, hidden1=400, hidden2=300, init_w=3e-3):
         super(Critic, self).__init__()
-        self.fc1 = nn.Linear(states_dim, hidden1)
-        self.fc2 = nn.Linear(hidden1 + actions_dim, hidden2)
-        self.fc3 = nn.Linear(hidden2, 1)
-        self.relu = nn.ReLU()
+        self.fc1 = torch.nn.Linear(states_dim, hidden1)
+        self.fc2 = torch.nn.Linear(hidden1 + actions_dim, hidden2)
+        self.fc3 = torch.nn.Linear(hidden2, 1)
+        self.relu = torch.nn.ReLU()
         self.init_weights(init_w)
     
     def init_weights(self, init_w):
@@ -194,6 +192,8 @@ class Critic(nn.Module):
         x, a = xs
         out = self.fc1(x)
         out = self.relu(out)
+        print("out:", out)
+        print("a:", a)
         # debug()
         out = self.fc2(torch.cat( [out, a], 1) )  # 按列拼接
         out = self.fc2()
