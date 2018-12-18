@@ -98,7 +98,7 @@ class DDPG(object):
             self.s_t = s_t1
 
     def random_action(self):
-        action = np.random.uniform(-1.,1.,self.nb_actions)
+        action = np.random.uniform(-1.,1., self.actions_dim)
         self.a_t = action
         return action
 
