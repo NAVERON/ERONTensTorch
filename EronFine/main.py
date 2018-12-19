@@ -7,6 +7,9 @@ from EronFine.evaluator import Evaluator
 from copy import deepcopy
 from EronFine import util
 
+#   在gym环境中欧巴versa体哦那是   3个值
+#   动作是一个值
+#   具体参考      https://www.jianshu.com/p/af3a7853268f
 
 def train(agent, env, evaluate):
     validate_episodes = evaluate.interval

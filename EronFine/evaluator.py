@@ -42,7 +42,8 @@ class Evaluator(object):
                 # update
                 episode_reward += reward
                 episode_steps += 1
-                
+            
+            if debug: util.prYellow('[Evaluate] #Episode{}: episode_reward:{}'.format(episode,episode_reward))    
             result.append(episode_reward)
 
         result = np.array(result).reshape(-1,1)

@@ -198,10 +198,10 @@ class Critic(nn.Module):
         print("out:", out)
         print("a:", a)
         # debug()
-#         out = self.fc2(torch.cat( [out, a], 1) )  # 按列拼接
-#         out = self.fc2()
-#         out = self.relu(out)
-#         out = self.fc3(out)
+        out = self.fc2(torch.cat( [out, a], 1) )  # 按列拼接
+        out = self.fc2()
+        out = self.relu(out)
+        out = self.fc3(out)
         return out
 
 
