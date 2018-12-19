@@ -64,7 +64,7 @@ class Viewer():
         
         time.sleep(0.01)
         
-        return [0, 0, 0, 0, 0], 0, False
+        return [0, 0, 0, 0, 0], 0, False   # 观察值， 奖励， 一个回合是否完成
         pass
     def reset(self):  # 重置环境和变量的条件
         

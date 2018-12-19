@@ -8,13 +8,15 @@ from copy import deepcopy
 from EronFine import util
 
 
-def train(agent, env, evaluate, validate_steps, output, max_episode_length = None):
+def train(agent, env, evaluate, validate_steps, output):
     
-    agent.is_training = True
+    agent.is_training = True  # 是不是训练状态
     step = episode = episode_steps = 0
-    episode_reward = 0.
-    observation = None
-    num_iterations = 10000
+    episode_reward = 0.  # 每一个回合的奖励总和
+    num_iterations = 1000  # 一共训练多少回合
+    max_episode_length = 500   # 每一个回合最大步进长度
+    
+    observation = None  # 环境状态，观察值
     
     while step < num_iterations:
         
