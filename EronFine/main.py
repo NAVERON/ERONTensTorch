@@ -80,7 +80,7 @@ if __name__ == "__main__":
     agent = DDPG(env.state_dim, env.action_dim)   # 环境和动作的维度
     evaluate = Evaluator(validate_episodes, validate_steps, output, max_episode_length)
     
-    train(agent, env, evaluate, validate_steps, output, max_episode_length)
+    train(agent, env, evaluate, validate_steps, output)
     print("train over")
     
     
