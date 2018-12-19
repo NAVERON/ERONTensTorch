@@ -16,8 +16,8 @@ class DDPG(object):
         self.states_dim = states_dim
         self.actions_dim = actions_dim
         
-        hidden1 = 400
-        hidden2 = 300
+        hidden1 = 300
+        hidden2 = 200
         init_w = 0.003
         net_cfg = {
             'hidden1':hidden1, 
@@ -42,7 +42,7 @@ class DDPG(object):
         self.batch_size = 64
         self.tau = 0.001
         self.discount = 0.99
-        self.depsilon = 1.0 / 50000
+        self.depsilon = 1.0 / 50000  # 微分
         
         self.epsilon = 1.0
         self.s_t = None # Most recent state
@@ -100,18 +100,19 @@ class DDPG(object):
             self.s_t = s_t1
 
     def random_action(self):
-        action = np.random.uniform(-1.,1., self.actions_dim)
+        action = np.random.uniform(-1.,1., self.actions_dim)   # 在均匀分布上取size个数   在-1 和 1之间取值
         self.a_t = action
         return action
 
     def select_action(self, s_t, decay_epsilon=True):
         action = util.to_numpy(
-            self.actor( util.to_tensor( np.array([s_t]) ) )    # 这里修改了[s_t]   ###################################
-        ).squeeze(0)
-        action += self.is_training * max(self.epsilon, 0) * self.random_process.sample()
+            self.actor( util.to_tensor( np.array([s_t]) ) )    # 向Actor网络中发输入当前的状态量
+        ).squeeze(0)     #  从数组的形状中删除单维度条目，即把shape中为1的维度去掉
+        
+        action += self.is_training * max(self.epsilon, 0) * self.random_process.sample()  # 这里的布尔值可以运算，当作1   有随即动作的成分
         action = np.clip(action, -1., 1.)
         
-        if decay_epsilon:
+        if decay_epsilon:  # 衰退
             self.epsilon -= self.depsilon
         
         self.a_t = action

@@ -3,6 +3,8 @@ import os
 import torch
 from torch.autograd import Variable
 
+USE_CUDA = torch.cuda.is_available()
+FLOAT = torch.cuda.FloatTensor if USE_CUDA else torch.FloatTensor
 
 def prRed(prt): print("\033[91m {}\033[00m" .format(prt))
 def prGreen(prt): print("\033[92m {}\033[00m" .format(prt))
@@ -14,12 +16,13 @@ def prLightGray(prt): print("\033[97m {}\033[00m" .format(prt))
 def prBlack(prt): print("\033[98m {}\033[00m" .format(prt))
 
 def to_numpy(var):
-    return var.data.numpy()
+    return var.cpu().data.numpy() if USE_CUDA else var.data.numpy()
 
-def to_tensor(numpy_ndarray, volatile=False, requires_grad=False, dtype=torch.FloatTensor):    # 这里传进来的是一个observation
-    print("numpy data : ", numpy_ndarray)
-    return Variable(torch.from_numpy(numpy_ndarray), volatile = volatile, requires_grad=requires_grad).type(dtype)
-    
+def to_tensor(ndarray, volatile=False, requires_grad=False, dtype=FLOAT):
+    return Variable(
+        torch.from_numpy(ndarray), volatile=volatile, requires_grad=requires_grad
+    ).type(dtype)
+
 def soft_update(target, source, tau):
     for target_param, param in zip(target.parameters(), source.parameters()):
         target_param.data.copy_(
@@ -66,9 +69,5 @@ def get_output_folder(parent_dir, env_name):
     parent_dir = parent_dir + '-run{}'.format(experiment_id)
     os.makedirs(parent_dir, exist_ok=True)
     return parent_dir
-
-
-
-
 
 

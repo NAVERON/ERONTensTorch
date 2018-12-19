@@ -10,7 +10,7 @@ class Ship():  # 训练对象的属性
     T = 3.12
     
     def __init__(self, position=np.array([500, 400], dtype=np.float), velocity=np.array([2, 4], dtype=np.float)):  # 矩阵
-        self.id = self.setID()
+        self.id = datetime.datetime.now().strftime("%d%H%M%S%f")
         
         self.rudder = 0
         self.position = position
@@ -18,8 +18,6 @@ class Ship():  # 训练对象的属性
         
         self.q = queue.Queue(maxsize=10)
         
-    def setID(self):
-        return datetime.datetime.now().strftime("%d%H%M%S%f")
     def courseTurn(self, dc):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
         dc_radius = np.radians(-dc)  # 转换成弧度

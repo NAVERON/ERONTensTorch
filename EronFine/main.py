@@ -8,7 +8,9 @@ from copy import deepcopy
 from EronFine import util
 
 
-def train(agent, env, evaluate, validate_steps, output):
+def train(agent, env, evaluate):
+    validate_episodes = evaluate.interval
+    output = evaluate.save_path
     
     agent.is_training = True  # 是不是训练状态
     step = episode = episode_steps = 0
@@ -20,11 +22,11 @@ def train(agent, env, evaluate, validate_steps, output):
     
     while step < num_iterations:
         
-        if observation is None:
+        if observation is None:  # 初始化环境状态  和  智能体的 初始状态，一个新的回合
             observation = env.reset()
             agent.reset(observation)
         
-        if step <= 200:
+        if step <= 200:  # steop表示已经训练了多少回合
             action = agent.random_action()
         else:
             action = agent.select_action(observation)
@@ -80,7 +82,7 @@ if __name__ == "__main__":
     agent = DDPG(env.state_dim, env.action_dim)   # 环境和动作的维度
     evaluate = Evaluator(validate_episodes, validate_steps, output, max_episode_length)
     
-    train(agent, env, evaluate, validate_steps, output)
+    train(agent, env, evaluate)
     print("train over")
     
     
