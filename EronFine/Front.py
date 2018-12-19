@@ -10,9 +10,9 @@ from EronFine.Ship import Ship
 
 class Viewer():
     
-    state_dim = 4
-    action_dim = 5
-    action_bound = [-1, 1]
+    state_dim = 3
+    action_dim = 1
+    action_bound = [-2, 2]
     # num_iterations = 10000
     
     def __init__(self):
@@ -57,6 +57,8 @@ class Viewer():
         
     def step(self, action):
         # 这里先做动作，舵角，速度变化等
+        print(action)
+        
         self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
         
         for s in self.ships:
@@ -64,11 +66,12 @@ class Viewer():
         
         time.sleep(0.01)
         
-        return [0, 0, 0, 0, 0], 0, False   # 观察值， 奖励， 一个回合是否完成
+        return [0, 0, 0], 1, False   # 观察值， 奖励， 一个回合是否完成
         pass
+    
     def reset(self):  # 重置环境和变量的条件
         
-        return [0, 0, 0, 0, 0]
+        return [0, 0, 0]
         pass
     
     def sampleAction(self):
