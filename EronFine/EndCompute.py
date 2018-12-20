@@ -100,7 +100,7 @@ class DDPG(object):
             self.s_t = s_t1
 
     def random_action(self):
-        action = np.random.uniform(-1.,1., self.actions_dim)   # 在均匀分布上取size个数   在-1 和 1之间取值
+        action = np.random.uniform(-2.,2., self.actions_dim)   # 在均匀分布上取size个数   在-1 和 1之间取值
         self.a_t = action
         return action
 
