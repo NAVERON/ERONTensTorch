@@ -32,7 +32,7 @@ def train(agent, env, evaluate):
         if step <= 200:  # steop表示已经训练了多少回合
             action = agent.random_action()
         else:
-            action = agent.select_action(observation)
+            action = agent.select_action(observation)   # 对于每一个Ship都要输入环境并计算出动作Action
         
         next_observation, reward, done = env.step(action)
         next_observation = deepcopy(next_observation)

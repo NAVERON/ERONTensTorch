@@ -72,6 +72,16 @@ class Ship():  # 训练对象的属性
         
         return True
     
+    def getNear(self, ships, dis):  # 传入查找对象的引用this_ship，以及距离范围 dis
+        near = []
+        for item_ship in ships:
+            if self.id == item_ship.id:
+                continue
+            if self.distance(item_ship) < dis:
+                near.append(item_ship)
+        return near
+        pass
+    
     
     def toString(self):
         return "id:" + self.id + " , position:" + str(self.position) + " , velocity:" + str(self.velocity)

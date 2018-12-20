@@ -34,6 +34,7 @@ class Viewer():
         print(entity.toString())
         time.sleep(0.001)
         return entity
+    #  获取周边放到了Ship中，方便逻辑调用
     def getNear(self, this_ship, dis):  # 传入查找对象的引用this_ship，以及距离范围 dis
         near = []
         for item_ship in self.ships:
