@@ -29,7 +29,7 @@ def train(agent, env, evaluate):
             observation = env.reset()
             agent.reset(observation)
         
-        if step <= 200:  # steop表示已经训练了多少回合
+        if step <= 200:  # steop表示已经训练了多少回合    在一定的回合中采用随即动作填充刚开始的网络
             action = agent.random_action()
         else:
             action = agent.select_action(observation)   # 对于每一个Ship都要输入环境并计算出动作Action

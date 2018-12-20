@@ -10,14 +10,19 @@ from EronFine.Ship import Ship
 
 class Viewer():
     
-    state_dim = 7
+    state_dim = 6
     action_dim = 2
     action_bound = [-2, 2]
     # num_iterations = 10000
     
+    
     def __init__(self):
         self.tk = Tk()
-        self.canvas = Canvas(self.tk, width=1000, height=600)
+        
+        self.window_width = 1000
+        self.window_height = 600
+        
+        self.canvas = Canvas(self.tk, width=self.window_width, height=self.window_height)
         self.ships = []
         self.drawer_ships = []
         
@@ -44,8 +49,6 @@ class Viewer():
                 near.append(item_ship)
         return near
         pass
-    
-    
     def render(self):  # 根据当前状况绘制
         for entity in self.drawer_ships:
             self.canvas.delete(entity)
@@ -56,24 +59,29 @@ class Viewer():
         
         self.tk.update()
         
-    def step(self, action):
+    def step(self, action):    # 这里传入每一个对象的动作，每一艘船舶都向前走一步，之后会得到新的环境
         # 这里先做动作，舵角，速度变化等
         print("在 环境中step打印当前传入的动作   ", action)
         action = np.clip(action, self.action_bound[0], self.action_bound[1])
         
+        observations = {}  # 以自定形式存储数据   id : observation
+        for s in self.ships:
+            s.getNear()
+            observations[s.id] = s.getObservation()
+        # 获取环境信息
         self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
         
         for s in self.ships:
-            s.goAhead(self.tk)
+            s.goAhead(self.window_width, self.window_height)
         
         time.sleep(0.01)
         
-        return [0, 0, 0, 0, 0, 0, 0], 3, False   # 观察值， 奖励， 一个回合是否完成
+        return [0, 0, 0, 0, 0, 0], 1, False   # 观察值， 奖励， 一个回合是否完成
         pass
     
     def reset(self):  # 重置环境和变量的条件
         
-        return [0, 0, 0, 0, 0, 0, 0]
+        return [0, 0, 0, 0, 0, 0]
         pass
     
     def sampleAction(self):

@@ -2,7 +2,7 @@
 import numpy as np
 import math
 import datetime
-import queue
+import copy
 
 class Ship():  # 训练对象的属性
     
@@ -16,7 +16,7 @@ class Ship():  # 训练对象的属性
         self.position = position
         self.velocity = velocity
         
-        self.q = queue.Queue(maxsize=10)
+        # self.q = queue.Queue(maxsize=10)
         
     def courseTurn(self, dc):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
@@ -25,13 +25,16 @@ class Ship():  # 训练对象的属性
         R = np.array([ [c, -s], [s, c] ])
         # print(R)
         self.velocity = np.dot(R, self.velocity.T).T
-        
         #print(self.id, "id:", self.velocity)
         
     def velocityChange(self, dv): # 根据dv  修改原速度矢量
         self.velocity += dv
-    def rudderChange(self, dr):  # 舵角变化    范围为每次一度
+        if self.getSpeed() > 20 or self.getSpeed() < 0:   # 控制速度大小
+            self.velocity -= dv
+    def rudderChange(self, dr):  # 舵角变化    范围为每次一度， 变化舵角会造成航向的变化
         self.rudder += dr
+        if self.rudder > 35 or self.rudder < -35:  # 设定舵角的范围
+            self.rudder -= dr
     def getSpeed(self):  # 速度大小
         return np.linalg.norm(self.velocity)
     def getCourse(self): # 运动方向
@@ -46,20 +49,16 @@ class Ship():  # 训练对象的属性
             angle += 360
         return angle
     
-    def goAhead(self, viewer):
+    def goAhead(self, width, height):
         # 边界判断    设置为不能超越边界
         if self.position[0] < 0:
-            self.position[0] = viewer.winfo_width()
-        elif self.position[0] > viewer.winfo_width():
+            self.position[0] = width
+        elif self.position[0] > width:
             self.position[0] = 0
         elif self.position[1] < 0:
-            self.position = viewer.winfo_height()
-        elif self.position[1] > viewer.winfo_height():
+            self.position = height
+        elif self.position[1] > height:
             self.position[1] = 0
-        
-        if self.q.full():  # 如果队列满了，就取出
-            self.q.get()
-        self.q.put(self.position)
         
         delta = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1 / self.T))
         self.courseTurn(delta)
@@ -68,23 +67,92 @@ class Ship():  # 训练对象的属性
     def isCollision(self, other):
         dis = np.linalg.norm(other.position-self.position)
         if dis < 30:
-            return False
+            return True
         
-        return True
+        return False
+    def getObservation(self):
+        near_locals = self.warpAxis(self.near)
+        up = 0
+        right = 0
+        down = 0
+        left = 0
+        for local in near_locals:
+            ratio = local.getRatio()
+            if ratio > 355 and ratio < 30:
+                up += 1
+            elif ratio > 30 and ratio < 112.5:
+                right += 1
+            elif ratio > 112.5 and ratio < 210:
+                down += 1
+            elif ratio > 210 and ratio < 355:
+                left += 1
+        
+        return [up, right, down, left, self.getCourse(), self.getSpeed()]
+        pass
     
+    near = []   # 顶层计算后存储现在周边的情况
     def getNear(self, ships, dis):  # 传入查找对象的引用this_ship，以及距离范围 dis
-        near = []
+        self.near.clear()   # 清空之前的数据
+        
         for item_ship in ships:
             if self.id == item_ship.id:
                 continue
             if self.distance(item_ship) < dis:
-                near.append(item_ship)
-        return near
+                self.near.append(item_ship)
+        return self.near
         pass
-    
+    def warpAxis(self, near):
+        
+        near_locals = []
+        for s in near:
+            d_pos = s.position - self.position
+            d_pos_radius = -np.radians(-self.getCourse())  # 转换成弧度
+            c, s = np.cos(d_pos_radius), np.sin(d_pos_radius)
+            R = np.array([ [c, -s], [s, c] ])
+            position = np.dot(R, d_pos.T).T
+            dh = s.getCourse() - self.getCourse()
+            while dh >= 360 or dh < 0:
+                if dh >= 360:
+                    dh -= 360
+                if dh < 0:
+                    dh += 360
+            
+            local_ship = LocalShip(s.id, position, dh)
+            local_ship.setRatio(self.calAngle( position[0], position[1] ))
+            near_locals.append(local_ship)
+        
+        return near_locals
+        pass
     
     def toString(self):
         return "id:" + self.id + " , position:" + str(self.position) + " , velocity:" + str(self.velocity)
+
+class LocalShip():
+    
+    def __init__(self, id, position, velocity):
+        self.id = id
+        self.position = position
+        self.velocity = velocity
+        self.ratio = 0
+        pass
+    
+    def setRatio(self, ratio):
+        self.ratio = ratio
+    def getRatio(self):
+        return self.ratio
+        pass
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
