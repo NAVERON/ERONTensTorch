@@ -21,26 +21,32 @@ def train(agent, env, evaluate):
     num_iterations = 1000  # 一共训练多少回合
     max_episode_length = 500   # 每一个回合最大步进长度
     
-    observation = None  # 环境状态，观察值
+    all_observations = None  # 环境状态，观察值
     
     while step < num_iterations:
         
-        if observation is None:  # 初始化环境状态  和  智能体的初始状态，一个新的回合
-            all_observations = env.reset()
-            
-            agent.reset(observation)
+        # train_id  是指当前回合中训练的对象id
+        if all_observations is None:  # 初始化环境状态  和  智能体的初始状态，一个新的回合
+            all_observations, train_id = env.reset()
+            train_observation = all_observations[train_id]
+            agent.reset(train_observation)
         
+        actions = {}
         if step <= 200:  # steop表示已经训练了多少回合    在一定的回合中采用随即动作填充刚开始的网络
-            action = agent.random_action()
+            for k, v in all_observations.items():
+                actions[k] = agent.random_action()
         else:
-            action = agent.select_action(observation)   # 对于每一个Ship都要输入环境并计算出动作Action
+            for k ,v in all_observations.items():
+                actions[k] = agent.select_action(v)
         
-        next_observation, reward, done = env.step(action)
+        next_all_observation, train_reward, done = env.step(actions, train_id)  # 传进去每个对象对应 的动作，返回特定id的学习成果
+        
+        next_observation = next_all_observation[train_id]
         next_observation = deepcopy(next_observation)
         if max_episode_length and episode_steps >= max_episode_length - 1:
             done = True
         
-        agent.observe(reward, next_observation, done)
+        agent.observe(train_reward, next_observation, done)
         if step > 100:
             agent.update_policy()
         
@@ -57,19 +63,19 @@ def train(agent, env, evaluate):
         # update
         step += 1
         episode_steps += 1
-        episode_reward += reward
-        observation = next_observation
+        episode_reward += train_reward
+        all_observations = next_all_observation
         
         if done: # end of episode
             if True: util.prGreen('#{}: episode_reward:{} steps:{}'.format(episode,episode_reward,step))
             agent.memory.append(
-                observation,
-                agent.select_action(observation),
+                train_observation,
+                agent.select_action(train_observation),
                 0., False
             )
             
             # reset
-            observation = None
+            all_observations = None
             episode_steps = 0
             episode_reward = 0.
             episode += 1  #   总体的循环

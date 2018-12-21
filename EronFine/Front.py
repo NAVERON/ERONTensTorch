@@ -83,11 +83,18 @@ class Viewer():
     def reset(self):  # 重置环境和变量的条件
         self.ships.clear()
         self.drawer_ships.clear()
+        # 重新生成一个新的环境
         for _ in range(10):
-            self.ships.append(self.createRandomEntity())
+            temp = self.createRandomEntity()
+            self.ships.append( temp )
         self.render()
         
-        return [0, 0, 0, 0, 0, 0]
+        all_observations = {}
+        for s in self.ships:
+            all_observations[s.id] = s.getObservation()
+        train_id = self.ships[0].id
+        
+        return all_observations, train_id
         pass
     
     def sampleAction(self):
