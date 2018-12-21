@@ -22,6 +22,7 @@ def train(agent, env, evaluate):
     max_episode_length = 500   # 每一个回合最大步进长度
     
     all_observations = None  # 环境状态，观察值
+    train_id = None
     
     while step < num_iterations:
         
@@ -32,16 +33,16 @@ def train(agent, env, evaluate):
             agent.reset(train_observation)
         
         actions = {}
-        if step <= 200:  # steop表示已经训练了多少回合    在一定的回合中采用随即动作填充刚开始的网络
+        if step <= 200:  # steop表示已经训练了多少回合    在一定的回合中采用随机动作填充刚开始的网络
             for k, v in all_observations.items():
                 actions[k] = agent.random_action()
         else:
             for k ,v in all_observations.items():
                 actions[k] = agent.select_action(v)
         
-        next_all_observation, train_reward, done = env.step(actions, train_id)  # 传进去每个对象对应 的动作，返回特定id的学习成果
+        next_all_observations, train_reward, done = env.step(train_id, **actions)  # 传进去每个对象对应 的动作，返回特定id的学习成果
         
-        next_observation = next_all_observation[train_id]
+        next_observation = next_all_observations[train_id]
         next_observation = deepcopy(next_observation)
         if max_episode_length and episode_steps >= max_episode_length - 1:
             done = True
@@ -53,7 +54,7 @@ def train(agent, env, evaluate):
         # [optional] evaluate
         if evaluate is not None and validate_steps > 0 and step % validate_steps == 0:
             policy = lambda x: agent.select_action(x, decay_epsilon=False)
-            validate_reward = evaluate(env, policy, debug=False, visualize=False)
+            validate_reward = evaluate(env, policy, debug=False, visualize=False)    #########################内部修改
             if True: util.prYellow('[Evaluate] Step_{:07d}: mean_reward:{}'.format(step, validate_reward))
         
         # [optional] save intermideate model
@@ -64,10 +65,10 @@ def train(agent, env, evaluate):
         step += 1
         episode_steps += 1
         episode_reward += train_reward
-        all_observations = next_all_observation
+        all_observations = next_all_observations
         
         if done: # end of episode
-            if True: util.prGreen('#{}: episode_reward:{} steps:{}'.format(episode,episode_reward,step))
+            if True: util.prGreen('#{}: episode_reward:{} steps:{}'.format(episode, episode_reward, step))
             agent.memory.append(
                 train_observation,
                 agent.select_action(train_observation),

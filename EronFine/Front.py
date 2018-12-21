@@ -60,24 +60,34 @@ class Viewer():
         
         self.tk.update()
         
-    def step(self, actions):    # 这里传入每一个对象的动作，每一艘船舶都向前走一步，之后会得到新的环境
+    def step(self, train_id,  **actions):    # 这里传入每一个对象的动作，每一艘船舶都向前走一步，之后会得到新的环境
         # 这里先做动作，舵角，速度变化等
         print("在 环境中step打印当前传入的动作   ", actions)
-        actions = np.clip(actions, self.action_bound[0], self.action_bound[1])
+        train_reward = 0
+        done = False
+        # 根据action做出动作
+        for k, v in actions.items():
+            action = actions[k]
+            action = np.clip(action, self.action_bound[0], self.action_bound[1])
+            print("action id", k, ", action:", action)
+            
+            # 根据id操作相应的动作，修改数据
+            pass
         
-        observations = {}  # 以自定形式存储数据   id : observation
-        for s in self.ships:
-            s.getNear(self.ships, 30)
-            observations[s.id] = s.getObservation()
-        # 获取环境信息
-        self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
         
         for s in self.ships:
             s.goAhead(self.window_width, self.window_height)
+            
+        all_observations = {}  # 以自定形式存储数据   id : observation
+        for s in self.ships:
+            s.getNear(self.ships, 300)
+            all_observations[s.id] = s.getObservation()
+        # 获取环境信息
         
+        self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
         time.sleep(0.01)
         
-        return [0, 0, 0, 0, 0, 0], 1, False   # 观察值， 奖励， 一个回合是否完成
+        return all_observations, train_reward, done   # 观察值， 奖励， 一个回合是否完成
         pass
     
     def reset(self):  # 重置环境和变量的条件
@@ -91,15 +101,12 @@ class Viewer():
         
         all_observations = {}
         for s in self.ships:
+            s.getNear(self.ships, 300)
             all_observations[s.id] = s.getObservation()
+        
         train_id = self.ships[0].id
         
         return all_observations, train_id
-        pass
-    
-    def sampleAction(self):
-        pass
-    def getState(self):
         pass
 
 

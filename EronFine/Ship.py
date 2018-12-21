@@ -48,7 +48,7 @@ class Ship():  # 训练对象的属性
         angle = math.degrees(theta)
         if angle < 0:
             angle += 360
-        angle = np.float64(angle)
+        # angle = np.float64(angle)
         return angle
     
     def goAhead(self, width, height):
@@ -106,21 +106,21 @@ class Ship():  # 训练对象的属性
     def warpAxis(self, near):
         
         near_locals = []
-        for s in near:
-            d_pos = s.position - self.position
+        for ship in near:
+            d_pos = ship.position - self.position
             d_pos_radius = -np.radians(-self.getCourse())  # 转换成弧度
             c, s = np.cos(d_pos_radius), np.sin(d_pos_radius)
             R = np.array([ [c, -s], [s, c] ])
             position = np.dot(R, d_pos.T).T
-            print(s.getCourse(), "self : ", self.getCourse())
-            dh = s.getCourse() - self.getCourse()
+            print(ship.getCourse(), "self : ", self.getCourse())
+            dh = ship.getCourse() - self.getCourse()
             while dh >= 360 or dh < 0:
                 if dh >= 360:
                     dh -= 360
                 if dh < 0:
                     dh += 360
             
-            local_ship = LocalShip(s.id, position, dh)
+            local_ship = LocalShip(ship.id, position, dh)
             local_ship.setRatio(self.calAngle( position[0], position[1] ))
             near_locals.append(local_ship)
         
