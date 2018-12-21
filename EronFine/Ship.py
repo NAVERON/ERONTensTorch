@@ -8,6 +8,7 @@ class Ship():  # 训练对象的属性
     
     K = 0.0785
     T = 3.12
+    isDead = False
     
     def __init__(self, position=np.array([500, 400], dtype=np.float), velocity=np.array([2, 4], dtype=np.float)):  # 矩阵
         self.id = datetime.datetime.now().strftime("%d%H%M%S%f")
@@ -47,6 +48,7 @@ class Ship():  # 训练对象的属性
         angle = math.degrees(theta)
         if angle < 0:
             angle += 360
+        angle = np.float64(angle)
         return angle
     
     def goAhead(self, width, height):
@@ -110,6 +112,7 @@ class Ship():  # 训练对象的属性
             c, s = np.cos(d_pos_radius), np.sin(d_pos_radius)
             R = np.array([ [c, -s], [s, c] ])
             position = np.dot(R, d_pos.T).T
+            print(s.getCourse(), "self : ", self.getCourse())
             dh = s.getCourse() - self.getCourse()
             while dh >= 360 or dh < 0:
                 if dh >= 360:

@@ -26,8 +26,8 @@ class Viewer():
         self.ships = []
         self.drawer_ships = []
         
-        for _ in range(10):
-            self.ships.append(self.createRandomEntity())
+#         for _ in range(10):
+#             self.ships.append(self.createRandomEntity())
         self.canvas.pack()
         
         self.render()
@@ -37,16 +37,17 @@ class Viewer():
         velocity = np.multiply([np.random.rand(), np.random.rand()], 2)
         entity = Ship(np.array(position), np.array(velocity))
         print(entity.toString())
-        time.sleep(0.001)
+        time.sleep(0.005)
         return entity
     #  获取周边放到了Ship中，方便逻辑调用
-    def getNear(self, this_ship, dis):  # 传入查找对象的引用this_ship，以及距离范围 dis
+    def getNearByOut(self, this_ship, dis):  # 传入查找对象的引用this_ship，以及距离范围 dis
         near = []
         for item_ship in self.ships:
             if this_ship.id == item_ship.id:
                 continue
             if this_ship.distance(item_ship) < dis:
                 near.append(item_ship)
+        
         return near
         pass
     def render(self):  # 根据当前状况绘制
@@ -59,14 +60,14 @@ class Viewer():
         
         self.tk.update()
         
-    def step(self, action):    # 这里传入每一个对象的动作，每一艘船舶都向前走一步，之后会得到新的环境
+    def step(self, actions):    # 这里传入每一个对象的动作，每一艘船舶都向前走一步，之后会得到新的环境
         # 这里先做动作，舵角，速度变化等
-        print("在 环境中step打印当前传入的动作   ", action)
-        action = np.clip(action, self.action_bound[0], self.action_bound[1])
+        print("在 环境中step打印当前传入的动作   ", actions)
+        actions = np.clip(actions, self.action_bound[0], self.action_bound[1])
         
         observations = {}  # 以自定形式存储数据   id : observation
         for s in self.ships:
-            s.getNear()
+            s.getNear(self.ships, 30)
             observations[s.id] = s.getObservation()
         # 获取环境信息
         self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
@@ -80,6 +81,11 @@ class Viewer():
         pass
     
     def reset(self):  # 重置环境和变量的条件
+        self.ships.clear()
+        self.drawer_ships.clear()
+        for _ in range(10):
+            self.ships.append(self.createRandomEntity())
+        self.render()
         
         return [0, 0, 0, 0, 0, 0]
         pass

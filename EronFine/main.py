@@ -7,7 +7,7 @@ from EronFine.evaluator import Evaluator
 from copy import deepcopy
 from EronFine import util
 
-#   在gym环境中observation体哦那是   3个值
+#   在gym环境中observation观测变量   3个值
 #   动作是一个值
 #   具体参考      https://www.jianshu.com/p/af3a7853268f
 
@@ -25,8 +25,9 @@ def train(agent, env, evaluate):
     
     while step < num_iterations:
         
-        if observation is None:  # 初始化环境状态  和  智能体的 初始状态，一个新的回合
-            observation = env.reset()
+        if observation is None:  # 初始化环境状态  和  智能体的初始状态，一个新的回合
+            all_observations = env.reset()
+            
             agent.reset(observation)
         
         if step <= 200:  # steop表示已经训练了多少回合    在一定的回合中采用随即动作填充刚开始的网络
@@ -90,12 +91,15 @@ if __name__ == "__main__":
     
     
     
-    
-    
-    
-    
-    
-    
-    
+   
+
+
+
+
+
+
+
+
+
 
 
