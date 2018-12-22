@@ -30,11 +30,11 @@ class Ship():  # 训练对象的属性
         
     def velocityChange(self, dv): # 根据dv  修改原速度矢量
         self.velocity += dv
-        if self.getSpeed() > 20 or self.getSpeed() < 0:   # 控制速度大小
+        if self.getSpeed() > 10 or self.getSpeed() < 0:   # 控制速度大小
             self.velocity -= dv
     def rudderChange(self, dr):  # 舵角变化    范围为每次一度， 变化舵角会造成航向的变化
         self.rudder += dr
-        if self.rudder > 35 or self.rudder < -35:  # 设定舵角的范围
+        if self.rudder > 20 or self.rudder < -20:  # 设定舵角的范围
             self.rudder -= dr
     def getSpeed(self):  # 速度大小
         return np.linalg.norm(self.velocity)
@@ -68,10 +68,22 @@ class Ship():  # 训练对象的属性
     
     def isCollision(self, other):
         dis = np.linalg.norm(other.position-self.position)
-        if dis < 30:
+        if dis < 20:
+            self.isDead = True
+            other.isDead = True
+            
+            self.velocity = np.array([0., 0.])
+            self.rudder = 0.
+            other.velocity = np.array([0., 0.])
+            other.rudder = 0.
             return True
         
         return False
+    def setDead(self):
+        if self.isDead:
+            self.velocity = np.array([0., 0.])
+            self.rudder = 0.
+        pass
     def getObservation(self):
         near_locals = self.warpAxis(self.near)
         up = 0
@@ -93,10 +105,11 @@ class Ship():  # 训练对象的属性
         pass
     
     near = []   # 顶层计算后存储现在周边的情况
-    def getNear(self, ships, dis):  # 传入查找对象的引用this_ship，以及距离范围 dis
+    def getNear(self, dis, **ships):  # 传入查找对象的引用this_ship，以及距离范围 dis
         self.near.clear()   # 清空之前的数据
         
-        for item_ship in ships:
+        for k, v in ships.items():
+            item_ship = v
             if self.id == item_ship.id:
                 continue
             if self.distance(item_ship) < dis:
@@ -112,7 +125,7 @@ class Ship():  # 训练对象的属性
             c, s = np.cos(d_pos_radius), np.sin(d_pos_radius)
             R = np.array([ [c, -s], [s, c] ])
             position = np.dot(R, d_pos.T).T
-            print(ship.getCourse(), "self : ", self.getCourse())
+            
             dh = ship.getCourse() - self.getCourse()
             while dh >= 360 or dh < 0:
                 if dh >= 360:

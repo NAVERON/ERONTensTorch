@@ -44,7 +44,7 @@ class Evaluator(object):
                 all_observations, train_reward, done = env.step(train_id, **actions)
                 if self.max_episode_length and episode_steps >= self.max_episode_length -1:
                     done = True
-                    
+                
                 # update
                 episode_reward += train_reward
                 episode_steps += 1
