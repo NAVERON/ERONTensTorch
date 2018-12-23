@@ -87,7 +87,7 @@ class Viewer():
                     continue
                 other = in_v
                 if own.isCollision(other):
-                    train_reward -= 1   # 如果撞上了，则惩罚一次
+                    train_reward -= 2   # 如果撞上了，则惩罚一次
                     break
         # 根据碰撞情况制定惩罚奖励  reward
         
@@ -96,7 +96,7 @@ class Viewer():
             done = True
         else:
             if len( self.ships[train_id].near ) < 4:
-                train_reward += 8
+                train_reward += 2
             else:
                 train_reward += 4
         

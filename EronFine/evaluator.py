@@ -7,7 +7,7 @@ from EronFine import util
 
 class Evaluator(object):
 
-    def __init__(self, num_episodes, interval, save_path='', max_episode_length=None):
+    def __init__(self, num_episodes, interval, save_path="", max_episode_length=None):
         self.num_episodes = num_episodes
         self.max_episode_length = max_episode_length
         self.interval = interval
@@ -69,7 +69,7 @@ class Evaluator(object):
         plt.xlabel('Timestep')
         plt.ylabel('Average Reward')
         ax.errorbar(x, y, yerr=error, fmt='-o')
-        plt.savefig(fn+'.png')
+        plt.savefig(fn + '.png')
         savemat(fn+'.mat', {'reward':self.results})
         
 
