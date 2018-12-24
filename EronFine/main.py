@@ -82,8 +82,22 @@ def train(agent, env, evaluate):
             episode_reward = 0.
             episode += 1  #   总体的循环
 
+def test(validate_episodes, ganet, env, evaluate, model_path, visualize = True, debug = True):
+    
+    agent.load_weights(model_path)
+    agent.is_training = False
+    agent.eval()
+    policy = lambda x: agent.select_action(x, decay_epsilon=False)
+
+    for i in range(validate_episodes):
+        validate_reward = evaluate(env, policy, debug=debug, visualize=visualize, save=False)
+        if debug: util.prYellow('[Evaluate] #{}: mean_reward:{}'.format(i, validate_reward))
+    
+    pass
 
 if __name__ == "__main__":
+    
+    isTraining = True   # 训练参数/使用训练好的参数计算动作
     
     validate_episodes = 20
     validate_steps = 2000
@@ -94,7 +108,10 @@ if __name__ == "__main__":
     agent = DDPG(env.state_dim, env.action_dim)   # 环境和动作的维度
     evaluate = Evaluator(validate_episodes, validate_steps, output, max_episode_length)
     
-    train(agent, env, evaluate)
+    if isTraining:
+        train(agent, env, evaluate)
+    else:
+        test(validate_episodes, agent, env, evaluate, output)
     print("train over")
     
     
