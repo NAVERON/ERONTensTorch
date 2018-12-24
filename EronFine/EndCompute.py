@@ -9,6 +9,7 @@ from EronFine.memory import SequentialMemory
 from EronFine import util
 from EronFine import random_process
 
+criterion = nn.MSELoss()
 
 class DDPG(object):
     
@@ -68,7 +69,8 @@ class DDPG(object):
 
         q_batch = self.critic([ util.to_tensor(state_batch), util.to_tensor(action_batch) ])
         
-        value_loss = nn.MSELoss(q_batch, target_q_batch)
+        # value_loss = nn.MSELoss(q_batch, target_q_batch)      ##################
+        value_loss = criterion(q_batch, target_q_batch)
         value_loss.backward()
         self.critic_optim.step()
 
