@@ -14,41 +14,42 @@ from EronFine import util
 def train(agent, env, evaluate):
     validate_episodes = evaluate.interval
     output = evaluate.save_path
+    validate_steps = 2000
     
     agent.is_training = True  # 是不是训练状态
     step = episode = episode_steps = 0
     episode_reward = 0.  # 每一个回合的奖励总和
-    num_iterations = 500  # 一共训练多少回合
+    num_iterations = 1000  # 一共训练多少回合
     max_episode_length = 5000   # 每一个回合最大步进长度
     
     all_observations = None  # 环境状态，观察值
-    train_id = None
+    # train_id = None
     
     while step < num_iterations:
         
         # train_id  是指当前回合中训练的对象id
         if all_observations is None:  # 初始化环境状态  和  智能体的初始状态，一个新的回合
-            all_observations, train_id = env.reset()
-            train_observation = all_observations[train_id]
+            all_observations = env.reset()
+            train_observation = all_observations[env.train_id]
             agent.reset(train_observation)
         
         actions = {}
         if step <= 200:  # steop表示已经训练了多少回合    在一定的回合中采用随机动作填充刚开始的网络
             for k, v in all_observations.items():
-                actions[k] = agent.random_action()
+                actions[k] = 5*agent.random_action()
         else:
             for k ,v in all_observations.items():
-                actions[k] = agent.select_action(v)
+                actions[k] = 5*agent.select_action(v)
         
-        next_all_observations, train_reward, done = env.step(train_id, **actions)  # 传进去每个对象对应 的动作，返回特定id的学习成果
+        next_all_observations, train_reward, done = env.step(**actions)  # 传进去每个对象对应 的动作，返回特定id的学习成果
         
-        next_observation = next_all_observations[train_id]
-        next_observation = deepcopy(next_observation)
+        next_train_observation = next_all_observations[env.train_id]
+        next_train_observation = deepcopy(next_train_observation)
         if max_episode_length and episode_steps >= max_episode_length - 1:
             done = True
         
-        agent.observe(train_reward, next_observation, done)
-        if step > 100:
+        agent.observe(train_reward, next_train_observation, done)
+        if step > 200:
             agent.update_policy()
         
         # [optional] evaluate

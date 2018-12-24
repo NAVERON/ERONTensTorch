@@ -110,7 +110,7 @@ class DDPG(object):
         ).squeeze(0)     #  从数组的形状中删除单维度条目，即把shape中为1的维度去掉
         
         action += self.is_training * max(self.epsilon, 0) * self.random_process.sample()  # 这里的布尔值可以运算，当作1   有随即动作的成分
-        action = np.clip(action, -1., 1.)
+        action = np.clip(action, -2., 2.)
         
         if decay_epsilon:  # 衰退
             self.epsilon -= self.depsilon
@@ -195,11 +195,8 @@ class Critic(nn.Module):
         x, a = xs
         out = self.fc1(x)
         out = self.relu(out)
-        print("out:", out)
-        print("a:", a)
         # debug()
         out = self.fc2(torch.cat( [out, a], 1) )  # 按列拼接
-        out = self.fc2()
         out = self.relu(out)
         out = self.fc3(out)
         return out

@@ -25,7 +25,8 @@ class Evaluator(object):
 
             # reset at the start of episode
             # observation = env.reset()
-            all_observations, train_id = env.reset()
+            # all_observations, train_id = env.reset()
+            all_observations = env.all_observations
             episode_steps = 0
             episode_reward = 0.
             
@@ -41,7 +42,7 @@ class Evaluator(object):
                         actions[k] = policy(v)
                 # action = policy(all_observations[train_id])
                 
-                all_observations, train_reward, done = env.step(train_id, **actions)
+                all_observations, train_reward, done = env.step(**actions)
                 if self.max_episode_length and episode_steps >= self.max_episode_length -1:
                     done = True
                 
