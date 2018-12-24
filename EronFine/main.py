@@ -19,7 +19,7 @@ def train(agent, env, evaluate):
     step = episode = episode_steps = 0
     episode_reward = 0.  # 每一个回合的奖励总和
     num_iterations = 500  # 一共训练多少回合
-    max_episode_length = 500   # 每一个回合最大步进长度
+    max_episode_length = 5000   # 每一个回合最大步进长度
     
     all_observations = None  # 环境状态，观察值
     train_id = None
