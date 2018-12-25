@@ -54,16 +54,18 @@ class Ship():  # 训练对象的属性
     
     def goAhead(self, width, height):
         # 边界判断    设置为不能超越边界
-        if self.position[0] < 0:
+        if self.position[0] <= 0:
             self.position[0] = width
         elif self.position[0] > width:
             self.position[0] = 0
-        elif self.position[1] < 0:
+        elif self.position[1] <= 0:
             self.position = height
         elif self.position[1] > height:
             self.position[1] = 0
         
         delta = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1 / self.T))
+        if self.velocity[0] == 0:
+            print("前进中测试转向角度", delta)
         self.courseTurn(delta)
         self.position += self.velocity  # 这样就更新位置了    ====  可以把界面更新放到数据更新里面同步，更好
     

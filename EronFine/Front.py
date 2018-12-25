@@ -71,7 +71,7 @@ class Viewer():
         for k, v in actions.items():
             action = actions[k]
             action = np.clip(action, self.action_bound[0], self.action_bound[1])
-            print("action id:", k, ", action:", action)
+            # print("action id:", k, ", action:", action)
             # action      变向/舵角变化            变速/  航向改变
             # 根据id操作相应的动作，修改数据
             s = self.ships[k]
