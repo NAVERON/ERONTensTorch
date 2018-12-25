@@ -143,11 +143,11 @@ class Viewer():
 if __name__ == "__main__":
     
     env = Viewer()
-    a, b = env.reset()
+    observatyions = env.reset()
     step = 0
     dic = {}
     while step < 1000:
-        c, d, e = env.step(12, **dic)
+        c, d, e = env.step(**dic)
         step += 1
         
     

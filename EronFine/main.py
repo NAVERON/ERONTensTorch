@@ -82,7 +82,7 @@ def train(agent, env, evaluate):
             episode_reward = 0.
             episode += 1  #   总体的循环
 
-def test(validate_episodes, ganet, env, evaluate, model_path, visualize = True, debug = True):
+def test(validate_episodes, agent, env, evaluate, model_path, visualize = True, debug = True):
     
     agent.load_weights(model_path)
     agent.is_training = False

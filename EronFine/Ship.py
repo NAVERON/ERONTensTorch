@@ -3,6 +3,7 @@ import numpy as np
 import math
 import datetime
 import copy
+from django.template.defaultfilters import pprint
 
 class Ship():  # 训练对象的属性
     
