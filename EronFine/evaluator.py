@@ -26,7 +26,7 @@ class Evaluator(object):
             # reset at the start of episode
             # observation = env.reset()
             # all_observations, train_id = env.reset()
-            all_observations = env.all_observations
+            all_observations = env.reset()
             episode_steps = 0
             episode_reward = 0.
             

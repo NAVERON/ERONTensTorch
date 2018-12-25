@@ -97,7 +97,7 @@ def test(validate_episodes, ganet, env, evaluate, model_path, visualize = True, 
 
 if __name__ == "__main__":
     
-    isTraining = True   # 训练参数/使用训练好的参数计算动作
+    isTraining = False   # 训练参数/使用训练好的参数计算动作
     
     validate_episodes = 20
     validate_steps = 2000
