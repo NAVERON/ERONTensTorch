@@ -3,7 +3,6 @@ import numpy as np
 import math
 import datetime
 import copy
-from django.template.defaultfilters import pprint
 
 class Ship():  # 训练对象的属性
     
@@ -11,13 +10,19 @@ class Ship():  # 训练对象的属性
     T = 3.12
     isDead = False
     
-    def __init__(self, position=np.array([500, 400], dtype=np.float), velocity=np.array([2, 4], dtype=np.float)):  # 矩阵
+    #  标准
+    #  位置以左下角为标准原点，这里全部按照实际的坐标系来，绘制的时候再  进一步处理绘制的问题
+    #  速度以正上方为 0 ，顺时针旋转    正向
+    def __init__(self, position=np.array([500, 400], dtype=np.float), velocity=np.array([2, 4], dtype=np.float), width=1000, height=600):  # 矩阵
         self.id = datetime.datetime.now().strftime("%d%H%M%S%f")
         
         self.rudder = 0
         self.position = position
+        #self.position[1] = height - self.position[1]   # 左下角为坐标系原点
         self.velocity = velocity
         
+        self.width = width
+        self.height = height
         # self.q = queue.Queue(maxsize=10)
         
     def courseTurn(self, dc):  # dc代表变化的方向
@@ -29,13 +34,17 @@ class Ship():  # 训练对象的属性
         self.velocity = np.dot(R, self.velocity.T).T
         #print(self.id, "id:", self.velocity)
         
-    def velocityChange(self, dv): # 根据dv  修改原速度矢量
+    def velocityChange(self, dv): # 根据dv  修改原速度矢量   输入的是2维向量S[]
         self.velocity += dv
         if self.getSpeed() > 15 or self.getSpeed() < 0:   # 控制速度大小
             self.velocity -= dv
+    def speedChange(self, ds):
+        course = self.getCourse()
+        sx, sy = ds*math.sin(course), ds*math.cos(course)
+        self.velocityChange(np.array([sx, sy]))
     def rudderChange(self, dr):  # 舵角变化    范围为每次一度， 变化舵角会造成航向的变化
         self.rudder += dr
-        if self.rudder > 20 or self.rudder < -20:  # 设定舵角的范围
+        if self.rudder > 30 or self.rudder < -30:  # 设定舵角的范围
             self.rudder -= dr
     def getSpeed(self):  # 速度大小
         return np.linalg.norm(self.velocity)
@@ -49,27 +58,27 @@ class Ship():  # 训练对象的属性
         angle = math.degrees(theta)
         if angle < 0:
             angle += 360
-        # angle = np.float64(angle)
+        
         return angle
     
-    def goAhead(self, width, height):
+    def goAhead(self):
         # 边界判断    设置为不能超越边界
         if self.position[0] <= 0:
-            self.position[0] = width
-        elif self.position[0] > width:
+            self.position[0] = self.width
+        elif self.position[0] > self.width:
             self.position[0] = 0
         elif self.position[1] <= 0:
-            self.position = height
-        elif self.position[1] > height:
+            self.position = self.height
+        elif self.position[1] > self.height:
             self.position[1] = 0
         
-        delta = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1 / self.T))
+        delta = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1./self.T))
         
         self.courseTurn(delta)
         self.position += self.velocity  # 这样就更新位置了    ====  可以把界面更新放到数据更新里面同步，更好
     
     def isCollision(self, other):
-        dis = np.linalg.norm(other.position-self.position)
+        dis = self.distance(other)
         if dis < 20:
             self.isDead = True
             other.isDead = True
@@ -86,8 +95,12 @@ class Ship():  # 训练对象的属性
             self.velocity = np.array([0., 0.])
             self.rudder = 0.
         pass
-    def getObservation(self):
-        near_locals = self.warpAxis(self.near)
+    
+    near = []
+    def getObservation(self, dis, **ships):
+        now_near = self.getNear(dis, **ships)
+        near_locals = self.warpAxis(now_near)
+        
         up = 0
         right = 0
         down = 0
@@ -106,7 +119,6 @@ class Ship():  # 训练对象的属性
         return [up, right, down, left, self.getCourse(), self.getSpeed()]
         pass
     
-    near = []   # 顶层计算后存储现在周边的情况
     def getNear(self, dis, **ships):  # 传入查找对象的引用this_ship，以及距离范围 dis
         self.near.clear()   # 清空之前的数据
         
@@ -143,14 +155,14 @@ class Ship():  # 训练对象的属性
         pass
     
     def toString(self):
-        return "id:" + self.id + " , position:" + str(self.position) + " , velocity:" + str(self.velocity)
+        return "id:" + self.id + " , position:" + str(self.position) + " , velocity:" + str(self.velocity) + ", course:" + str(self.getCourse())
 
 class LocalShip():
     
-    def __init__(self, id, position, velocity):
-        self.id = id
-        self.position = position
-        self.velocity = velocity
+    def __init__(self, local_id, local_position, local_velocity):
+        self.local_id = local_id
+        self.local_position = local_position
+        self.local_velocity = local_velocity
         self.ratio = 0
         pass
     

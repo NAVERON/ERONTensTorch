@@ -15,6 +15,7 @@ class Viewer():
     action_bound = [-2, 2]
     # num_iterations = 10000
     train_id = None
+    dis = 300
     
     def __init__(self):
         self.tk = Tk()
@@ -32,12 +33,13 @@ class Viewer():
         self.render()
     
     def createRandomEntity(self):
-        position = np.multiply([np.random.rand(), np.random.rand()], 600)
-        vx = np.random.random_sample()*3
-        vy = np.random.random_sample()*3
-        velocity = np.multiply(np.array( [vx, vy] ), 2)
-        entity = Ship(np.array(position), np.array(velocity))
-        # print(entity.toString())  ###############################################################################3
+        position_list = np.array(np.random.random((1, 2))).flatten()
+        position = np.multiply(position_list, 600)
+        
+        velocity_list = np.array(-1 + 2*np.random.random((1, 2))).flatten()
+        velocity = np.multiply(velocity_list, 2)
+        entity = Ship(position, velocity, self.window_width, self.window_height)
+        print(entity.toString())  ###############################################################################3
         time.sleep(0.01)
         return entity
     #  获取周边放到了Ship中，方便逻辑调用
@@ -58,7 +60,7 @@ class Viewer():
         
         for k, v in self.ships.items():
             s = v
-            self.drawer_ships.append(self.canvas.create_oval(s.position[0]-10, s.position[1]-10, s.position[0]+10, s.position[1]+10, fill="black"))
+            self.drawer_ships.append(self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="black"))
         
         self.tk.update()
     
@@ -77,11 +79,11 @@ class Viewer():
             # action      变向/舵角变化            变速/  航向改变
             # 根据id操作相应的动作，修改数据
             s = self.ships[k]
-            s.rudderChange(action[0])
-            s.velocityChange(action[1])
+            s.rudderChange(action[0])   #动作1是改变舵角   动作2 是改变速度
+            s.speedChange(action[1])
         for k, v in self.ships.items():  # 做完动作后向前一步走
             s = v
-            s.goAhead(self.window_width, self.window_height)
+            s.goAhead()
             
         # 根据动作判断动作后的后果，是好还是坏
         for k, v in self.ships.items() :
@@ -105,10 +107,10 @@ class Viewer():
         
         for k, v in self.ships.items():
             s = v
-            s.getNear(300, **self.ships)
-            self.all_observations[s.id] = s.getObservation()
+            #s.getNear(300, **self.ships)
+            self.all_observations[s.id] = s.getObservation(self.dis, **self.ships)
         self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
-        time.sleep(0.01)
+        time.sleep(0.1)
         
         return self.all_observations, train_reward, done   # 观察值， 奖励， 一个回合是否完成
         pass
@@ -125,7 +127,7 @@ class Viewer():
         for _ in range(10):
             temp = self.createRandomEntity()
             self.ships[temp.id] = temp
-            print(temp.toString())
+            #print(temp.toString())
         # self.render()
         
         self.all_observations.clear()
@@ -133,8 +135,8 @@ class Viewer():
             s = v
             if self.train_id is None:
                 self.train_id = k
-            s.getNear(300, **self.ships)
-            self.all_observations[s.id] = s.getObservation()
+            #s.getNear(300, **self.ships)
+            self.all_observations[s.id] = s.getObservation(self.dis, **self.ships)
         
         # train_id = self.ships[0].id
         print("本次训练的id号码是:", self.train_id)
