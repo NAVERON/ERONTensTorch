@@ -33,10 +33,12 @@ class Viewer():
     
     def createRandomEntity(self):
         position = np.multiply([np.random.rand(), np.random.rand()], 600)
-        velocity = np.multiply([np.random.rand(), np.random.rand()], 2)
+        vx = np.random.random_sample()*3
+        vy = np.random.random_sample()*3
+        velocity = np.multiply(np.array( [vx, vy] ), 2)
         entity = Ship(np.array(position), np.array(velocity))
         # print(entity.toString())  ###############################################################################3
-        time.sleep(0.005)
+        time.sleep(0.01)
         return entity
     #  获取周边放到了Ship中，方便逻辑调用
 #     def getNearByOut(self, this_ship, dis):  # 传入查找对象的引用this_ship，以及距离范围 dis
