@@ -64,8 +64,7 @@ class Ship():  # 训练对象的属性
             self.position[1] = 0
         
         delta = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1 / self.T))
-        if self.velocity[0] == 0:
-            print("前进中测试转向角度", delta)
+        
         self.courseTurn(delta)
         self.position += self.velocity  # 这样就更新位置了    ====  可以把界面更新放到数据更新里面同步，更好
     
