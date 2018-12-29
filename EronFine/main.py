@@ -55,7 +55,7 @@ def train(agent, env, evaluate):
         # [optional] evaluate
         if evaluate is not None and validate_steps > 0 and step % validate_steps == 0:
             policy = lambda x: agent.select_action(x, decay_epsilon=False)
-            validate_reward = evaluate(env, policy, debug=False, visualize=False)    #########################内部修改
+            validate_reward = evaluate(env, policy, debug=False)    #########################内部修改
             if True: util.prYellow('[Evaluate] Step_{:07d}: mean_reward:{}'.format(step, validate_reward))
         
         # [optional] save intermideate model
@@ -82,7 +82,7 @@ def train(agent, env, evaluate):
             episode_reward = 0.
             episode += 1  #   总体的循环
 
-def test(validate_episodes, agent, env, evaluate, model_path, visualize = True, debug = True):
+def test(validate_episodes, agent, env, evaluate, model_path, debug = True):
     
     agent.load_weights(model_path)
     agent.is_training = False
@@ -90,7 +90,7 @@ def test(validate_episodes, agent, env, evaluate, model_path, visualize = True, 
     policy = lambda x: agent.select_action(x, decay_epsilon=False)
 
     for i in range(validate_episodes):
-        validate_reward = evaluate(env, policy, debug=debug, visualize=visualize, save=False)
+        validate_reward = evaluate(env, policy, debug=debug, save=False)
         if debug: util.prYellow('[Evaluate] #{}: mean_reward:{}'.format(i, validate_reward))
     
     pass

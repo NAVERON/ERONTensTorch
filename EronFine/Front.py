@@ -110,7 +110,7 @@ class Viewer():
             #s.getNear(300, **self.ships)
             self.all_observations[s.id] = s.getObservation(self.dis, **self.ships)
         self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
-        time.sleep(0.01)
+        time.sleep(0.1)
         
         return self.all_observations, train_reward, done   # 观察值， 奖励， 一个回合是否完成
         pass

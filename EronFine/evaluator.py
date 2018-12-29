@@ -14,7 +14,7 @@ class Evaluator(object):
         self.save_path = save_path
         self.results = np.array([]).reshape(num_episodes,0)
 
-    def __call__(self, env, policy, debug=False, visualize=False, save=True):
+    def __call__(self, env, policy, debug=False, save=True):
 
         self.is_training = False
         # observation = None
