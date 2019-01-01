@@ -26,6 +26,7 @@ class Viewer():
         self.canvas = Canvas(self.tk, width=self.window_width, height=self.window_height)
         self.ships = {}
         self.drawer_ships = []
+        self.drawer_velocities = []
         
 #         for _ in range(10):
 #             self.ships.append(self.createRandomEntity())
@@ -56,12 +57,17 @@ class Viewer():
     def render(self):  # 根据当前状况绘制
         for entity in self.drawer_ships:
             self.canvas.delete(entity)
+        for line in self.drawer_velocities:
+            self.canvas.delete(line)
         self.drawer_ships.clear()
+        self.drawer_velocities.clear()
         
         for k, v in self.ships.items():
             s = v
             self.drawer_ships.append(self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="black"))
-        
+            self.drawer_velocities.append(
+                self.canvas.create_line(s.position[0], self.window_height-s.position[1], s.position[0]+s.velocity[0]*10, self.window_height-s.position[1]-s.velocity[1]*10, fill="blue")
+            )
         self.tk.update()
     
     all_observations = {}  # 以自定形式存储数据   id : observation
@@ -79,7 +85,7 @@ class Viewer():
             # action      变向/舵角变化            变速/  航向改变
             # 根据id操作相应的动作，修改数据
             s = self.ships[k]
-            if s.isDead:
+            if s.isDead:       #  如果已经死亡，则不进行动作指导
                 continue
             s.rudderChange(action[0])   #动作1是改变舵角   动作2 是改变速度
             s.speedChange(action[1])
@@ -88,7 +94,7 @@ class Viewer():
             s.goAhead()
             
         # 根据动作判断动作后的后果，是好还是坏
-        for k, v in self.ships.items() :
+        for k, v in self.ships.items():
             own = v
             for in_k, in_v in self.ships.items():
                 if own is in_v:
@@ -112,7 +118,7 @@ class Viewer():
             #s.getNear(300, **self.ships)
             self.all_observations[s.id] = s.getObservation(self.dis, **self.ships)
         self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
-        time.sleep(0.1)
+        time.sleep(0.01)
         
         return self.all_observations, train_reward, done   # 观察值， 奖励， 一个回合是否完成
         pass
@@ -124,7 +130,10 @@ class Viewer():
         self.ships.clear()
         for entity in self.drawer_ships:
             self.canvas.delete(entity)
+        for line in self.drawer_velocities:
+            self.canvas.delete(line)
         self.drawer_ships.clear()
+        self.drawer_velocities.clear()
         # 重新生成一个新的环境
         for _ in range(10):
             temp = self.createRandomEntity()
