@@ -79,6 +79,8 @@ class Viewer():
             # action      变向/舵角变化            变速/  航向改变
             # 根据id操作相应的动作，修改数据
             s = self.ships[k]
+            if s.isDead:
+                continue
             s.rudderChange(action[0])   #动作1是改变舵角   动作2 是改变速度
             s.speedChange(action[1])
         for k, v in self.ships.items():  # 做完动作后向前一步走

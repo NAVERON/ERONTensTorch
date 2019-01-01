@@ -25,7 +25,7 @@ class DDPG(object):
             'hidden2':hidden2, 
             'init_w':init_w
         }
-        self.actor = Actor(self.states_dim, self.actions_dim, **net_cfg)
+        self.actor = Actor(self.states_dim, self.actions_dim, **net_cfg)   #  初始化训练网络
         self.actor_target = Actor(self.states_dim, self.actions_dim, **net_cfg)
         self.actor_optim  = Adam(self.actor.parameters(), lr=0.001)
         
@@ -33,11 +33,11 @@ class DDPG(object):
         self.critic_target = Critic(self.states_dim, self.actions_dim, **net_cfg)
         self.critic_optim  = Adam(self.critic.parameters(), lr=0.001)
         # 确认网络中参数是一样的，再DDPG网络中，会有两套网络，一个现实，一个虚拟
-        util.hard_update(self.actor_target, self.actor) # Make sure target is with the same weight
+        util.hard_update(self.actor_target, self.actor) # Make sure target is with the same weight      同步网络参数
         util.hard_update(self.critic_target, self.critic)
         
         #Create replay buffer
-        self.memory = SequentialMemory(limit=6000000, window_length=1)
+        self.memory = SequentialMemory(limit=600000, window_length=1)
         self.random_process = random_process.OrnsteinUhlenbeckProcess(size=self.actions_dim, theta=0.15, mu=0.0, sigma=0.2)
         # Hyper-parameters
         self.batch_size = 64

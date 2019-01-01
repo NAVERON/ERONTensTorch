@@ -36,7 +36,7 @@ def sample_batch_indexes(low, high, size):
     return batch_idxs
 
 
-class RingBuffer(object):
+class RingBuffer(object):   #  环形缓冲  存储数据结构  ⭕
     def __init__(self, maxlen):
         self.maxlen = maxlen
         self.start = 0
@@ -64,7 +64,7 @@ class RingBuffer(object):
         self.data[(self.start + self.length - 1) % self.maxlen] = v
 
 
-def zeroed_observation(observation):
+def zeroed_observation(observation):      # 归零化观察值
     if hasattr(observation, 'shape'):
         return np.zeros(observation.shape)
     elif hasattr(observation, '__iter__'):
@@ -116,7 +116,7 @@ class Memory(object):
         }
         return config
 
-class SequentialMemory(Memory):
+class SequentialMemory(Memory):         #  序列存储
     def __init__(self, limit, **kwargs):
         super(SequentialMemory, self).__init__(**kwargs)
         
