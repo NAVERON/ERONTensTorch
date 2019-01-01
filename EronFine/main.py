@@ -19,7 +19,7 @@ def train(agent, env, evaluate):
     agent.is_training = True  # 是不是训练状态
     step = episode = episode_steps = 0
     episode_reward = 0.  # 每一个回合的奖励总和
-    num_iterations = 1000  # 一共训练多少回合
+    num_iterations = 10000  # 一共训练多少回合
     max_episode_length = 5000   # 每一个回合最大步进长度
     
     all_observations = None  # 环境状态，观察值
@@ -97,7 +97,7 @@ def test(validate_episodes, agent, env, evaluate, model_path, debug = True):
 
 if __name__ == "__main__":
     
-    isTraining = False   # 训练参数/使用训练好的参数计算动作
+    isTraining = True   # 训练参数/使用训练好的参数计算动作
     
     validate_episodes = 20
     validate_steps = 2000
