@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np
 import os
 import shutil
-from Nano.Ui_Frame import CarEnv
+from Tester.Nano.CarSolu import CarEnv
 import time
 
 
