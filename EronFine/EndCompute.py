@@ -9,6 +9,12 @@ from EronFine.memory import SequentialMemory
 from EronFine import util
 from EronFine import random_process
 
+from torch.autograd import Variable
+from lstm import *
+from gru import *
+
+
+
 criterion = nn.MSELoss()
 
 class DDPG(object):
@@ -25,6 +31,7 @@ class DDPG(object):
             'hidden2':hidden2, 
             'init_w':init_w
         }
+        #  这里的网络以后需要替换成    RNN网络存储记忆
         self.actor = Actor(self.states_dim, self.actions_dim, **net_cfg)   #  初始化训练网络
         self.actor_target = Actor(self.states_dim, self.actions_dim, **net_cfg)
         self.actor_optim  = Adam(self.actor.parameters(), lr=0.001)
@@ -204,7 +211,50 @@ class Critic(nn.Module):
         return out
 
 
+class RNN(nn.Module):
+    def __init__(self, out_size, hidden_size, batch_size, dim_w, dict_size, cell = "gru", num_layers = 1):
+        super(RNN, self).__init__()
+        self.in_size = dim_w
+        self.out_size = out_size
+        self.hidden_size = hidden_size
+        self.cell = cell.lower()
+        self.batch_size = batch_size
+        self.dict_size = dict_size
+        self.dim_w = dim_w
+        self.num_layers = num_layers
+
+        self.raw_emb = nn.Embedding(self.dict_size, self.dim_w, 0)
+        if self.cell == "gru":
+            self.rnn_model = nn.GRU(self.in_size, self.hidden_size)
+        elif self.cell == "lstm":
+            self.rnn_model = nn.LSTM(self.in_size, self.hidden_size)
+        self.linear = nn.Linear(self.hidden_size, self.out_size)
     
+        self.init_weights()
+
+    def init_weights(self):
+        initrange = 0.1
+        self.raw_emb.weight.data.uniform_(-initrange, initrange)
+        self.linear.bias.data.zero_()
+        self.linear.weight.data.uniform_(-initrange, initrange)
+
+    def forward(self, x, len_x, hidden=None, mask=None):
+        emb_x = self.raw_emb(x)
+        
+        self.rnn_model.flatten_parameters()
+        emb_x = nn.utils.rnn.pack_padded_sequence(emb_x, len_x)
+        hs, hn = self.rnn_model(emb_x, hidden)
+        hs, _ = nn.utils.rnn.pad_packed_sequence(hs)
+        
+        output = self.linear(hs) 
+        return output, hn
+    
+    def init_hidden(self, batch_size):
+        if self.cell == "lstm":                # torch.zeros(*size)  定义一个size的全0张量
+            return (Variable(torch.zeros(self.num_layers, batch_size, self.hidden_size)),
+                    Variable(torch.zeros(self.num_layers, batch_size, self.hidden_size)))
+        return Variable(torch.zeros(self.num_layers, batch_size, self.hidden_size))
+
     
 
 
