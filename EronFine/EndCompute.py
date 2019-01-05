@@ -12,7 +12,7 @@ from EronFine import random_process
 from torch.autograd import Variable
 # from lstm import *
 # from gru import *
-
+import matplotlib.pyplot as plt
 
 
 criterion = nn.MSELoss()
@@ -96,7 +96,16 @@ class DDPG(object):
         # Target update
         util.soft_update(self.actor_target, self.actor, self.tau)
         util.soft_update(self.critic_target, self.critic, self.tau)
-
+        
+        dd = util.to_numpy(policy_loss)
+        #print("loss:", dd)
+        self.t += 1
+        if self.t % 10 == 0:
+            plt.ion()
+            plt.scatter(self.t, dd)
+            plt.pause(0.01)
+    
+    t = 0
     def eval(self):
         self.actor.eval()
         self.actor_target.eval()

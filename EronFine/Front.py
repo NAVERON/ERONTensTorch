@@ -40,7 +40,7 @@ class Viewer():
         velocity_list = np.array(-1 + 2*np.random.random((1, 2))).flatten()
         velocity = np.multiply(velocity_list, 2)
         entity = Ship(position, velocity, self.window_width, self.window_height)
-        print(entity.toString())  ###############################################################################3
+        #print(entity.toString())  ###############################################################################3
         time.sleep(0.01)
         return entity
     #  获取周边放到了Ship中，方便逻辑调用
@@ -90,29 +90,30 @@ class Viewer():
                 continue
             s.rudderChange(action[0])   #动作1是改变舵角   动作2 是改变速度
             s.speedChange(action[1])
-        for k, v in self.ships.items():  # 做完动作后向前一步走
-            s = v
+            
             s.goAhead()
+#         for k, v in self.ships.items():  # 做完动作后向前一步走
+#             s = v
+#             s.goAhead()
             
         # 根据动作判断动作后的后果，是好还是坏
         for k, v in self.ships.items():
-            own = v
             for in_k, in_v in self.ships.items():
-                if own is in_v:
+                if v is in_v:
                     continue
-                if own.isCollision(in_v):
+                if v.isCollision(in_v):
                     train_reward -= 2   # 如果撞上了，则惩罚一次
                     break
         # 根据碰撞情况制定惩罚奖励  reward
         
         if self.ships[self.train_id].isDead:
-            train_reward -= 10
+            train_reward -= 5
             done = True
         else:
             if len( self.ships[self.train_id].near ) < 4:
                 train_reward += 2
             else:
-                train_reward += 4
+                train_reward -= 1
         
         for k, v in self.ships.items():
             s = v
@@ -152,7 +153,7 @@ class Viewer():
             self.all_observations[s.id] = s.getObservation(self.dis, **self.ships)
         
         # train_id = self.ships[0].id
-        print("本次训练的id号码是:", self.train_id)
+        #print("本次训练的id号码是:", self.train_id)
         return self.all_observations
         pass
 

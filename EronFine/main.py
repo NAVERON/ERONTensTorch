@@ -34,12 +34,12 @@ def train(agent, env, evaluate):
             agent.reset(train_observation)
         
         actions = {}
-        if step <= 200:  # steop表示已经训练了多少回合    在一定的回合中采用随机动作填充刚开始的网络
+        if step <= 100:  # steop表示已经训练了多少回合    在一定的回合中采用随机动作填充刚开始的网络
             for k, v in all_observations.items():
-                actions[k] = 5*agent.random_action()
+                actions[k] = agent.random_action()
         else:
             for k ,v in all_observations.items():
-                actions[k] = 5*agent.select_action(v)
+                actions[k] = agent.select_action(v)
         
         next_all_observations, train_reward, done = env.step(**actions)  # 传进去每个对象对应 的动作，返回特定id的学习成果
         
@@ -49,7 +49,7 @@ def train(agent, env, evaluate):
             done = True
         
         agent.observe(train_reward, next_train_observation, done)
-        if step > 200:
+        if step > 100:
             agent.update_policy()
         
         # [optional] evaluate
