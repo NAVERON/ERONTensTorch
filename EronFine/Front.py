@@ -55,10 +55,11 @@ class Viewer():
 #         return near
 #         pass
     def render(self):  # 根据当前状况绘制
-        for entity in self.drawer_ships:
-            self.canvas.delete(entity)
-        for line in self.drawer_velocities:
-            self.canvas.delete(line)
+#         for entity in self.drawer_ships:
+#             self.canvas.delete(entity)
+#         for line in self.drawer_velocities:
+#             self.canvas.delete(line)
+        self.canvas.delete("all")
         self.drawer_ships.clear()
         self.drawer_velocities.clear()
         
@@ -128,10 +129,11 @@ class Viewer():
         self.train_id = None
         
         self.ships.clear()
-        for entity in self.drawer_ships:
-            self.canvas.delete(entity)
-        for line in self.drawer_velocities:
-            self.canvas.delete(line)
+#         for entity in self.drawer_ships:
+#             self.canvas.delete(entity)
+#         for line in self.drawer_velocities:
+#             self.canvas.delete(line)
+        self.canvas.delete("all")
         self.drawer_ships.clear()
         self.drawer_velocities.clear()
         # 重新生成一个新的环境
