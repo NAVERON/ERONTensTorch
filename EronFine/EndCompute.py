@@ -24,7 +24,7 @@ class DDPG(object):
         self.actions_dim = actions_dim
         
         hidden1 = 300
-        hidden2 = 200
+        hidden2 = 400
         init_w = 0.003
         net_cfg = {
             'hidden1':hidden1, 
@@ -48,7 +48,7 @@ class DDPG(object):
         self.random_process = random_process.OrnsteinUhlenbeckProcess(size=self.actions_dim, theta=0.15, mu=0.0, sigma=0.2)
         # Hyper-parameters
         self.batch_size = 64
-        self.tau = 0.001
+        self.tau = 0.001    # soft replacement
         self.discount = 0.99
         self.depsilon = 1.0 / 50000  # 微分
         
@@ -58,7 +58,7 @@ class DDPG(object):
         self.is_training = True
         pass
     
-    def update_policy(self):
+    def update_policy(self):   # 重点
         # Sample batch
         state_batch, action_batch, reward_batch, next_state_batch, terminal_batch = self.memory.sample_and_split(self.batch_size)
         
@@ -92,13 +92,13 @@ class DDPG(object):
         policy_loss = policy_loss.mean()
         policy_loss.backward()
         self.actor_optim.step()
-        
         # Target update
         util.soft_update(self.actor_target, self.actor, self.tau)
         util.soft_update(self.critic_target, self.critic, self.tau)
         
         dd = util.to_numpy(policy_loss)
         #print("loss:", dd)
+        plt.figure("Loss")
         self.t += 1
         if self.t % 10 == 0:
             plt.ion()
@@ -112,7 +112,7 @@ class DDPG(object):
         self.critic.eval()
         self.critic_target.eval()
 
-    def observe(self, r_t, s_t1, done):
+    def observe(self, r_t, s_t1, done):  # 存储状态  动作  奖励
         if self.is_training:
             self.memory.append(self.s_t, self.a_t, r_t, done)
             self.s_t = s_t1
@@ -219,7 +219,10 @@ class Critic(nn.Module):
         out = self.fc3(out)
         return out
 
-
+class Actor_RNN():
+    pass
+class Critic_RNN():
+    pass
 class RNN(nn.Module):
     def __init__(self, out_size, hidden_size, batch_size, dim_w, dict_size, cell = "gru", num_layers = 1):
         super(RNN, self).__init__()

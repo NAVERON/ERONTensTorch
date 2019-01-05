@@ -65,7 +65,9 @@ class Viewer():
         
         for k, v in self.ships.items():
             s = v
-            self.drawer_ships.append(self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="black"))
+            self.drawer_ships.append(
+                self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="black")
+            )
             self.drawer_velocities.append(
                 self.canvas.create_line(s.position[0], self.window_height-s.position[1], s.position[0]+s.velocity[0]*10, self.window_height-s.position[1]-s.velocity[1]*10, fill="blue")
             )
