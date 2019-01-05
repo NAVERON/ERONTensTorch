@@ -38,7 +38,9 @@ class Ship():  # 训练对象的属性
         self.velocity += dv
         if self.getSpeed() > 15 or self.getSpeed() < 0:   # 控制速度大小
             self.velocity -= dv
-    def speedChange(self, ds):
+    def speedChange(self, ds):  # 速度变化过快
+        if ds > 2 or ds < -2:
+            ds = ds/2
         course = self.getCourse()
         sx, sy = ds*math.sin(course), ds*math.cos(course)
         self.velocityChange(np.array([sx, sy]))

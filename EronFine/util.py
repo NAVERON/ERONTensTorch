@@ -4,14 +4,14 @@ import torch
 from torch.autograd import Variable
 
 
-def prRed(prt): print("[91m {}[00m" .format(prt))
-def prGreen(prt): print("[92m {}[00m" .format(prt))
-def prYellow(prt): print("[93m {}[00m" .format(prt))
-def prLightPurple(prt): print("[94m {}[00m" .format(prt))
-def prPurple(prt): print("[95m {}[00m" .format(prt))
-def prCyan(prt): print("[96m {}[00m" .format(prt))
-def prLightGray(prt): print("[97m {}[00m" .format(prt))
-def prBlack(prt): print("[98m {}[00m" .format(prt))
+def prRed(prt): print("91m {}" .format(prt))
+def prGreen(prt): print("92m {}" .format(prt))
+def prYellow(prt): print("93m {}" .format(prt))
+def prLightPurple(prt): print("[94m {}" .format(prt))
+def prPurple(prt): print("95m {}" .format(prt))
+def prCyan(prt): print("96m {}" .format(prt))
+def prLightGray(prt): print("97m {}" .format(prt))
+def prBlack(prt): print("98m {}" .format(prt))
 
 def to_numpy(var):
     return var.data.numpy()
