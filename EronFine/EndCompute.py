@@ -99,13 +99,10 @@ class DDPG(object):
         dd = util.to_numpy(policy_loss)
         #print("loss:", dd)
         plt.figure("Loss")
-        self.t += 1
-        if self.t % 10 == 0:
-            plt.ion()
-            plt.scatter(self.t, dd)
-            plt.pause(0.01)
+        plt.ion()
+        plt.scatter(self.t, dd)
+        plt.pause(0.01)
     
-    t = 0
     def eval(self):
         self.actor.eval()
         self.actor_target.eval()
