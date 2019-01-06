@@ -104,12 +104,18 @@ class Viewer():
                 if v is in_v:
                     continue
                 if v.isCollision(in_v):
-                    train_reward -= 2   # 如果撞上了，则惩罚一次
+                    train_reward -= 1   # 如果撞上了，则惩罚一次
                     break
         # 根据碰撞情况制定惩罚奖励  reward
         
         if self.ships[self.train_id].isDead:
-            train_reward -= 5
+            ob = self.ships[self.train_id].getObservation(self.dis, **self.ships)
+            if ob[0] > 0 and actions[self.train_id]>0:
+                train_reward += 2
+            elif ob[0] > 0 and actions[self.train_id]<0:
+                train_reward -= 4
+            else:
+                train_reward -= 2
             done = True
         else:
             if len( self.ships[self.train_id].near ) < 4:
@@ -119,7 +125,6 @@ class Viewer():
         
         for k, v in self.ships.items():
             s = v
-            #s.getNear(300, **self.ships)
             self.all_observations[s.id] = s.getObservation(self.dis, **self.ships)
         self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
         time.sleep(0.01)
