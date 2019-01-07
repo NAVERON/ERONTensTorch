@@ -63,7 +63,7 @@ class DDPG(object):
         state_batch, action_batch, reward_batch, next_state_batch, terminal_batch = self.memory.sample_and_split(self.batch_size)
         
         # Prepare for the target q batch
-        next_q_values = self.critic_target([
+        next_q_values = self.critic_target([    # 输入当前的状态，和actor计算的动作
             util.to_tensor(next_state_batch, volatile=True),
             self.actor_target( util.to_tensor(next_state_batch, volatile=True) )
         ])
