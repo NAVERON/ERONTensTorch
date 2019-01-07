@@ -26,7 +26,7 @@ class DDPG(object):
         hidden1 = 300
         hidden2 = 400
         init_w = 0.003
-        net_cfg = {
+        net_cfg = {   #网络配置
             'hidden1':hidden1, 
             'hidden2':hidden2, 
             'init_w':init_w
@@ -98,11 +98,14 @@ class DDPG(object):
         
         dd = util.to_numpy(policy_loss)
         #print("loss:", dd)
+        self.t += 1
         plt.figure("Loss")
         plt.ion()
         plt.scatter(self.t, dd)
         plt.pause(0.01)
     
+    t=0
+
     def eval(self):
         self.actor.eval()
         self.actor_target.eval()

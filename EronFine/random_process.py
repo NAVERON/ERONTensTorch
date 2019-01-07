@@ -27,7 +27,7 @@ class AnnealedGaussianProcess(RandomProcess):
         sigma = max(self.sigma_min, self.m * float(self.n_steps) + self.c)
         return sigma
 
-
+#       https://blog.csdn.net/u013745804/article/details/78461253
 # Based on http://math.stackexchange.com/questions/1287634/implementing-ornstein-uhlenbeck-in-matlab
 class OrnsteinUhlenbeckProcess(AnnealedGaussianProcess):   # 一种计算随即数据的算法
     def __init__(self, theta, mu=0., sigma=1., dt=1e-2, x0=None, size=1, sigma_min=None, n_steps_annealing=1000):
