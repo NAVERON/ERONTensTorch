@@ -72,10 +72,11 @@ def train(agent, env, evaluate):
             agent.memory.append(
                 train_observation,
                 agent.select_action(train_observation),
-                episode_reward, False
+                episode_reward, done
             )
             
             # reset
+            done = False
             all_observations = None
             episode_steps = 0
             episode_reward = 0.

@@ -16,6 +16,7 @@ class Viewer():
     # num_iterations = 10000
     train_id = None
     dis = 300
+    ships_count = 10
     
     def __init__(self):
         self.tk = Tk()
@@ -44,21 +45,7 @@ class Viewer():
         time.sleep(0.01)
         return entity
     #  获取周边放到了Ship中，方便逻辑调用
-#     def getNearByOut(self, this_ship, dis):  # 传入查找对象的引用this_ship，以及距离范围 dis
-#         near = []
-#         for item_ship in self.ships:
-#             if this_ship.id == item_ship.id:
-#                 continue
-#             if this_ship.distance(item_ship) < dis:
-#                 near.append(item_ship)
-#         
-#         return near
-#         pass
     def render(self):  # 根据当前状况绘制
-#         for entity in self.drawer_ships:
-#             self.canvas.delete(entity)
-#         for line in self.drawer_velocities:
-#             self.canvas.delete(line)
         self.canvas.delete("all")
         self.drawer_ships.clear()
         self.drawer_velocities.clear()
@@ -94,6 +81,7 @@ class Viewer():
             s.speedChange(action[1])
             
             s.goAhead()
+            self.all_observations[k] = s.getObservation(self.dis, **self.ships)
             
         # 根据动作判断动作后的后果，是好还是坏
         for k, v in self.ships.items():
@@ -101,28 +89,24 @@ class Viewer():
                 if v is in_v:
                     continue
                 if v.isCollision(in_v):
-                    train_reward -= 1   # 如果撞上了，则惩罚一次
+                    #train_reward -= 1   # 如果撞上了，则惩罚一次
                     break
         # 根据碰撞情况制定惩罚奖励  reward
-        
         if self.ships[self.train_id].isDead:
             ob = self.ships[self.train_id].getObservation(self.dis, **self.ships)
-            if ob[0] > 0 and actions[self.train_id]>0:
-                train_reward += 2
-            elif ob[0] > 0 and actions[self.train_id]<0:
+            if ob[0] > 1 and actions[self.train_id]>0:
+                train_reward -= 1
+            elif ob[0] > 1 and actions[self.train_id]<0:
                 train_reward -= 4
             else:
                 train_reward -= 2
             done = True
         else:
-            if len( self.ships[self.train_id].near ) < 4:
-                train_reward += 2
-            else:
-                train_reward -= 1
+            train_reward += 2
         
-        for k, v in self.ships.items():
-            s = v
-            self.all_observations[s.id] = s.getObservation(self.dis, **self.ships)
+#         for k, v in self.ships.items():
+#             s = v
+#             self.all_observations[s.id] = s.getObservation(self.dis, **self.ships)
         self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
         time.sleep(0.01)
         
@@ -134,29 +118,21 @@ class Viewer():
         self.train_id = None
         
         self.ships.clear()
-#         for entity in self.drawer_ships:
-#             self.canvas.delete(entity)
-#         for line in self.drawer_velocities:
-#             self.canvas.delete(line)
         self.canvas.delete("all")
         self.drawer_ships.clear()
         self.drawer_velocities.clear()
         # 重新生成一个新的环境
-        for _ in range(10):
+        for _ in range(self.ships_count):
             temp = self.createRandomEntity()
             self.ships[temp.id] = temp
-            #print(temp.toString())
-        # self.render()
         
         self.all_observations.clear()
         for k, v in self.ships.items():
             s = v
             if self.train_id is None:
                 self.train_id = k
-            #s.getNear(300, **self.ships)
             self.all_observations[s.id] = s.getObservation(self.dis, **self.ships)
         
-        # train_id = self.ships[0].id
         #print("本次训练的id号码是:", self.train_id)
         return self.all_observations
         pass
