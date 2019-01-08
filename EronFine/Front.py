@@ -94,9 +94,6 @@ class Viewer():
             s.speedChange(action[1])
             
             s.goAhead()
-#         for k, v in self.ships.items():  # 做完动作后向前一步走
-#             s = v
-#             s.goAhead()
             
         # 根据动作判断动作后的后果，是好还是坏
         for k, v in self.ships.items():

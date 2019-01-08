@@ -68,26 +68,22 @@ class DDPG(object):
             self.actor_target( util.to_tensor(next_state_batch, volatile=True) )
         ])
         next_q_values.volatile=False
-        
         target_q_batch = util.to_tensor(reward_batch) + self.discount* util.to_tensor(terminal_batch.astype(np.float))*next_q_values
 
         # Critic update
-        self.critic.zero_grad()
-
+        self.critic.zero_grad() # Sets gradients of all model parameters to zero.将module中的所有模型参数的梯度设置为0.
         q_batch = self.critic([ util.to_tensor(state_batch), util.to_tensor(action_batch) ])
-        
         value_loss = criterion(q_batch, target_q_batch)
         value_loss.backward()
         self.critic_optim.step()
 
         # Actor update
         self.actor.zero_grad()
-
-        policy_loss = -self.critic([
+        policy_loss = -self.critic([   # 这里为什么是负号
             util.to_tensor(state_batch),
             self.actor( util.to_tensor(state_batch) )
         ])
-
+        
         policy_loss = policy_loss.mean()
         policy_loss.backward()
         self.actor_optim.step()
@@ -141,11 +137,9 @@ class DDPG(object):
 
     def load_weights(self, output):
         if output is None: return
-
         self.actor.load_state_dict(
             torch.load('{}/actor.pkl'.format(output))
         )
-
         self.critic.load_state_dict(
             torch.load('{}/critic.pkl'.format(output))
         )
