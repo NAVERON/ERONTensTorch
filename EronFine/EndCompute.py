@@ -118,6 +118,7 @@ class DDPG(object):
         return action
 
     def select_action(self, s_t, decay_epsilon=True):
+        print("select action:", np.array([s_t]))
         action = util.to_numpy(
             self.actor( util.to_tensor( np.array([s_t]) ) )    # 向Actor网络中发输入当前的状态量
         ).squeeze(0)     #  从数组的形状中删除单维度条目，即把shape中为1的维度去掉

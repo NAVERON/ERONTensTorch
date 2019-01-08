@@ -41,7 +41,7 @@ def sample_batch_indexes(low, high, size):
         
         batch_idxs = np.random.randint(low, high-1, size=size)
         
-    assert len(batch_idxs) == size
+    assert len(batch_idxs) == size  # 判断最终生成的数量是不是
     return batch_idxs
 
 
@@ -166,7 +166,7 @@ class SequentialMemory(Memory):         #  序列存储
         self.terminals = RingBuffer(limit)
         self.observations = RingBuffer(limit)
 
-    def sample(self, batch_size, batch_idxs=None):
+    def sample(self, batch_size, batch_idxs=None):      # 返回一系列存储的经验值
         """Return a randomized batch of experiences
         # Argument
             batch_size (int): Size of the all batch
@@ -178,7 +178,7 @@ class SequentialMemory(Memory):         #  序列存储
         # would require access to the "terminal" flag associated to the previous state. As a result
         # we will never return this first state (only using `self.terminals[0]` to know whether the
         # second state is terminal).
-# In addition we need enough entries to fill the desired window length.
+        # In addition we need enough entries to fill the desired window length.
         if batch_idxs is None:
             # Draw random indexes such that we have at least a single entry before each
             # index.
@@ -233,7 +233,7 @@ class SequentialMemory(Memory):         #  序列存储
 
     def sample_and_split(self, batch_size, batch_idxs=None):
         experiences = self.sample(batch_size, batch_idxs)
-
+        print("sample and split:", experiences)
         state0_batch = []
         reward_batch = []
         action_batch = []
@@ -245,7 +245,7 @@ class SequentialMemory(Memory):         #  序列存储
             reward_batch.append(e.reward)
             action_batch.append(e.action)
             terminal1_batch.append(0. if e.terminal1 else 1.)
-
+            
         # Prepare and validate parameters.
         state0_batch = np.array(state0_batch).reshape(batch_size,-1)
         state1_batch = np.array(state1_batch).reshape(batch_size,-1)
