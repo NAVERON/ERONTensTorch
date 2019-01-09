@@ -236,7 +236,11 @@ class RNN(nn.Module):
         self.linear = nn.Linear(self.hidden_size, self.out_size)
     
         self.init_weights()
-
+    '''
+    num_layers:
+    RNN层的个数，在图中竖向的是层数，横向的是seq_len
+    
+    '''
     def init_weights(self):
         initrange = 0.1
         self.raw_emb.weight.data.uniform_(-initrange, initrange)
