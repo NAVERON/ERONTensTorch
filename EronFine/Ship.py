@@ -25,7 +25,7 @@ class Ship():  # 训练对象的属性
         
         self.width = width
         self.height = height
-        self.q = queue.Queue(maxsize=10)
+        self.q = queue.Queue(maxsize=20)
         
     def courseTurn(self, dc):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
@@ -37,11 +37,8 @@ class Ship():  # 训练对象的属性
         #print(self.id, "id:", self.velocity)
     
     def addHistory(self, his):
-        print("当前历史轨迹大小", self.q._qsize())
-        self.q._put(his)
-    def clearHistory(self):
-        while not self.q.empty():
-            self.q._get()
+        print("当前历史轨迹大小", self.q.qsize())
+        self.q.put(his)
     
     def velocityChange(self, dv): # 根据dv  修改原速度矢量   输入的是2维向量S[]
         self.velocity += dv
