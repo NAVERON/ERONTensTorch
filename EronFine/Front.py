@@ -58,6 +58,12 @@ class Viewer():
             self.drawer_velocities.append(
                 self.canvas.create_line(s.position[0], self.window_height-s.position[1], s.position[0]+s.velocity[0]*10, self.window_height-s.position[1]-s.velocity[1]*10, fill="blue")
             )
+            # 绘制历史轨迹
+            i = 0
+            for his in s.q:
+                self.canvas.create_text(his[0], self.window_height-his[1], text=str(i))
+                i += 1
+            
         self.tk.update()
     
     all_observations = {}  # 以自定形式存储数据   id : observation
@@ -70,7 +76,7 @@ class Viewer():
         # 根据action做出动作
         for k, v in actions.items():
             action = actions[k]
-            action = np.clip(action, self.action_bound[0], self.action_bound[1])
+            action = np.clip(action, self.action_bound[0], self.action_bound)
             # print("action id:", k, ", action:", action)
             # action      变向/舵角变化            变速/  航向改变
             # 根据id操作相应的动作，修改数据

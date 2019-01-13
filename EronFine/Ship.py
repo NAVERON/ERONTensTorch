@@ -2,7 +2,7 @@
 import numpy as np
 import math
 import datetime
-
+import queue
 
 
 class Ship():  # 训练对象的属性
@@ -25,7 +25,7 @@ class Ship():  # 训练对象的属性
         
         self.width = width
         self.height = height
-        # self.q = queue.Queue(maxsize=10)
+        self.q = queue.Queue(maxsize=10)
         
     def courseTurn(self, dc):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
@@ -35,7 +35,14 @@ class Ship():  # 训练对象的属性
         # print(R)
         self.velocity = np.dot(R, self.velocity.T).T
         #print(self.id, "id:", self.velocity)
-        
+    
+    def addHistory(self, his):
+        print("当前历史轨迹大小", self.q._qsize())
+        self.q._put(his)
+    def clearHistory(self):
+        while not self.q.empty():
+            self.q._get()
+    
     def velocityChange(self, dv): # 根据dv  修改原速度矢量   输入的是2维向量S[]
         self.velocity += dv
         if self.getSpeed() > 10 or self.getSpeed() < 0:   # 控制速度大小
@@ -80,6 +87,7 @@ class Ship():  # 训练对象的属性
         
         self.courseTurn(delta)
         self.position += self.velocity  # 这样就更新位置了    ====  可以把界面更新放到数据更新里面同步，更好
+        self.addHistory([self.position[0], self.position[1]])
     
     def isCollision(self, other):
         dis = self.distance(other)
