@@ -37,8 +37,7 @@ class Ship():  # 训练对象的属性
         #print(self.id, "id:", self.velocity)
     
     def addHistory(self, his):
-        print(self.id, "当前历史轨迹大小", len(self.history) )
-        if len(self.history)>40:
+        if len(self.history) >= 20:
             self.history.popleft()
         self.history.append(his)
     
@@ -86,7 +85,7 @@ class Ship():  # 训练对象的属性
         
         self.courseTurn(delta)
         self.position += self.velocity  # 这样就更新位置了    ====  可以把界面更新放到数据更新里面同步，更好
-        if self.i % 10 == 0:
+        if self.i % 20 == 0:
             self.addHistory([self.position[0], self.position[1]])
         self.i += 1
         if self.i > 1000:

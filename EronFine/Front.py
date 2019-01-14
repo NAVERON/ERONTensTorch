@@ -59,11 +59,9 @@ class Viewer():
                 self.canvas.create_line(s.position[0], self.window_height-s.position[1], s.position[0]+s.velocity[0]*10, self.window_height-s.position[1]-s.velocity[1]*10, fill="blue")
             )
             # 绘制历史轨迹
-            i = 0
             for i in range(len(s.history)):
                 his = s.history[i]
                 self.canvas.create_text(his[0], self.window_height-his[1], text="*")
-                i += 1
             
         self.tk.update()
     
