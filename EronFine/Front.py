@@ -60,10 +60,9 @@ class Viewer():
             )
             # 绘制历史轨迹
             i = 0
-            while not s.q.empty():
-                his = s.q._get()
-                print("绘制", his)
-                self.canvas.create_text(his[0], self.window_height-his[1], text=str(i)+"_Position")
+            for i in range(len(s.history)):
+                his = s.history[i]
+                self.canvas.create_text(his[0], self.window_height-his[1], text="*")
                 i += 1
             
         self.tk.update()

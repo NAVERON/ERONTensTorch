@@ -2,7 +2,7 @@
 import numpy as np
 import math
 import datetime
-import queue
+from collections import deque
 
 
 class Ship():  # 训练对象的属性
@@ -25,7 +25,7 @@ class Ship():  # 训练对象的属性
         
         self.width = width
         self.height = height
-        self.q = queue.Queue(maxsize=20)
+        self.history = deque()
         
     def courseTurn(self, dc):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
@@ -37,8 +37,10 @@ class Ship():  # 训练对象的属性
         #print(self.id, "id:", self.velocity)
     
     def addHistory(self, his):
-        print("当前历史轨迹大小", self.q.qsize())
-        self.q.put(his)
+        print(self.id, "当前历史轨迹大小", len(self.history) )
+        if len(self.history)>40:
+            self.history.popleft()
+        self.history.append(his)
     
     def velocityChange(self, dv): # 根据dv  修改原速度矢量   输入的是2维向量S[]
         self.velocity += dv
@@ -68,7 +70,7 @@ class Ship():  # 训练对象的属性
             angle += 360
         
         return angle
-    
+    i=0
     def goAhead(self):
         # 边界判断    设置为不能超越边界
         if self.position[0] <= 0:
@@ -84,7 +86,11 @@ class Ship():  # 训练对象的属性
         
         self.courseTurn(delta)
         self.position += self.velocity  # 这样就更新位置了    ====  可以把界面更新放到数据更新里面同步，更好
-        self.addHistory([self.position[0], self.position[1]])
+        if self.i % 10 == 0:
+            self.addHistory([self.position[0], self.position[1]])
+        self.i += 1
+        if self.i > 1000:
+            self.i = 0
     
     def isCollision(self, other):
         dis = self.distance(other)

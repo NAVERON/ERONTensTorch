@@ -10,8 +10,6 @@ from EronFine import util
 from EronFine import random_process
 
 from torch.autograd import Variable
-# from lstm import *
-# from gru import *
 import matplotlib.pyplot as plt
 
 
