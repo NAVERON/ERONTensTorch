@@ -88,7 +88,7 @@ def test(validate_episodes, agent, env, evaluate, model_path):
     agent.is_training = False
     agent.eval()
     policy = lambda x: agent.select_action(x, decay_epsilon=False)  # 不衰减  decay_epsilon
-
+    
     for i in range(validate_episodes):
         validate_reward = evaluate(env, policy, debug=True, save=False)
         util.prYellow('[Evaluate] #{}: mean_reward:{}'.format(i, validate_reward))
@@ -97,9 +97,9 @@ def test(validate_episodes, agent, env, evaluate, model_path):
 
 if __name__ == "__main__":
     
-    isTraining = True   # 训练参数/使用训练好的参数计算动作
+    isTraining = False   # 训练参数/使用训练好的参数计算动作
     
-    validate_episodes = 100    # 回合，一整个回合
+    validate_episodes = 10    # 回合，一整个回合
     validate_steps = 2000   # 每一个回合最大步数，验证需要的步数
     
     output = "output"   # 输出文件夹

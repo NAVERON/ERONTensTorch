@@ -3,6 +3,7 @@ import numpy as np
 import math
 import datetime
 from collections import deque
+import pandas as pd
 
 
 class Ship():  # 训练对象的属性
@@ -10,6 +11,7 @@ class Ship():  # 训练对象的属性
     K = 0.0785
     T = 3.12
     isDead = False
+    
     
     #  标准
     #  位置以左下角为标准原点，这里全部按照实际的坐标系来，绘制的时候再  进一步处理绘制的问题
@@ -69,7 +71,9 @@ class Ship():  # 训练对象的属性
             angle += 360
         
         return angle
+    
     i=0
+    trajectories = []
     def goAhead(self):
         # 边界判断    设置为不能超越边界
         if self.position[0] <= 0:
@@ -87,10 +91,16 @@ class Ship():  # 训练对象的属性
         self.position += self.velocity  # 这样就更新位置了    ====  可以把界面更新放到数据更新里面同步，更好
         if self.i % 20 == 0:
             self.addHistory([self.position[0], self.position[1]])
+        
+        self.trajectories.append([self.position[0], self.position[1], self.getCourse(), self.getSpeed(), self.rudder])
         self.i += 1
         if self.i > 1000:
             self.i = 0
-    
+        
+    def storeTrajectories(self):
+        formated_data = pd.DataFrame(data = self.trajectories)
+        formated_data.to_csv("../"+self.id+".csv", encoding="utf-8", header=None, index=None)
+        pass
     def isCollision(self, other):
         dis = self.distance(other)
         if dis < 20:

@@ -161,7 +161,7 @@ def fanin_init(size, fanin=None):
     fanin = fanin or size[0]
     v = 1. / np.sqrt(fanin)
     return torch.Tensor(size).uniform_(-v, v)
-
+    
 class Actor(nn.Module):
     
     def __init__(self, states_dim, actions_dim, hidden1=400, hidden2=300, init_w=3e-3):
