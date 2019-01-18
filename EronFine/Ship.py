@@ -10,7 +10,6 @@ class Ship():  # 训练对象的属性
     
     K = 0.0785
     T = 3.12
-    isDead = False
     
     
     #  标准
@@ -19,6 +18,7 @@ class Ship():  # 训练对象的属性
     #  
     def __init__(self, position=np.array([500, 400], dtype=np.float), velocity=np.array([2, 4], dtype=np.float), width=1000, height=600):  # 矩阵
         self.id = datetime.datetime.now().strftime("%d%H%M%S%f")
+        self.isDead = False
         
         self.rudder = 0
         self.position = position
@@ -28,6 +28,8 @@ class Ship():  # 训练对象的属性
         self.width = width
         self.height = height
         self.history = deque()
+        
+        self.trajectories = []
         
     def courseTurn(self, dc):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
@@ -73,7 +75,7 @@ class Ship():  # 训练对象的属性
         return angle
     
     i=0
-    trajectories = []
+    
     def goAhead(self):
         # 边界判断    设置为不能超越边界
         if self.position[0] <= 0:
