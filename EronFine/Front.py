@@ -127,9 +127,7 @@ class Viewer():
     
     def saveAllShips(self):
         for id, ship in self.ships.items():
-            if id == self.train_id:
-                ship.storeTrajectories()
-                break
+            ship.storeTrajectories()
         pass
     def reset(self):  # 重置环境和变量的条件
         print("一个回合结束，重新生成新的环境")
