@@ -47,17 +47,16 @@ class Evaluator(object):
                     done = True
                 
                 # update
-                episode_reward += train_reward
+                episode_reward += train_reward       # episode_reward 代表每一个回合的奖励
                 episode_steps += 1
             # episode  回合    epiusode_reward  奖励
-            if debug: util.prYellow('[Evaluate] #Episode{}: episode_reward:{}'.format(episode,episode_reward))    
-            result.append(episode_reward)
-            if episode_reward >= 1000:
-                env.saveAllShips()
-                break
+            if debug: util.prYellow('[Evaluate] #Episode{}: episode_reward:{}'.format(episode,episode_reward))
+            result.append(episode_reward)        # result   存储在 num_episodes    回合里面的所有奖励结果
+#             if episode_reward >= 1000:
+#                 env.saveAllShips()
+#                 break
             
         result = np.array(result).reshape(-1,1)   # 不管分多少行，我需要分成一列            在这里相当于转置了一下，一行变一列
-        
         self.results = np.hstack([self.results, result])  # 按照列合并             这个只是保存训练结果
         
         if save:

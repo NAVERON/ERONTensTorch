@@ -1,6 +1,7 @@
 
 
 
+
 from EronFine.EndCompute import DDPG
 from EronFine.Front import Viewer
 from EronFine.evaluator import Evaluator
@@ -25,7 +26,7 @@ def train(agent, env, evaluate):
     all_observations = None  # 环境状态，观察值
     # train_id = None
     
-    while step < num_iterations:    # 回合数
+    while step < num_iterations:
         
         # train_id  是指当前回合中训练的对象id
         if all_observations is None:  # 初始化环境状态  和  智能体的初始状态，一个新的回合
@@ -118,6 +119,22 @@ if __name__ == "__main__":
     
     
    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
