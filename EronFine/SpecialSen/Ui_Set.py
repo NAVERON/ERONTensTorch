@@ -22,7 +22,7 @@ class Viewer():
     # num_iterations = 10000
     train_id = None
     dis = 300
-    ships_count = 10
+    ships_count = 3
     
     def __init__(self):
         self.tk = Tk()
@@ -39,8 +39,9 @@ class Viewer():
         self.canvas.pack()
         self.render()
         
-    def do_thing(self, event=None):
+    def do_thing(self, event):
         test(validate_episodes, agent, env, evaluate, output)
+        print("hello", event)
         pass
     
     def init_train_parameters(self, validate_episodes, agent, evaluate):
@@ -130,9 +131,6 @@ class Viewer():
         else:
             train_reward += 2
         
-#         for k, v in self.ships.items():
-#             s = v
-#             self.all_observations[s.id] = s.getObservation(self.dis, **self.ships)
         self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
         time.sleep(0.01)
         
@@ -199,8 +197,7 @@ if __name__ == "__main__":
     agent = DDPG(env.state_dim, env.action_dim)   # 环境和动作的维度
     evaluate = Evaluator(validate_episodes, validate_steps, output, max_episode_length)
     
-    
-    # test(validate_episodes, agent, env, evaluate, output)
+    test(validate_episodes, agent, env, evaluate, output)
     print("test over")
         
     
