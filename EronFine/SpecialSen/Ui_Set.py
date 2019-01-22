@@ -10,7 +10,7 @@ from EronFine.Ship import Ship
 
 
 from EronFine.EndCompute import DDPG
-from EronFine.evaluator import Evaluator
+from EronFine.SpecialSen.Evaluator_Set import Evaluator
 from EronFine import util
 
 
@@ -22,7 +22,7 @@ class Viewer():
     # num_iterations = 10000
     train_id = None
     dis = 300
-    ships_count = 3
+    ships_count = 10
     
     def __init__(self):
         self.tk = Tk()
@@ -51,9 +51,9 @@ class Viewer():
     
     def createRandomEntity(self):
         position_list = np.array(np.random.random((1, 2))).flatten()
-        position = np.multiply(position_list, 600)
+        position = np.multiply(position_list, 600)         # 范围是   0到600
         
-        velocity_list = np.array(-1 + 2*np.random.random((1, 2))).flatten()
+        velocity_list = np.array(-1 + 2*np.random.random((1, 2))).flatten()         #生成的范围时   -1到1
         velocity = np.multiply(velocity_list, 2)
         entity = Ship(position, velocity, self.window_width, self.window_height)
         #print(entity.toString())  ###############################################################################3
@@ -150,6 +150,28 @@ class Viewer():
         self.drawer_ships.clear()
         self.drawer_velocities.clear()
         # 重新生成一个新的环境
+#         for _ in range(self.ships_count):
+#             temp = self.createRandomEntity()
+#             self.ships[temp.id] = temp
+        
+        # 对遇态势
+        temp = Ship(np.array([500.0, 100.0]), np.array([0.0, 2.0]), self.window_width, self.window_height)
+        self.ships[temp.id] = temp
+        time.sleep(0.01)
+        
+        temp = Ship(np.array([500.0, 500.0]), np.array([0.0, -2.0]), self.window_width, self.window_height)
+        self.ships[temp.id] = temp
+        time.sleep(0.01)
+        #  对遇和 左舷交叉相遇     3 无人艇会遇
+        temp = Ship(np.array([200.0, 300.0]), np.array([1.2, -1.0]), self.window_width, self.window_height)
+        self.ships[temp.id] = temp
+        time.sleep(0.01)
+        #  四无人艇   会遇
+        temp = Ship(np.array([700.0, 450.0]), np.array([-2.0, -3.0]), self.window_width, self.window_height)
+        self.ships[temp.id] = temp
+        time.sleep(0.01)
+        
+        # 随机生成避碰环境
         for _ in range(self.ships_count):
             temp = self.createRandomEntity()
             self.ships[temp.id] = temp
