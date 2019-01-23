@@ -50,7 +50,7 @@ def train(agent, env, evaluate):
                 done = True
             
             agent.observe(train_reward, next_train_observation, done)   # 存储训练状态
-            if step > 100:  #和上面选动作一致
+            if step > 50:  #和上面选动作一致
                 agent.update_policy()
             
             # [optional] evaluate          这里检测一下当前的训练结果

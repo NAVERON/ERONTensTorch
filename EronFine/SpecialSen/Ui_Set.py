@@ -27,26 +27,54 @@ class Viewer():
     def __init__(self):
         self.tk = Tk()
         
-        self.window_width = 1000
-        self.window_height = 600
+        self.window_width = 1000.0
+        self.window_height = 600.0
         
         self.canvas = Canvas(self.tk, width=self.window_width, height=self.window_height)
         self.ships = {}
         self.drawer_ships = []
         self.drawer_velocities = []
-        self.canvas.bind("B1-Motion", self.do_thing)
+        self.canvas.bind("<Button-1>", self.create_things)
+        self.canvas.bind("<Button-3>", self.do_begin)
+        self.canvas.bind("<ButtonRelease-1>", self.new_things)
         
         self.canvas.pack()
         self.render()
+        # 开启总循环
         
-    def do_thing(self, event):
-        test(validate_episodes, agent, env, evaluate, output)
-        print("hello", event)
+    def do_begin(self, event):
+        test(self.validate_episodes, self.agent, self, self.evaluate, self.output)
+        
+        pass
+    def create_things(self, event):    # 创建功能作废，手动创建
+        self.pressed_x = event.x
+        self.pressed_y = event.y
+        print("正在创建", self.pressed_x, ", ", self.pressed_y)
+        pass
+    def new_things(self, event):
+        self.released_x = event.x
+        self.released_y = event.y
+        print("生成新对象", self.released_x, ", ", self.released_y)
+        
+        x = self.pressed_x
+        y = self.window_height-self.pressed_y
+        dx = self.released_x - self.pressed_x
+        dy = self.pressed_y - self.released_y
+        
+        temp = Ship(np.array([x, y], dtype = np.float64), np.array([dx, dy], dtype = np.float64), self.window_width, self.window_height)
+        self.ships[temp.id] = temp
+        print("创建成功", temp)
         pass
     
-    def init_train_parameters(self, validate_episodes, agent, evaluate):
+    def init_train_parameters(self, validate_episodes, agent, env, evaluate, output):
+        self.validate_episodes = validate_episodes
         self.agent = agent
         self.evaluate = evaluate
+        self.agent = agent
+        self.evaluate = evaluate
+        self.output = output
+        
+        self.tk.mainloop()
         pass
     
     def createRandomEntity(self):
@@ -155,26 +183,30 @@ class Viewer():
 #             self.ships[temp.id] = temp
         
         # 对遇态势
-        temp = Ship(np.array([500.0, 100.0]), np.array([0.0, 2.0]), self.window_width, self.window_height)
+        temp = Ship(np.array([500.0, 100.0]), np.array([0.0, 2.0]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         
-        temp = Ship(np.array([500.0, 500.0]), np.array([0.0, -2.0]), self.window_width, self.window_height)
+        temp = Ship(np.array([500.0, 500.0]), np.array([0.0, -2.0]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         #  对遇和 左舷交叉相遇     3 无人艇会遇
-        temp = Ship(np.array([200.0, 300.0]), np.array([1.2, -1.0]), self.window_width, self.window_height)
+        temp = Ship(np.array([200.0, 300.0]), np.array([1.2, -1.0]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         #  四无人艇   会遇
-        temp = Ship(np.array([700.0, 450.0]), np.array([-2.0, -3.0]), self.window_width, self.window_height)
+        temp = Ship(np.array([700.0, 450.0]), np.array([-2.0, -3.0]), width=self.window_width, height=self.window_height)
+        self.ships[temp.id] = temp
+        time.sleep(0.01)
+        #再来一个追越
+        temp = Ship(np.array([600.0, 20.0]), np.array([-2.0, 1.0]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         
         # 随机生成避碰环境
-        for _ in range(self.ships_count):
-            temp = self.createRandomEntity()
-            self.ships[temp.id] = temp
+#         for _ in range(self.ships_count):
+#             temp = self.createRandomEntity()
+#             self.ships[temp.id] = temp
         
         self.all_observations.clear()
         for k, v in self.ships.items():
@@ -210,7 +242,7 @@ def test(validate_episodes, agent, env, evaluate, model_path):
 if __name__ == "__main__":
     
     validate_episodes = 10    # 回合，一整个回合
-    validate_steps = 2000   # 每一个回合最大步数，验证需要的步数
+    validate_steps = 1000   # 每一个回合最大步数，验证需要的步数
     
     output = "../output"   # 输出文件夹==========================================新建的场景目录发生变化，那么输出文件也应该变化一下
     max_episode_length = 500   # 每一个回合最大步数
@@ -219,7 +251,8 @@ if __name__ == "__main__":
     agent = DDPG(env.state_dim, env.action_dim)   # 环境和动作的维度
     evaluate = Evaluator(validate_episodes, validate_steps, output, max_episode_length)
     
-    test(validate_episodes, agent, env, evaluate, output)
+    env.init_train_parameters(validate_episodes, agent, env, evaluate, output)
+    #test(validate_episodes, agent, env, evaluate, output)
     print("test over")
         
     

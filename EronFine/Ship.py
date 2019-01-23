@@ -16,7 +16,7 @@ class Ship():  # 训练对象的属性
     #  位置以左下角为标准原点，这里全部按照实际的坐标系来，绘制的时候再  进一步处理绘制的问题
     #  速度以正上方为 0 ，顺时针旋转    正向
     #  
-    def __init__(self, position=np.array([500, 400], dtype=np.float), velocity=np.array([2, 4], dtype=np.float), width=1000, height=600):  # 矩阵
+    def __init__(self, position=np.array([500, 400], dtype=np.float), velocity=np.array([2, 4], dtype=np.float), width=1000.0, height=600.0):  # 矩阵
         self.id = datetime.datetime.now().strftime("%d%H%M%S%f")
         self.isDead = False
         
@@ -78,12 +78,14 @@ class Ship():  # 训练对象的属性
     
     def goAhead(self):
         # 边界判断    设置为不能超越边界
+        #print("position", self.position)
         if self.position[0] <= 0:
             self.position[0] = self.width
         elif self.position[0] > self.width:
             self.position[0] = 0
-        elif self.position[1] <= 0:
-            self.position = self.height
+        
+        if self.position[1] <= 0:
+            self.position[1] = self.height
         elif self.position[1] > self.height:
             self.position[1] = 0
         
