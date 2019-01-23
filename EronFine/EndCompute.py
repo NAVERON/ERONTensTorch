@@ -90,19 +90,28 @@ class DDPG(object):
         dd_v= util.to_numpy(value_loss)
         
         self.t += 1
-        plt.figure("Policy Loss")
-        plt.ion()
-        plt.scatter(self.t, dd_p)
-        plt.figure("Value Loss")
-        plt.ion()
-        plt.scatter(self.t, dd_v)
-        plt.pause(0.001)
-        if self.t > 1000:
+        self.p_all.append(dd_p)
+        self.v_all.append(dd_v)
+        
+        if self.t > 500:
             plt.cla()
+            
+            plt.figure("Loss")
+            #plt.ion()
+            plt.plot(range(0, len(self.p_all)), self.p_all, color="#F08080")
+            #plt.figure("Value Loss")
+            #plt.ion()
+            plt.plot(range(0, len(self.v_all)), self.v_all, color="#DB7093")
+            plt.pause(0.001)
+            
             self.t = 0
+            self.p_all.clear()
+            self.v_all.clear()
     
     t=0
-
+    p_all = []
+    v_all = []
+    
     def eval(self):
         self.actor.eval()
         self.actor_target.eval()

@@ -1,9 +1,29 @@
 
 from tkinter import *
+import matplotlib.pyplot as plt 
 
 root = Tk()
 w = Canvas(root,bg = 'white')
 w.pack()
+
+p_all = [0, 1, 2, 3, 4, 5, 6]
+v_all = [12, 34, 56, 78, 90, 100, 300]
+#测试plot清除和重绘
+plt.figure("Value Loss")
+plt.ion()
+plt.scatter(p_all, v_all)
+plt.pause(1)
+
+plt.cla()
+plt.pause(1)
+p_all = [0, 1, 2, 3, 4, 5, 6]
+v_all = [450, 123, 23, 2, 90, 100, 300]
+#plt.figure("Policy Loss")
+#plt.ion()
+plt.scatter(p_all, v_all)
+
+plt.pause(0.01)
+
 
 def paint(event):
     x1,y1 = (event.x -1),(event.y -1)
