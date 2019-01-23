@@ -86,17 +86,20 @@ class DDPG(object):
         util.soft_update(self.actor_target, self.actor, self.tau)
         util.soft_update(self.critic_target, self.critic, self.tau)
         
-        dd = util.to_numpy(policy_loss)
+        dd_p = util.to_numpy(policy_loss)
         dd_v= util.to_numpy(value_loss)
         
         self.t += 1
         plt.figure("Policy Loss")
         plt.ion()
-        plt.scatter(self.t, dd)
+        plt.scatter(self.t, dd_p)
         plt.figure("Value Loss")
         plt.ion()
         plt.scatter(self.t, dd_v)
         plt.pause(0.001)
+        if self.t > 1000:
+            plt.cla()
+            self.t = 0
     
     t=0
 
