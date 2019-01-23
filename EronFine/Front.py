@@ -14,7 +14,6 @@ class Viewer():
     action_dim = 2
     action_bound = [-2, 2]
     # num_iterations = 10000
-    train_id = None
     dis = 300
     ships_count = 10
     

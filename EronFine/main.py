@@ -35,7 +35,7 @@ def train(agent, env, evaluate):
                 train_observation = all_observations[env.train_id]
                 agent.reset(train_observation)
             actions = {}
-            if step <= 100:  # steop表示已经训练了多少回合    在一定的回合中采用随机动作填充刚开始的网络
+            if step <= 20:  # steop表示已经训练了多少回合    在一定的回合中采用随机动作填充刚开始的网络
                 for k, v in all_observations.items():
                     actions[k] = agent.random_action()
             else:
@@ -50,28 +50,26 @@ def train(agent, env, evaluate):
                 done = True
             
             agent.observe(train_reward, next_train_observation, done)   # 存储训练状态
-            if step > 50:  #和上面选动作一致
+            if step > 25:  #和上面选动作一致
                 agent.update_policy()
-            
-            # [optional] evaluate          这里检测一下当前的训练结果
-            if step % validate_steps == 0:
-                policy = lambda x: agent.select_action(x, decay_epsilon=False)
-                validate_reward = evaluate(env, policy, debug=False)    #########################这里是阶段性验证，判断是否训练成功
-                util.prYellow('[Evaluate] Step_{:07d}: mean_reward:{}'.format(step, validate_reward))
-            
             # [optional] save intermideate model    保存中间的模型数据
             if step % int(num_iterations/2) == 0:    # 如果训练过了3分之1，则保存模型参数
                 agent.save_model(output)
-                
+            
             # update
             episode_steps += 1   #在这一回合中前进一步，一个回合的每一步
             episode_reward += train_reward     # 在一个回合中总共的奖励值，越高越好
             all_observations = next_all_observations
         
-        step += 1     # 回合数
+        # [optional] evaluate          这里检测一下当前的训练结果
+        if step % validate_steps == 0:
+            policy = lambda x: agent.select_action(x, decay_epsilon=False)
+            validate_reward = evaluate(env, policy, debug=False)    #########################这里是阶段性验证，判断是否训练成功
+            util.prYellow('中间检测运行效果[Evaluate] Step_{}: mean_reward:{}'.format(step, validate_reward))
         
+        step += 1     # 回合数
         #if done: # end of episode    当一个回合超过了特定的步数，则认为一个回合完成
-        util.prGreen('#{}: episode_reward:{} steps:{}'.format(episode_steps, episode_reward, step))  # 第几个回合  回合奖励  这个回合步数
+        util.prGreen('回合完结:回合中的总步数{}: episode_reward:{} steps:{}'.format(episode_steps, episode_reward, step))  # 第几个回合  回合奖励  这个回合步数
         agent.memory.append(   #  这里应该是补充存储，上面的   obverse已经存储了每一步内容
             train_observation,
             agent.select_action(train_observation),

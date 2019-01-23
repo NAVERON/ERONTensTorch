@@ -26,8 +26,6 @@ class Evaluator(object):
         for episode in range(self.num_episodes):
             
             # reset at the start of episode
-            # observation = env.reset()
-            # all_observations, train_id = env.reset()
             all_observations = env.reset()
             episode_steps = 0
             episode_reward = 0
@@ -51,10 +49,7 @@ class Evaluator(object):
                 episode_steps += 1
             # episode  回合    epiusode_reward  奖励
             if debug: util.prYellow('[Evaluate] #Episode{}: episode_reward:{}'.format(episode,episode_reward))
-            result.append(episode_reward)        # result   存储在 num_episodes    回合里面的所有奖励结果
-#             if episode_reward >= 1000:
-#                 env.saveAllShips()
-#                 break
+            result.append(episode_reward)        # result   存储在 num_episodes    回合里面的所有奖励结
             
         result = np.array(result).reshape(-1,1)   # 不管分多少行，我需要分成一列            在这里相当于转置了一下，一行变一列
         self.results = np.hstack([self.results, result])  # 按照列合并             这个只是保存训练结果
