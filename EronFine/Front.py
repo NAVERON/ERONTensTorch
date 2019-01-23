@@ -78,7 +78,7 @@ class Viewer():
         train_reward = 0
         done = False
         # 根据action做出动作
-        for k, v in actions.items():
+        for k, v in actions.items():           #  重点：一个是环境获取，一个是惩罚奖励设置函数
             action = actions[k]
             action = np.clip(action, self.action_bound[0], self.action_bound)
             # print("action id:", k, ", action:", action)

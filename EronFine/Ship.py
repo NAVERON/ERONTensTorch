@@ -127,7 +127,7 @@ class Ship():  # 训练对象的属性
     near = []
     def getObservation(self, dis, **ships):
         now_near = self.getNear(dis, **ships)
-        near_locals = self.warpAxis(now_near)
+        near_locals = self.warpAxis(now_near)   # 可以得到   以本艇为中心的环境图
         
         up = 0
         right = 0
