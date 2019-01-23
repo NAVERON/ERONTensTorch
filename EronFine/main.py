@@ -50,7 +50,7 @@ def train(agent, env, evaluate):
                 done = True
             
             agent.observe(train_reward, next_train_observation, done)   # 存储训练状态
-            if step > 25:  #和上面选动作一致
+            if step > 50:  #和上面选动作一致
                 agent.update_policy()
             # [optional] save intermideate model    保存中间的模型数据
             if step % int(num_iterations/2) == 0:    # 如果训练过了3分之1，则保存模型参数

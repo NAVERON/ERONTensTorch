@@ -96,7 +96,7 @@ class DDPG(object):
         plt.figure("Value Loss")
         plt.ion()
         plt.scatter(self.t, dd_v)
-        plt.pause(0.01)
+        plt.pause(0.001)
     
     t=0
 
