@@ -104,7 +104,7 @@ if __name__ == "__main__":
     isTraining = True   # 训练参数/使用训练好的参数计算动作
     
     validate_episodes = 10    # 回合，一整个回合
-    validate_steps = 2000   # 每一个回合最大步数，验证需要的步数
+    validate_steps = 20   # 每一个回合最大步数，验证需要的步数
     
     output = "output"   # 输出文件夹
     max_episode_length = 500   # 每一个回合最大步数

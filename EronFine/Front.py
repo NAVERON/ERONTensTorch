@@ -10,7 +10,7 @@ from EronFine.Ship import Ship
 
 class Viewer():
     
-    ships_count = 10
+    ships_count = 5
     state_dim = 1 + 4*(ships_count-1)
     action_dim = 2
     action_bound = [-2,2]
@@ -67,7 +67,7 @@ class Viewer():
             # 绘制历史轨迹
             for i in range(len(s.history)):
                 his = s.history[i]
-                #print(his)
+                print(his)
                 self.canvas.create_text(his[0], self.window_height-his[1], text="*")
             
         self.tk.update()
