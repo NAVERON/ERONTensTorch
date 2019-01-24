@@ -93,6 +93,7 @@ class Viewer():
             s.speedChange(action[1])
             
             s.goAhead()
+            #s.addHistory(s.position)
             #self.all_observations[k] = s.getObservation(self.dis, **self.ships)
             
         # 判断是否碰撞
