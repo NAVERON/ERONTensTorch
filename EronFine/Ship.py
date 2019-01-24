@@ -94,7 +94,7 @@ class Ship():  # 训练对象的属性
         self.courseTurn(delta)
         self.position += self.velocity  # 这样就更新位置了    ====  可以把界面更新放到数据更新里面同步，更好
         if self.i % 20 == 0:
-            self.addHistory([self.position[0], self.position[1]])
+            self.addHistory(self.position)
             self.trajectories.append([self.position[0], self.position[1], self.getCourse(), self.getSpeed(), self.rudder])
         
         self.i += 1
@@ -126,31 +126,43 @@ class Ship():  # 训练对象的属性
     
     near = []
     def getObservation(self, dis, **ships):
-        now_near = self.getNear(dis, **ships)
+        #now_near = self.getNear(dis, **ships)
+        now_near = []
+        for k, v in ships.items():
+            if k != self.id:
+                now_near.append(v)
         near_locals = self.warpAxis(now_near)   # 可以得到   以本艇为中心的环境图
         
-        up = 0
-        right = 0
-        down = 0
-        left = 0
+#         local_others = []
+#         for local in near_locals:
+#             local_others.append([local.local_position, local.local_course, local.local_speed, local.local_ratio, local.local_dis]) 
+#         up = []
+#         right = []
+#         down = []
+#         left = []
+#         for local in near_locals:
+#             ratio = local.local_ratio
+#             if ratio > 355 and ratio < 30:
+#                 up.append([local.local_position, local.local_course, local.local_speed, local.local_ratio, local.local_dis])
+#             elif ratio > 30 and ratio < 112.5:
+#                 right.append([local.local_position, local.local_course, local.local_speed, local.local_ratio, local.local_dis])
+#             elif ratio > 112.5 and ratio < 210:
+#                 down.append([local.local_position, local.local_course, local.local_speed, local.local_ratio, local.local_dis])
+#             elif ratio > 210 and ratio < 355:
+#                 left.append([local.local_position, local.local_course, local.local_speed, local.local_ratio, local.local_dis])
+        observation = [self.getSpeed()]
         for local in near_locals:
-            ratio = local.getRatio()
-            if ratio > 355 and ratio < 30:
-                up += 1
-            elif ratio > 30 and ratio < 112.5:
-                right += 1
-            elif ratio > 112.5 and ratio < 210:
-                down += 1
-            elif ratio > 210 and ratio < 355:
-                left += 1
-        
-        return [up, right, down, left, self.getCourse(), self.getSpeed()]
+            observation.append(local.local_course)
+            observation.append(local.local_speed)
+            observation.append(local.local_ratio)
+            observation.append(local.local_dis)
+        return observation
         pass
     
     def getNear(self, dis, **ships):  # 传入查找对象的引用this_ship，以及距离范围 dis
         self.near.clear()   # 清空之前的数据
         
-        for k, v in ships.items():
+        for v in ships.values():
             item_ship = v
             if self.id == item_ship.id:
                 continue
@@ -175,8 +187,9 @@ class Ship():  # 训练对象的属性
                 if dh < 0:
                     dh += 360
             
-            local_ship = LocalShip(ship.id, position, dh)
+            local_ship = LocalShip(ship.id, position, dh, ship.getSpeed())
             local_ship.setRatio(self.calAngle( position[0], position[1] ))
+            local_ship.setDis(self.distance(ship))
             near_locals.append(local_ship)
         
         return near_locals
@@ -187,19 +200,22 @@ class Ship():  # 训练对象的属性
 
 class LocalShip():
     
-    def __init__(self, local_id, local_position, local_velocity):
+    def __init__(self, local_id, local_position, course, speed):
         self.local_id = local_id
         self.local_position = local_position
-        self.local_velocity = local_velocity
-        self.ratio = 0
+        self.local_course = course
+        self.local_speed = speed
+        self.local_ratio = 0
+        self.local_dis = 0
         pass
     
     def setRatio(self, ratio):
         self.ratio = ratio
-    def getRatio(self):
-        return self.ratio
-        pass
+    def setDis(self, dis):
+        self.dis = dis
 
+    def toString(self):
+        return self.local_id +":"+ str(self.local_position[0]) + ","+str(self.local_position[1]) + "\n" + str(self.course) +","+str(self.ratio)
 
 
 

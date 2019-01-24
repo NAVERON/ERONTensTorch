@@ -16,13 +16,13 @@ from EronFine import util
 
 class Viewer():
     
-    state_dim = 6
+    ships_count = 10
+    state_dim = 10
     action_dim = 2
     action_bound = [-2, 2]
     # num_iterations = 10000
     train_id = None
     dis = 300
-    ships_count = 10
     
     def __init__(self):
         self.tk = Tk()
@@ -158,9 +158,8 @@ class Viewer():
             done = True
         else:
             train_reward += 2
-        
         self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
-        time.sleep(0.01)
+        time.sleep(0.1)
         
         return self.all_observations, train_reward, done   # 观察值， 奖励， 一个回合是否完成
         pass
