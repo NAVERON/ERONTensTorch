@@ -16,8 +16,8 @@ from EronFine import util
 
 class Viewer():
     
-    ships_count = 10
-    state_dim = 10
+    ships_count = 5
+    state_dim = 1+4*(ships_count-1)
     action_dim = 2
     action_bound = [-2, 2]
     # num_iterations = 10000
@@ -101,7 +101,7 @@ class Viewer():
                 )
             else:
                 self.drawer_ships.append(
-                    self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="black")
+                    self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill=None)
                 )
             
             self.drawer_velocities.append(

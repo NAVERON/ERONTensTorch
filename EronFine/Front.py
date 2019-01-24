@@ -16,7 +16,6 @@ class Viewer():
     action_bound = [-2,2]
     # num_iterations = 10000
     dis = 300
-    ships_count = 10
     
     def __init__(self):
         self.tk = Tk()
@@ -67,7 +66,7 @@ class Viewer():
             # 绘制历史轨迹
             for i in range(len(s.history)):
                 his = s.history[i]
-                print(his)
+                #print(his)
                 self.canvas.create_text(his[0], self.window_height-his[1], text="*")
             
         self.tk.update()
@@ -107,7 +106,7 @@ class Viewer():
             # 如何造成的碰撞，追究原因，给予惩罚
             speed = self.ships[self.train_id].getSpeed()
             action = actions[self.train_id]
-            if  speed > 10:
+            if  speed > 7:
                 train_reward -= speed/3
             
             done = True
