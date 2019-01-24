@@ -13,7 +13,7 @@ class Viewer():
     ships_count = 10
     state_dim = 1 + 4*(ships_count-1)
     action_dim = 2
-    action_bound = [-5,5]
+    action_bound = [-2,2]
     # num_iterations = 10000
     dis = 300
     ships_count = 10
