@@ -13,7 +13,7 @@ class Viewer():
     ships_count = 5
     state_dim = 1 + 4*(ships_count-1)
     action_dim = 2
-    action_bound = [-2,2]
+    action_bound = [-0.5,0.5]
     # num_iterations = 10000
     dis = 300
     
@@ -66,7 +66,6 @@ class Viewer():
             # 绘制历史轨迹
             for i in range(len(s.history)):
                 his = s.history[i]
-                #print(his)
                 self.canvas.create_text(his[0], self.window_height-his[1], text="*")
             
         self.tk.update()
@@ -120,7 +119,9 @@ class Viewer():
 #             else:
 #                 train_reward += 2
             
-            train_reward += 2
+            if actions[self.train_id][1] > 0:
+                train_reward += 1
+            train_reward += 1
         
         for k, v in self.ships.items():
             self.all_observations[v.id] = v.getObservation(self.dis, **self.ships)

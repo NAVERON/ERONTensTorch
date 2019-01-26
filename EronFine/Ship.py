@@ -158,6 +158,8 @@ class Ship():  # 训练对象的属性
             observation.append(local.local_ratio)
             observation.append(local.local_dis)
         return observation
+        
+        
         pass
     
     def getNear(self, dis, **ships):  # 传入查找对象的引用this_ship，以及距离范围 dis
