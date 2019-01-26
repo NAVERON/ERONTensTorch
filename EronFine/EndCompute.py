@@ -98,10 +98,10 @@ class DDPG(object):
             
             plt.figure("Loss")
             #plt.ion()
-            plt.plot(range(0, len(self.p_all)), self.p_all, color="#F08080")
+            plt.plot(range(0, len(self.p_all)), self.p_all, color="red")
             #plt.figure("Value Loss")
             #plt.ion()
-            plt.plot(range(0, len(self.v_all)), self.v_all, color="#DB7093")
+            plt.plot(range(0, len(self.v_all)), self.v_all, color="blue")
             plt.pause(0.001)
             
             self.t = 0
