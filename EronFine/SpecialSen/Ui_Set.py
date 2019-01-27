@@ -122,7 +122,7 @@ class Viewer():
         train_reward = 0
         done = False
         # 根据action做出动作
-        for k, v in actions.items():
+        for k, v in actions.items():           #  重点：一个是环境获取，一个是惩罚奖励设置函数
             action = actions[k]
             action = np.clip(action, self.action_bound[0], self.action_bound)
             # print("action id:", k, ", action:", action)
@@ -135,31 +135,42 @@ class Viewer():
             s.speedChange(action[1])
             
             s.goAhead()
-            s.addHistory( [s.position[0], s.position[1]] )
-            self.all_observations[k] = s.getObservation(self.dis, **self.ships)
+            #s.addHistory(s.position)
+            #self.all_observations[k] = s.getObservation(self.dis, **self.ships)
             
-        # 根据动作判断动作后的后果，是好还是坏
+        # 判断是否碰撞
         for k, v in self.ships.items():
             for in_k, in_v in self.ships.items():
                 if v is in_v:
                     continue
-                if v.isCollision(in_v):
-                    #train_reward -= 1   # 如果撞上了，则惩罚一次
-                    break
+                v.isCollision(in_v)
         # 根据碰撞情况制定惩罚奖励  reward
         if self.ships[self.train_id].isDead:
-            ob = self.ships[self.train_id].getObservation(self.dis, **self.ships)
-            if ob[0] > 1 and actions[self.train_id]>0:
-                train_reward -= 1
-            elif ob[0] > 1 and actions[self.train_id]<0:
-                train_reward -= 4
-            else:
-                train_reward -= 2
+            # 如何造成的碰撞，追究原因，给予惩罚
+            speed = self.ships[self.train_id].getSpeed()
+            action = actions[self.train_id]
+            if  speed > 7:
+                train_reward -= speed/3
+            
             done = True
         else:
-            train_reward += 2
+            # 会遇态势，如果遵守规则，奖励多一些，否则给予奖励少一些
+#             ob = self.ships[self.train_id].getObservation(self.dis, **self.ships)
+#             if ob[0] > 1 and actions[self.train_id]>0:
+#                 train_reward += 1
+#             elif ob[0] > 1 and actions[self.train_id]<0:
+#                 train_reward += 4
+#             else:
+#                 train_reward += 2
+            
+            if actions[self.train_id][1] > 0:
+                train_reward += 1
+            train_reward += 1
+        
+        for k, v in self.ships.items():
+            self.all_observations[v.id] = v.getObservation(self.dis, **self.ships)
         self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
-        time.sleep(0.1)
+        time.sleep(0.001)
         
         return self.all_observations, train_reward, done   # 观察值， 奖励， 一个回合是否完成
         pass

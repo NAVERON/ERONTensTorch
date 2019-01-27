@@ -96,7 +96,7 @@ class Ship():  # 训练对象的属性
         
         if self.i % 20 == 0:
             self.addHistory(self.position)
-            self.trajectories.append([self.position[0], self.position[1], self.getCourse(), self.getSpeed(), self.rudder])
+        self.trajectories.append([self.position[0], self.position[1], self.getCourse(), self.getSpeed(), self.rudder])
         
         self.i += 1
         if self.i > 1000:
