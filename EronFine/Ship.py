@@ -47,7 +47,7 @@ class Ship():  # 训练对象的属性
     
     def velocityChange(self, dv): # 根据dv  修改原速度矢量   输入的是2维向量S[]
         self.velocity += dv
-        if self.getSpeed() > 10 or self.getSpeed() < 0:   # 控制速度大小
+        if self.getSpeed() > 8 or self.getSpeed() < 0:   # 控制速度大小
             self.velocity -= dv
     def speedChange(self, ds):  # 速度变化过快
         if ds > 2 or ds < -2:

@@ -75,7 +75,7 @@ class DDPG(object):
         self.critic_optim.step()
         # Actor update
         self.actor.zero_grad()
-        policy_loss = -self.critic([   # 这里为什么是负号
+        policy_loss = self.critic([   # 这里为什么是负号
             util.to_tensor(state_batch),
             self.actor( util.to_tensor(state_batch) )
         ])
