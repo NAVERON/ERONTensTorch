@@ -19,8 +19,10 @@ class Viewer():
     ships_count = 5
     state_dim = 1+4*(ships_count-1)
     action_dim = 2
-    action_bound = [-2, 2]
-    # num_iterations = 10000
+    action_bound = [-0.2, 0.2]
+    rudder_bound = [-0.5, 0.5]
+    speed_bound = [-0.2, 0.2]
+    
     train_id = None
     dis = 300
     
@@ -124,7 +126,7 @@ class Viewer():
         # 根据action做出动作
         for k, v in actions.items():           #  重点：一个是环境获取，一个是惩罚奖励设置函数
             action = actions[k]
-            action = np.clip(action, self.action_bound[0], self.action_bound)
+            action = np.array([np.clip(action[0], self.rudder_bound[0], self.rudder_bound[1]), np.clip(action[1], self.speed_bound[0], self.speed_bound[1])])
             # print("action id:", k, ", action:", action)
             # action      变向/舵角变化            变速/  航向改变
             # 根据id操作相应的动作，修改数据
