@@ -57,10 +57,12 @@ class Viewer():
                 self.drawer_ships.append(
                     self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="red")
                 )
+                self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str(s.id), fill = "red")
             else:
                 self.drawer_ships.append(
                     self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="black")
                 )
+                self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str(s.id), fill = "green")
             
             self.drawer_velocities.append(
                 self.canvas.create_line(s.position[0], self.window_height-s.position[1], s.position[0]+s.velocity[0]*10, self.window_height-s.position[1]-s.velocity[1]*10, fill="blue")
@@ -69,7 +71,7 @@ class Viewer():
             for i in range(len(s.history)):
                 his = s.history[i]
                 self.canvas.create_text(his[0], self.window_height-his[1], text="*")
-            self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = "O", fill = "green")
+            
         self.tk.update()
     
     all_observations = {}  # 以自定形式存储数据   id : observation
@@ -93,6 +95,7 @@ class Viewer():
             s.rudderChange(action[0])   #动作1是改变舵角   动作2 是改变速度
             s.speedChange(action[1])
             
+            s.inNear(self.dis, self.ships)
             s.goAhead()
             #s.addHistory(s.position)
             #self.all_observations[k] = s.getObservation(self.dis, **self.ships)

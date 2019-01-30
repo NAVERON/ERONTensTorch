@@ -42,7 +42,6 @@ class Ship():  # 训练对象的属性
         dc_radius = np.radians(-dc)  # 转换成弧度
         c, s = np.cos(dc_radius), np.sin(dc_radius)
         R = np.array([ [c, -s], [s, c] ])
-        # print(R)
         self.velocity = np.dot(R, self.velocity.T).T
         #print(self.id, "id:", self.velocity)
     
@@ -103,10 +102,33 @@ class Ship():  # 训练对象的属性
         #if self.i % 20 == 0:
         self.addHistory([self.position[0], self.position[1]])
         self.trajectories.append([self.position[0], self.position[1], self.getCourse(), self.getSpeed(), self.rudder])
+        if np.linalg.norm(self.position-self.destination) < 5:
+            self.setDestination()
         
         self.i += 1
         if self.i > 1000:
             self.i = 0
+        
+        # 当周边没有无人艇的时候，回航向
+        Point2D delta_D = destination.subtract(getPosition());
+        double delta_angle = calAngle(delta_D.getX(), delta_D.getY());
+        
+        if( delta_D.crossProduct(this.getVelocity()).getZ() > 5 ){
+            if(this.getId()==0){
+            System.out.println("当前航向：" + this.getAngle()+", 目标航向：" + delta_angle + "，决策：左转");
+            }
+            turnLeft();
+        }else if ( delta_D.crossProduct(this.getVelocity()).getZ() < 5 ){
+            if(this.getId()==0){
+            System.out.println("当前航向：" + this.getAngle()+", 目标航向：" + delta_angle + "，决策：右转");
+            }
+            turnRight();
+        }else{
+            turnPositiveOn();
+        }
+        delta_D = self.destination-self.position
+        delta_angle = self.calAngle(delta_D[0], delta_D[1])
+        
         
     def storeTrajectories(self):
         formated_data = pd.DataFrame(data = self.trajectories)
@@ -132,12 +154,22 @@ class Ship():  # 训练对象的属性
         pass
     
     near = []
+    def inNear(self, dis, **ships):
+        self.near.clear()   # 清空之前的数据
+        
+        for v in ships.values():
+            item_ship = v
+            if self.id == item_ship.id:
+                continue
+            if self.distance(item_ship) < dis:
+                self.near.append(item_ship)
+        return self.near
+        
     def getObservation(self, dis, **ships):
         now_near = self.getNear(dis, **ships)
-        now_near = []
-        for k, v in ships.items():
-            if k != self.id:
-                now_near.append(v)
+#         for k, v in ships.items():
+#             if k != self.id:
+#                 now_near.append(v)
         near_locals = self.warpAxis(now_near)   # 可以得到   以本艇为中心的环境图
         
 #         local_others = []
