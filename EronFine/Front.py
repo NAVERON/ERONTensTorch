@@ -17,7 +17,7 @@ class Viewer():
     rudder_bound = [-0.5, 0.5]
     speed_bound = [-0.2, 0.2]
     # num_iterations = 10000
-    dis = 300
+    dis = 2000
     
     def __init__(self):
         self.tk = Tk()
@@ -57,12 +57,12 @@ class Viewer():
                 self.drawer_ships.append(
                     self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="red")
                 )
-                self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str(s.id), fill = "red")
+                self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str("O"), fill = "red")
             else:
                 self.drawer_ships.append(
                     self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="black")
                 )
-                self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str(s.id), fill = "green")
+                self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str("O"), fill = "green")
             
             self.drawer_velocities.append(
                 self.canvas.create_line(s.position[0], self.window_height-s.position[1], s.position[0]+s.velocity[0]*10, self.window_height-s.position[1]-s.velocity[1]*10, fill="blue")
@@ -95,7 +95,7 @@ class Viewer():
             s.rudderChange(action[0])   #动作1是改变舵角   动作2 是改变速度
             s.speedChange(action[1])
             
-            s.inNear(self.dis, self.ships)
+            s.getNear(self.dis, **self.ships)
             s.goAhead()
             #s.addHistory(s.position)
             #self.all_observations[k] = s.getObservation(self.dis, **self.ships)
