@@ -130,6 +130,7 @@ class Ship():  # 训练对象的属性
         delta_angle = self.calAngle(delta_D[0], delta_D[1])
         
         
+        
     def storeTrajectories(self):
         formated_data = pd.DataFrame(data = self.trajectories)
         formated_data.to_csv("../"+self.id+".csv", encoding="utf-8", header=None, index=None)
