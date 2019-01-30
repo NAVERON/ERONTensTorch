@@ -13,7 +13,7 @@ class Viewer():
     ships_count = 5
     state_dim = 1 + 4*(ships_count-1)
     action_dim = 2
-    action_bound = [-0.2, 0.2]
+    action_bound = [-0.5, 0.5]
     rudder_bound = [-0.5, 0.5]
     speed_bound = [-0.2, 0.2]
     # num_iterations = 10000
@@ -22,8 +22,8 @@ class Viewer():
     def __init__(self):
         self.tk = Tk()
         
-        self.window_width = 1000
-        self.window_height = 600
+        self.window_width = 1200
+        self.window_height = 700
         
         self.canvas = Canvas(self.tk, width=self.window_width, height=self.window_height)
         self.ships = {}
@@ -69,7 +69,7 @@ class Viewer():
             for i in range(len(s.history)):
                 his = s.history[i]
                 self.canvas.create_text(his[0], self.window_height-his[1], text="*")
-            
+            self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = "O", fill = "green")
         self.tk.update()
     
     all_observations = {}  # 以自定形式存储数据   id : observation
@@ -150,6 +150,28 @@ class Viewer():
         for _ in range(self.ships_count):
             temp = self.createRandomEntity()
             self.ships[temp.id] = temp
+         
+        # 对遇态势
+#         temp = Ship(np.array([500.0, 100.0]), np.array([0.0, 2.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         
+#         temp = Ship(np.array([500.0, 500.0]), np.array([0.0, -2.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         #  对遇和 左舷交叉相遇     3 无人艇会遇
+#         temp = Ship(np.array([200.0, 300.0]), np.array([1.2, -1.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         #  四无人艇   会遇
+#         temp = Ship(np.array([700.0, 450.0]), np.array([-2.0, -3.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         #再来一个追越
+#         temp = Ship(np.array([600.0, 20.0]), np.array([-2.0, 1.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+        
         
         self.all_observations.clear()
         for k, v in self.ships.items():

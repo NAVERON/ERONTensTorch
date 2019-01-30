@@ -30,7 +30,13 @@ class Ship():  # 训练对象的属性
         self.history = deque(maxlen=40)
         
         self.trajectories = []
+        self.setDestination()
         
+    
+    def setDestination(self):
+        self.destination = self.position + 200 * self.velocity
+        self.destination = np.array([self.destination[0]%self.width, self.destination[1]%self.height])
+        pass
     def courseTurn(self, dc):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
         dc_radius = np.radians(-dc)  # 转换成弧度
@@ -50,9 +56,9 @@ class Ship():  # 训练对象的属性
         if self.getSpeed() > 8 or self.getSpeed() < 0:   # 控制速度大小
             self.velocity -= dv
     def speedChange(self, ds):  # 速度变化过快
-        if ds > 2 or ds < -2:
-            ds = ds/2
-        course = self.getCourse()
+        if  self.getSpeed() < 1 or self.getSpeed() > 8:
+            return
+        course = math.radians(self.getCourse())
         sx, sy = ds*math.sin(course), ds*math.cos(course)
         self.velocityChange(np.array([sx, sy]))
     def rudderChange(self, dr):  # 舵角变化    范围为每次一度， 变化舵角会造成航向的变化
@@ -127,7 +133,7 @@ class Ship():  # 训练对象的属性
     
     near = []
     def getObservation(self, dis, **ships):
-        #now_near = self.getNear(dis, **ships)
+        now_near = self.getNear(dis, **ships)
         now_near = []
         for k, v in ships.items():
             if k != self.id:
