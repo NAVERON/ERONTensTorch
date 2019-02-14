@@ -152,9 +152,8 @@ class Ship():  # 训练对象的属性
         pass
         
     def getObservation(self, dis, **ships):
-        self.now_near.clear()
-        now_near = self.getNear(dis, **ships)
-        near_locals = self.warpAxis(now_near)   # 可以得到   以本艇为中心的环境图
+        self.now_near = self.getNear(dis, **ships)
+        near_locals = self.warpAxis(self.now_near)   # 可以得到   以本艇为中心的环境图
         
 #         local_others = []
 #         for local in near_locals:
@@ -180,7 +179,6 @@ class Ship():  # 训练对象的属性
             observation.append(local.local_ratio)
             observation.append(local.local_dis)
         return observation
-        
         
         pass
     

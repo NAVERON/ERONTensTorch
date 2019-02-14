@@ -18,12 +18,12 @@ class Viewer():
     ships_count = 5
     state_dim = 1+4*(ships_count-1)
     action_dim = 2
-    action_bound = [-0.2, 0.2]
+
     rudder_bound = [-0.5, 0.5]
     speed_bound = [-0.2, 0.2]
     
     train_id = None
-    dis = 300
+    dis = 2000
     
     def __init__(self):
         self.tk = Tk()
@@ -35,7 +35,7 @@ class Viewer():
         self.ships = {}
 #         self.drawer_ships = []
 #         self.drawer_velocities = []
-        all_observations = {}  # 以自定形式存储数据   id : observation
+        self.all_observations = {}  # 以自定形式存储数据   id : observation
         
         self.canvas.bind("<Button-1>", self.create_things)
         self.canvas.bind("<Button-3>", self.do_begin)
@@ -124,25 +124,23 @@ class Viewer():
         done = False
         # 根据action做出动作
         for k, v in actions.items():           #  重点：一个是环境获取，一个是惩罚奖励设置函数
-            action = actions[k]
-            action = np.array([np.clip(action[0], self.rudder_bound[0], self.rudder_bound[1]), np.clip(action[1], self.speed_bound[0], self.speed_bound[1])])
-            # print("action id:", k, ", action:", action)
-            # action      变向/舵角变化            变速/  航向改变
-            # 根据id操作相应的动作，修改数据
             s = self.ships[k]
             if s.isDead:       #  如果已经死亡，则不进行动作指导
                 continue
+            action = actions[k]
+            action = np.array([np.clip(action[0], self.rudder_bound[0], self.rudder_bound[1]), np.clip(action[1], self.speed_bound[0], self.speed_bound[1])])
+            # action      变向/舵角变化            变速/  航向改变
+            # 根据id操作相应的动作，修改数据
             s.rudderChange(action[0])   #动作1是改变舵角   动作2 是改变速度
             s.speedChange(action[1])
             
+            s.getNear(self.dis, **self.ships)
             s.goAhead()
-            #s.addHistory(s.position)
-            #self.all_observations[k] = s.getObservation(self.dis, **self.ships)
             
         # 判断是否碰撞
         for k, v in self.ships.items():
             for in_k, in_v in self.ships.items():
-                if v is in_v:
+                if in_v.isDead or v is in_v:
                     continue
                 v.isCollision(in_v)
         # 根据碰撞情况制定惩罚奖励  reward
@@ -155,15 +153,6 @@ class Viewer():
             
             done = True
         else:
-            # 会遇态势，如果遵守规则，奖励多一些，否则给予奖励少一些
-#             ob = self.ships[self.train_id].getObservation(self.dis, **self.ships)
-#             if ob[0] > 1 and actions[self.train_id]>0:
-#                 train_reward += 1
-#             elif ob[0] > 1 and actions[self.train_id]<0:
-#                 train_reward += 4
-#             else:
-#                 train_reward += 2
-            
             if actions[self.train_id][1] > 0:
                 train_reward += 1
             train_reward += 1

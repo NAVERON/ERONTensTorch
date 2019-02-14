@@ -115,6 +115,7 @@ class Viewer():
                 if in_v.isDead or v is in_v:
                     continue
                 v.isCollision(in_v)
+        #################################################################################################
         # 根据碰撞情况制定惩罚奖励  reward  ################# 规则遵守情况奖励设计
         if self.ships[self.train_id].isDead:
             # 如何造成的碰撞，追究原因，给予惩罚
@@ -137,7 +138,7 @@ class Viewer():
             if actions[self.train_id][1] > 0:
                 train_reward += 1
             train_reward += 1
-        
+        ######################################################################################
         for k, v in self.ships.items():
             self.all_observations[v.id] = v.getObservation(self.dis, **self.ships)
         self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
