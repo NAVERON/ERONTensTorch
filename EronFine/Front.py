@@ -27,9 +27,10 @@ class Viewer():
         
         self.canvas = Canvas(self.tk, width=self.window_width, height=self.window_height)
         self.ships = {}
-        self.drawer_ships = []
-        self.drawer_velocities = []
+#         self.drawer_ships = []
+#         self.drawer_velocities = []
         
+        self.all_observations = {}  # 以自定形式存储数据   id : observation
 #         for _ in range(10):
 #             self.ships.append(self.createRandomEntity())
         self.canvas.pack()
@@ -48,25 +49,35 @@ class Viewer():
     #  获取周边放到了Ship中，方便逻辑调用
     def render(self):  # 根据当前状况绘制
         self.canvas.delete("all")
-        self.drawer_ships.clear()
-        self.drawer_velocities.clear()
+#         self.drawer_ships.clear()
+#         self.drawer_velocities.clear()
         
         for k, v in self.ships.items():
             s = v
+#             if k == self.train_id:
+#                 self.drawer_ships.append(
+#                     self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="red")
+#                 )
+#                 self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str("O"), fill = "red")
+#             else:
+#                 self.drawer_ships.append(
+#                     self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="black")
+#                 )
+#                 self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str("O"), fill = "green")
+#             
+#             self.drawer_velocities.append(
+#                 self.canvas.create_line(s.position[0], self.window_height-s.position[1], s.position[0]+s.velocity[0]*10, self.window_height-s.position[1]-s.velocity[1]*10, fill="blue")
+#             )
+            
             if k == self.train_id:
-                self.drawer_ships.append(
-                    self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="red")
-                )
+                self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="red")
                 self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str("O"), fill = "red")
             else:
-                self.drawer_ships.append(
-                    self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="black")
-                )
+                self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="black")
                 self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str("O"), fill = "green")
             
-            self.drawer_velocities.append(
-                self.canvas.create_line(s.position[0], self.window_height-s.position[1], s.position[0]+s.velocity[0]*10, self.window_height-s.position[1]-s.velocity[1]*10, fill="blue")
-            )
+            self.canvas.create_line(s.position[0], self.window_height-s.position[1], s.position[0]+s.velocity[0]*10, self.window_height-s.position[1]-s.velocity[1]*10, fill="blue")
+            
             # 绘制历史轨迹
             for i in range(len(s.history)):
                 his = s.history[i]
@@ -74,7 +85,7 @@ class Viewer():
             
         self.tk.update()
     
-    all_observations = {}  # 以自定形式存储数据   id : observation
+    
     def step(self,  **actions):    # 这里传入每一个对象的动作，每一艘船舶都向前走一步，之后会得到新的环境
         # 这里先做动作，舵角，速度变化等
         # print("在 环境中step打印当前传入的动作   ", actions)
@@ -83,27 +94,25 @@ class Viewer():
         done = False
         # 根据action做出动作
         for k, v in actions.items():           #  重点：一个是环境获取，一个是惩罚奖励设置函数
+            s = self.ships[k]
+            if s.isDead:       #  如果已经死亡，则不进行动作指导
+                continue
             action = actions[k]
             #action = np.clip(action, self.action_bound[0], self.action_bound[1])
             action = np.array([np.clip(action[0], self.rudder_bound[0], self.rudder_bound[1]), np.clip(action[1], self.speed_bound[0], self.speed_bound[1])])
             #print("action id:", k, ", action:", action)
             # action      变向/舵角变化            变速/  航向改变
             # 根据id操作相应的动作，修改数据
-            s = self.ships[k]
-            if s.isDead:       #  如果已经死亡，则不进行动作指导
-                continue
             s.rudderChange(action[0])   #动作1是改变舵角   动作2 是改变速度
             s.speedChange(action[1])
             
             s.getNear(self.dis, **self.ships)
             s.goAhead()
-            #s.addHistory(s.position)
-            #self.all_observations[k] = s.getObservation(self.dis, **self.ships)
             
         # 判断是否碰撞
         for k, v in self.ships.items():
             for in_k, in_v in self.ships.items():
-                if v is in_v:
+                if in_v.isDead or v is in_v:
                     continue
                 v.isCollision(in_v)
         # 根据碰撞情况制定惩罚奖励  reward  ################# 规则遵守情况奖励设计
@@ -147,8 +156,8 @@ class Viewer():
         
         self.ships.clear()
         self.canvas.delete("all")
-        self.drawer_ships.clear()
-        self.drawer_velocities.clear()
+#         self.drawer_ships.clear()
+#         self.drawer_velocities.clear()
         # 重新生成一个新的环境
         for _ in range(self.ships_count):
             temp = self.createRandomEntity()

@@ -28,6 +28,7 @@ def train(agent, env, evaluate):
     
     while step < num_iterations:    # 回合数
         
+        step += 1     # 回合数
         while not done:
             # train_id  是指当前回合中训练的对象id
             if all_observations is None:  # 初始化环境状态  和  智能体的初始状态，一个新的回合
@@ -67,7 +68,7 @@ def train(agent, env, evaluate):
             validate_reward = evaluate(env, policy, debug=False)    #########################这里是阶段性验证，判断是否训练成功
             util.prYellow('中间检测运行效果[Evaluate] Step_{}: mean_reward:{}'.format(step, validate_reward))
         
-        step += 1     # 回合数
+        #step += 1     # 回合数
         #if done: # end of episode    当一个回合超过了特定的步数，则认为一个回合完成
         util.prGreen('回合完结:回合中的总步数{}: episode_reward:{} steps:{}'.format(episode_steps, episode_reward, step))  # 第几个回合  回合奖励  这个回合步数
         agent.memory.append(   #  这里应该是补充存储，上面的   obverse已经存储了每一步内容
