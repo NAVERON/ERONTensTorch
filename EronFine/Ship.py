@@ -113,20 +113,14 @@ class Ship():  # 训练对象的属性
         if len(self.now_near)==0:
             delta_D = self.destination-self.position
             delta_angle = self.calAngle(delta_D[0], delta_D[1])  # 偏差航向
-            delta_action = np.cross(delta_D, self.velocity)
-            print("偏差角", delta_angle)
+            delta_action = np.cross(self.velocity, delta_D)
+            print("全局下的偏差角", delta_angle)
             if delta_action > 0:
                 print("需要左转", delta_action)
+                self.courseTurn(-1)
             else:
                 print("需要右转", delta_action)
-        delta_D = self.destination-self.position
-        delta_angle = self.calAngle(delta_D[0], delta_D[1])  # 偏差航向
-        delta_action = np.cross(delta_D, self.velocity)
-        print("全局下的方位角", delta_angle)
-        if delta_action > 5:
-            print("需要左转", delta_action)
-        else:
-            print("需要右转", delta_action)
+                self.courseTurn(1)
         
     def storeTrajectories(self):
         formated_data = pd.DataFrame(data = self.trajectories)
@@ -154,7 +148,7 @@ class Ship():  # 训练对象的属性
     def getObservation(self, dis, **ships):
         self.now_near = self.getNear(dis, **ships)
         near_locals = self.warpAxis(self.now_near)   # 可以得到   以本艇为中心的环境图
-        
+        print(near_locals[0].toString())
 #         local_others = []
 #         for local in near_locals:
 #             local_others.append([local.local_position, local.local_course, local.local_speed, local.local_ratio, local.local_dis]) 
@@ -203,16 +197,17 @@ class Ship():  # 训练对象的属性
             R = np.array([ [c, -s], [s, c] ])
             position = np.dot(R, d_pos.T).T
             
-            dh = ship.getCourse() - self.getCourse()
+            dh = ship.getCourse() - self.getCourse()    # dh代表坐标转换后的方向
             while dh >= 360 or dh < 0:
                 if dh >= 360:
                     dh -= 360
                 if dh < 0:
                     dh += 360
             
-            local_ship = LocalShip(ship.id, position, dh, ship.getSpeed())
-            local_ship.setRatio(self.calAngle( position[0], position[1] ))
-            local_ship.setDis(self.distance(ship))
+            ratio = self.calAngle( position[0], position[1] )
+            dis = np.linalg.norm(d_pos)
+            
+            local_ship = LocalShip(ship.id, position, dh, ship.getSpeed(), ratio, dis)
             near_locals.append(local_ship)
         
         return near_locals
@@ -223,22 +218,17 @@ class Ship():  # 训练对象的属性
 
 class LocalShip():
     
-    def __init__(self, local_id, local_position, course, speed):
+    def __init__(self, local_id, local_position, course, speed, ratio, dis):
         self.local_id = local_id
         self.local_position = local_position
         self.local_course = course
         self.local_speed = speed
-        self.local_ratio = 0
-        self.local_dis = 0
+        self.local_ratio = ratio
+        self.local_dis = dis
         pass
     
-    def setRatio(self, ratio):
-        self.ratio = ratio
-    def setDis(self, dis):
-        self.dis = dis
-
     def toString(self):
-        return self.local_id +":"+ str(self.local_position[0]) + ","+str(self.local_position[1]) + "\n" + str(self.course) +","+str(self.ratio)
+        return self.local_id +":"+ str(self.local_position[0]) + ","+str(self.local_position[1]) + "\ncourse" + str(self.local_course) +", ratio and dis:"+str(self.local_ratio)+"=="+str(self.local_dis)  
 
 
 

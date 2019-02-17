@@ -10,7 +10,7 @@ from EronFine.Ship import Ship
 
 class Viewer():
     
-    ships_count = 5
+    ships_count = 2
     state_dim = 1 + 4*(ships_count-1)
     action_dim = 2
     action_bound = [-0.5, 0.5]
@@ -160,18 +160,18 @@ class Viewer():
 #         self.drawer_ships.clear()
 #         self.drawer_velocities.clear()
         # 重新生成一个新的环境
-        for _ in range(self.ships_count):
-            temp = self.createRandomEntity()
-            self.ships[temp.id] = temp
-         
+#         for _ in range(self.ships_count):
+#             temp = self.createRandomEntity()
+#             self.ships[temp.id] = temp
+#          
         # 对遇态势
-#         temp = Ship(np.array([500.0, 100.0]), np.array([0.0, 2.0]), width=self.window_width, height=self.window_height)
-#         self.ships[temp.id] = temp
-#         time.sleep(0.01)
-#         
-#         temp = Ship(np.array([500.0, 500.0]), np.array([0.0, -2.0]), width=self.window_width, height=self.window_height)
-#         self.ships[temp.id] = temp
-#         time.sleep(0.01)
+        temp = Ship(np.array([500.0, 100.0]), np.array([0.0, 2.0]), width=self.window_width, height=self.window_height)
+        self.ships[temp.id] = temp
+        time.sleep(0.01)
+         
+        temp = Ship(np.array([500.0, 500.0]), np.array([0.0, -2.0]), width=self.window_width, height=self.window_height)
+        self.ships[temp.id] = temp
+        time.sleep(0.01)
 #         #  对遇和 左舷交叉相遇     3 无人艇会遇
 #         temp = Ship(np.array([200.0, 300.0]), np.array([1.2, -1.0]), width=self.window_width, height=self.window_height)
 #         self.ships[temp.id] = temp
