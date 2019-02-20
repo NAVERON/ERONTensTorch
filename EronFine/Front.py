@@ -49,8 +49,6 @@ class Viewer():
     #  获取周边放到了Ship中，方便逻辑调用
     def render(self):  # 根据当前状况绘制
         self.canvas.delete("all")
-#         self.drawer_ships.clear()
-#         self.drawer_velocities.clear()
         
         for k, v in self.ships.items():
             s = v
