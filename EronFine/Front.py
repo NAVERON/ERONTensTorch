@@ -54,21 +54,6 @@ class Viewer():
         
         for k, v in self.ships.items():
             s = v
-#             if k == self.train_id:
-#                 self.drawer_ships.append(
-#                     self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="red")
-#                 )
-#                 self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str("O"), fill = "red")
-#             else:
-#                 self.drawer_ships.append(
-#                     self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="black")
-#                 )
-#                 self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str("O"), fill = "green")
-#             
-#             self.drawer_velocities.append(
-#                 self.canvas.create_line(s.position[0], self.window_height-s.position[1], s.position[0]+s.velocity[0]*10, self.window_height-s.position[1]-s.velocity[1]*10, fill="blue")
-#             )
-            
             if k == self.train_id:
                 self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="red")
                 self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str("O"), fill = "red")
