@@ -60,7 +60,7 @@ class Ship():  # 训练对象的属性
     def courseTurn(self, dc):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
         self.dc = dc
-        self.PID_rudder()
+        #self.PID_rudder()
         
         dc_radius = np.radians(-self.dc)  # 转换成弧度
         c, s = np.cos(dc_radius), np.sin(dc_radius)
@@ -83,10 +83,10 @@ class Ship():  # 训练对象的属性
         course = math.radians(self.getCourse())
         sx, sy = ds*math.sin(course), ds*math.cos(course)
         self.velocityChange(np.array([sx, sy]))
-#     def rudderChange(self, dr):  # 舵角变化    范围为每次一度， 变化舵角会造成航向的变化
-#         self.rudder += dr
-#         if self.rudder > 30 or self.rudder < -30:  # 设定舵角的范围
-#             self.rudder -= dr
+    def rudderChange(self, dr):  # 舵角变化    范围为每次一度， 变化舵角会造成航向的变化
+        self.rudder += dr
+        if self.rudder > 30 or self.rudder < -30:  # 设定舵角的范围
+            self.rudder -= dr
     def getSpeed(self):  # 速度大小
         return np.linalg.norm(self.velocity)
     def getCourse(self): # 运动方向

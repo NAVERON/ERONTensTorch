@@ -16,7 +16,7 @@ from EronFine import util
 class Viewer():
     
     ships_count = 5
-    state_dim = 1+4*4
+    state_dim = 1+4*(ships_count-1)
     action_dim = 2
 
     rudder_bound = [-0.5, 0.5]
