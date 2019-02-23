@@ -14,7 +14,7 @@ class Viewer():
     state_dim = 1 + 4*4
     action_dim = 2
 
-    course_bound = [-30, 30]
+    course_bound = [-0.5, 0.5]
     speed_bound = [-0.2, 0.2]
     # num_iterations = 10000
     dis = 2000
