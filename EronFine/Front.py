@@ -14,7 +14,7 @@ class Viewer():
     state_dim = 1 + 4*4
     action_dim = 2
 
-    course_bound = [-10, 10]
+    course_bound = [-30, 30]
     speed_bound = [-0.2, 0.2]
     # num_iterations = 10000
     dis = 2000
@@ -84,7 +84,7 @@ class Viewer():
             #print("action id:", k, ", action:", action)
             # action      变向/舵角变化            变速/  航向改变
             # 根据id操作相应的动作，修改数据
-            s.rudderChange(action[0])   #动作1是改变舵角   动作2 是改变速度
+            s.courseTurn(action[0])  #动作1是改变舵角   动作2 是改变速度
             s.speedChange(action[1])
             
             s.getNear(self.dis, **self.ships)
