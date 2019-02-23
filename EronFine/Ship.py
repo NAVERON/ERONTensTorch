@@ -11,6 +11,9 @@ class Ship():  # 训练对象的属性
     K = 0.0785
     T = 3.12
     
+    kp=1.2
+    ki=20.0
+    kd=10.0
     #  标准
     #  位置以左下角为标准原点，这里全部按照实际的坐标系来，绘制的时候再  进一步处理绘制的问题
     #  速度以正上方为 0 ，顺时针旋转    正向
@@ -32,6 +35,23 @@ class Ship():  # 训练对象的属性
         self.setDestination()
         self.now_near = []
         
+        # 关于PID的参数设置
+        self.dc = 0  # 当前航向与目标航向的偏差
+        self.last_course_error = 0
+        self.pre_course_error = 0
+        
+        self.i=0
+        
+    def PID(self):  # dc表示角度偏差，此函数根据航向偏差修改舵角数值
+        delta_rudder = self.kp*(self.dc-self.last_course_error)+(self.kp*self.kd)*(self.dc-2*self.last_course_error+self.pre_course_error)
+        self.pre_course_error = self.last_course_error
+        self.last_course_error = self.dc
+        self.rudder += delta_rudder
+        if self.rudder > 35 or self.rudder < -35:
+            self.rudder -= delta_rudder
+        
+        # 修改了当前的舵角
+        pass
     
     def setDestination(self):
         self.destination = self.position + 200 * self.velocity
@@ -39,7 +59,8 @@ class Ship():  # 训练对象的属性
         pass
     def courseTurn(self, dc):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
-        dc_radius = np.radians(-dc)  # 转换成弧度
+        self.dc = dc
+        dc_radius = np.radians(-self.dc)  # 转换成弧度
         c, s = np.cos(dc_radius), np.sin(dc_radius)
         R = np.array([ [c, -s], [s, c] ])
         self.velocity = np.dot(R, self.velocity.T).T
@@ -79,8 +100,6 @@ class Ship():  # 训练对象的属性
         
         return angle
     
-    i=0
-    
     def goAhead(self):
         # 边界判断    设置为不能超越边界
         #print("position", self.position)
@@ -94,12 +113,12 @@ class Ship():  # 训练对象的属性
         elif self.position[1] > self.height:
             self.position[1] = 0
         
-        delta = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1./self.T))
         
+        delta = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1./self.T))
         self.courseTurn(delta)
         self.position += self.velocity  # 这样就更新位置了    ====  可以把界面更新放到数据更新里面同步，更好
         
-        #if self.i % 20 == 0:
+        ##########################################################################################
         self.addHistory([self.position[0], self.position[1]])
         self.trajectories.append([self.position[0], self.position[1], self.getCourse(), self.getSpeed(), self.rudder])
         if np.linalg.norm(self.position-self.destination) < 5:
@@ -117,7 +136,9 @@ class Ship():  # 训练对象的属性
             print("全局下的偏差角", delta_angle)
             if delta_action > 0:
                 print("需要左转", delta_action)
-                self.courseTurn(-1)
+                # 根据航向偏差计算舵角变化
+                delta_course = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1./self.T))
+                self.courseTurn(delta_course)
             else:
                 print("需要右转", delta_action)
                 self.courseTurn(1)
@@ -139,11 +160,6 @@ class Ship():  # 训练对象的属性
             return True
         
         return False
-    def setDead(self):
-        if self.isDead:
-            self.velocity = np.array([0., 0.])
-            self.rudder = 0.
-        pass
         
     def getObservation(self, dis, **ships):
         self.now_near = self.getNear(dis, **ships)

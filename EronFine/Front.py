@@ -10,11 +10,11 @@ from EronFine.Ship import Ship
 
 class Viewer():
     
-    ships_count = 2
-    state_dim = 1 + 4*(ships_count-1)
+    ships_count = 10
+    state_dim = 1 + 4*4
     action_dim = 2
-    action_bound = [-0.5, 0.5]
-    rudder_bound = [-0.5, 0.5]
+
+    course_bound = [-10, 10]
     speed_bound = [-0.2, 0.2]
     # num_iterations = 10000
     dis = 2000
@@ -27,8 +27,6 @@ class Viewer():
         
         self.canvas = Canvas(self.tk, width=self.window_width, height=self.window_height)
         self.ships = {}
-#         self.drawer_ships = []
-#         self.drawer_velocities = []
         
         self.all_observations = {}  # 以自定形式存储数据   id : observation
 #         for _ in range(10):
@@ -82,7 +80,7 @@ class Viewer():
                 continue
             action = actions[k]
             #action = np.clip(action, self.action_bound[0], self.action_bound[1])
-            action = np.array([np.clip(action[0], self.rudder_bound[0], self.rudder_bound[1]), np.clip(action[1], self.speed_bound[0], self.speed_bound[1])])
+            action = np.array([np.clip(action[0], self.course_bound[0], self.course_bound[1]), np.clip(action[1], self.speed_bound[0], self.speed_bound[1])])
             #print("action id:", k, ", action:", action)
             # action      变向/舵角变化            变速/  航向改变
             # 根据id操作相应的动作，修改数据
