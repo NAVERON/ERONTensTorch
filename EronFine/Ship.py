@@ -40,7 +40,7 @@ class Ship():  # 训练对象的属性
         self.last_course_error = 0
         self.pre_course_error = 0
         
-    def PID_rudder(self, dc):  # dc表示角度偏差，此函数根据航向偏差修改舵角数值
+    def PID_rudder(self, dc):  # dc表示角度偏差，此函数       根据航向偏差修改舵角数值
         self.dc = dc
         delta_rudder = self.kp*(self.dc-self.last_course_error)+(self.kp*self.kd)*(self.dc-2*self.last_course_error+self.pre_course_error)
         self.pre_course_error = self.last_course_error
@@ -48,19 +48,15 @@ class Ship():  # 训练对象的属性
         self.rudder += delta_rudder
         if self.rudder > 35 or self.rudder < -35:
             self.rudder -= delta_rudder
-        
-        delta_course = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1./self.T))
-        self.courseTurn(delta_course)
-        # 修改了当前的舵角
-        pass
     
     def setDestination(self):
         self.destination = self.position + 200 * self.velocity
         self.destination = np.array([self.destination[0]%self.width, self.destination[1]%self.height])
         pass
-    def courseTurn(self, delta_course):  # dc代表变化的方向
+    def courseTurn(self, dc):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
-        #self.PID_rudder()
+        self.PID_rudder(dc)    # 根据航向偏差啊修改舵角
+        delta_course = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1./self.T))
         
         dc_radius = np.radians(-delta_course)  # 转换成弧度
         c, s = np.cos(dc_radius), np.sin(dc_radius)
@@ -104,21 +100,18 @@ class Ship():  # 训练对象的属性
     
     def goAhead(self):
         # 边界判断    设置为不能超越边界
-        #print("position", self.position)
         if self.position[0] <= 0:
             self.position[0] = self.width
         elif self.position[0] > self.width:
             self.position[0] = 0
-        
         if self.position[1] <= 0:
             self.position[1] = self.height
         elif self.position[1] > self.height:
             self.position[1] = 0
-        
-        delta = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1./self.T))
-        self.courseTurn(delta)
+        # 前面courseTurn改变了舵角和航向，这里直接计算前近
+#         delta = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1./self.T))
+#         self.courseTurn(delta)
         self.position += self.velocity  # 这样就更新位置了    ====  可以把界面更新放到数据更新里面同步，更好
-        
         ##########################################################################################
         self.addHistory([self.position[0], self.position[1]])
         self.trajectories.append([self.position[0], self.position[1], self.getCourse(), self.getSpeed(), self.rudder])
@@ -126,68 +119,74 @@ class Ship():  # 训练对象的属性
             self.setDestination()
         
         # 当周边没有无人艇的时候，回航向
-        if len(self.now_near)==0:
+        if not self.now_near:
             delta_D = self.destination-self.position
-            delta_angle = self.calAngle(delta_D[0], delta_D[1])  # 偏差航向
+            delta_angle = self.calAngle(delta_D[0], delta_D[1]) - self.getCourse()  # 偏差航向
             delta_action = np.cross(self.velocity, delta_D)
             print("全局下的偏差角", delta_angle)
             if delta_action > 0:
                 print("需要左转", delta_action)
-                # 根据航向偏差计算舵角变化
-                delta_course = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1./self.T))
-                self.courseTurn(delta_course)
+                self.courseTurn(delta_angle)
             else:
                 print("需要右转", delta_action)
-                self.courseTurn(1)
+                self.courseTurn(delta_angle)
         
     def storeTrajectories(self):
         formated_data = pd.DataFrame(data = self.trajectories)
         formated_data.to_csv("../"+self.id+".csv", encoding="utf-8", header=None, index=None)
         pass
-    def isCollision(self, other):
-        dis = self.distance(other)
-        if dis < 20:
-            self.isDead = True
-            other.isDead = True
-            
-            self.velocity = np.array([0., 0.])
-            self.rudder = 0.
-            other.velocity = np.array([0., 0.])
-            other.rudder = 0.
-            return True
-        
+    def isCollision(self):   # 判断当前是否于与周边碰撞
+        for s in self.now_near:
+            dis = self.distance(s)
+            if dis < 20:  # 如果碰撞，直接返回结果，结束遍历
+                self.isDead = True
+                s.isDead = True
+                
+                self.velocity = np.array([0., 0.])
+                self.rudder = 0.
+                s.velocity = np.array([0., 0.])
+                s.rudder = 0.
+                
+                return True
+            # 直接结束遍历
         return False
         
     def getObservation(self, dis, **ships):
         self.now_near = self.getNear(dis, **ships)
         near_locals = self.warpAxis(self.now_near)   # 可以得到   以本艇为中心的环境图
-        print(near_locals[0].toString())
-#         local_others = []
-#         for local in near_locals:
-#             local_others.append([local.local_position, local.local_course, local.local_speed, local.local_ratio, local.local_dis]) 
-#         up = []
-#         right = []
-#         down = []
-#         left = []
-#         for local in near_locals:
-#             ratio = local.local_ratio
-#             if ratio > 355 and ratio < 30:
-#                 up.append([local.local_position, local.local_course, local.local_speed, local.local_ratio, local.local_dis])
-#             elif ratio > 30 and ratio < 112.5:
-#                 right.append([local.local_position, local.local_course, local.local_speed, local.local_ratio, local.local_dis])
-#             elif ratio > 112.5 and ratio < 210:
-#                 down.append([local.local_position, local.local_course, local.local_speed, local.local_ratio, local.local_dis])
-#             elif ratio > 210 and ratio < 355:
-#                 left.append([local.local_position, local.local_course, local.local_speed, local.local_ratio, local.local_dis])
-        observation = [self.getSpeed()]
-        for local in near_locals:
-            observation.append(local.local_course)
-            observation.append(local.local_speed)
-            observation.append(local.local_ratio)
-            observation.append(local.local_dis)
-        return observation
+        #print(near_locals[0].toString())   # 测试环境坐标转换是否正确
         
-        pass
+        observation = [self.getSpeed()]
+        up = []
+        right = []
+        down = []
+        left = []
+        for local in near_locals:
+            ratio = local.local_ratio
+            if ratio > 350 and ratio < 30:
+                up.append(local)
+            elif ratio > 30 and ratio < 112.5:
+                right.append(local)
+            elif ratio > 112.5 and ratio < 210:
+                down.append(local)
+            elif ratio > 210 and ratio < 355:
+                left.append(local)
+        up_average_dis = self.getAverageDis(up)
+        right_average_dis = self.getAverageDis(right)
+        down_average_dis = self.getAverageDis(down)
+        left_average_dis = self.getAverageDis(left)
+        
+        up_observation = [len(up), up_average_dis, 0, 0, 0]
+        right_observation = [len(right), right_average_dis, 0, 0, 0]
+        down_observation = [len(down), down_average_dis, 0, 0, 0]
+        left_observation = [len(left), left_average_dis, 0, 0, 0]
+        
+        observation.extend(up_observation)
+        observation.extend(right_observation)
+        observation.extend(down_observation)
+        observation.extend(left_observation)
+        
+        return observation
     
     def getNear(self, dis, **ships):  # 传入查找对象的引用this_ship，以及距离范围 dis
         self.now_near.clear()   # 清空之前的数据
@@ -201,7 +200,6 @@ class Ship():  # 训练对象的属性
         return self.now_near
         pass
     def warpAxis(self, near):
-        
         near_locals = []
         for ship in near:
             d_pos = ship.position - self.position
@@ -224,7 +222,13 @@ class Ship():  # 训练对象的属性
             near_locals.append(local_ship)
         
         return near_locals
-        pass
+    def getAverageDis(self, local_ships_list):
+        if not local_ships_list:  # 如果是空的
+            return 0
+        sum = 0
+        for local_ship in local_ships_list:
+            sum += local_ship.local_dis
+        return sum/len(local_ships_list)
     
     def toString(self):
         return "id:" + self.id + " , position:" + str(self.position) + " , velocity:" + str(self.velocity) + ", course:" + str(self.getCourse())
