@@ -11,10 +11,10 @@ from EronFine.Ship import Ship
 class Viewer():
     
     ships_count = 10
-    state_dim = 1 + 4*4
+    state_dim = 1 + 4*4   # 自身属性 + 4个领域 * 每个领域四个属性
     action_dim = 2
 
-    course_bound = [-0.5, 0.5]
+    course_bound = [-10, 10]    #目标方向偏差
     speed_bound = [-0.2, 0.2]
     # num_iterations = 10000
     dis = 2000
@@ -54,10 +54,10 @@ class Viewer():
                 self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="red")
                 self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str("O"), fill = "red")
             else:
-                self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="black")
+                self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="blue")
                 self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str("O"), fill = "green")
             
-            self.canvas.create_line(s.position[0], self.window_height-s.position[1], s.position[0]+s.velocity[0]*10, self.window_height-s.position[1]-s.velocity[1]*10, fill="blue")
+            self.canvas.create_line(s.position[0], self.window_height-s.position[1], s.position[0]+s.velocity[0]*10, self.window_height-s.position[1]-s.velocity[1]*10, fill="black")
             
             # 绘制历史轨迹
             for i in range(len(s.history)):

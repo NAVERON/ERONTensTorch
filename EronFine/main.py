@@ -45,7 +45,7 @@ def train(agent, env, evaluate):
             
             next_all_observations, train_reward, done = env.step(**actions)  # 传进去每个对象对应 的动作，返回特定id的学习成果
             next_train_observation = next_all_observations[env.train_id]
-            next_train_observation = deepcopy(next_train_observation)
+            next_train_observation = deepcopy(next_train_observation)  # 深层复制，对原对象任何修改都不会同步
             
             if episode_steps >= max_episode_length:
                 done = True
@@ -74,7 +74,7 @@ def train(agent, env, evaluate):
         agent.memory.append(   #  这里应该是补充存储，上面的   obverse已经存储了每一步内容
             train_observation,
             agent.select_action(train_observation),
-            0, False
+            0, True
         )
         
         # reset

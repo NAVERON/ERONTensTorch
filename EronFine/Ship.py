@@ -40,9 +40,8 @@ class Ship():  # 训练对象的属性
         self.last_course_error = 0
         self.pre_course_error = 0
         
-        self.i=0
-        
-    def PID_rudder(self):  # dc表示角度偏差，此函数根据航向偏差修改舵角数值
+    def PID_rudder(self, dc):  # dc表示角度偏差，此函数根据航向偏差修改舵角数值
+        self.dc = dc
         delta_rudder = self.kp*(self.dc-self.last_course_error)+(self.kp*self.kd)*(self.dc-2*self.last_course_error+self.pre_course_error)
         self.pre_course_error = self.last_course_error
         self.last_course_error = self.dc
@@ -50,6 +49,8 @@ class Ship():  # 训练对象的属性
         if self.rudder > 35 or self.rudder < -35:
             self.rudder -= delta_rudder
         
+        delta_course = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1./self.T))
+        self.courseTurn(delta_course)
         # 修改了当前的舵角
         pass
     
@@ -57,12 +58,11 @@ class Ship():  # 训练对象的属性
         self.destination = self.position + 200 * self.velocity
         self.destination = np.array([self.destination[0]%self.width, self.destination[1]%self.height])
         pass
-    def courseTurn(self, dc):  # dc代表变化的方向
+    def courseTurn(self, delta_course):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
-        self.dc = dc
         #self.PID_rudder()
         
-        dc_radius = np.radians(-self.dc)  # 转换成弧度
+        dc_radius = np.radians(-delta_course)  # 转换成弧度
         c, s = np.cos(dc_radius), np.sin(dc_radius)
         R = np.array([ [c, -s], [s, c] ])
         self.velocity = np.dot(R, self.velocity.T).T
@@ -124,10 +124,6 @@ class Ship():  # 训练对象的属性
         self.trajectories.append([self.position[0], self.position[1], self.getCourse(), self.getSpeed(), self.rudder])
         if np.linalg.norm(self.position-self.destination) < 5:
             self.setDestination()
-        
-        self.i += 1
-        if self.i > 1000:
-            self.i = 0
         
         # 当周边没有无人艇的时候，回航向
         if len(self.now_near)==0:
