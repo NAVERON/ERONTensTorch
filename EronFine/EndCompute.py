@@ -47,10 +47,10 @@ class DDPG(object):
         # Hyper-parameters
         self.batch_size = 64
         self.tau = 0.001    # soft replacement
-        self.discount = 0.99
+        self.discount = 0.95
         self.depsilon = 1.0 / 50000  # 微分
         
-        self.epsilon = 1. #1.0
+        self.epsilon = 0.5 #1.0
         self.s_t = None # Most recent state
         self.a_t = None # Most recent action
         self.is_training = True

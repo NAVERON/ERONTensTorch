@@ -166,11 +166,11 @@ class Viewer():
 #             self.ships[temp.id] = temp
 #       
         # 对遇态势
-        temp = Ship(np.array([510.0, 100.0]), np.array([0.0, 2.0]), width=self.window_width, height=self.window_height)
+        temp = Ship(np.array([500.0, 100.0]), np.array([0.0, 2.0]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
          
-        temp = Ship(np.array([500.0, 500.0]), np.array([0.0, -2.0]), width=self.window_width, height=self.window_height)
+        temp = Ship(np.array([480.0, 500.0]), np.array([0.0, -2.0]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         #  对遇和 左舷交叉相遇     3 无人艇会遇
