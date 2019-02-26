@@ -36,10 +36,10 @@ class Viewer():
     
     def createRandomEntity(self):
         position_list = np.array(np.random.random((1, 2))).flatten()
-        position = np.multiply(position_list, 600)
+        position = np.multiply(position_list, self.window_height)
         
         velocity_list = np.array(-1 + 2*np.random.random((1, 2))).flatten()
-        velocity = np.multiply(velocity_list, 2)
+        velocity = np.multiply(velocity_list, 3)
         entity = Ship(position, velocity, self.window_width, self.window_height)
         #print(entity.toString())  ###############################################################################3
         time.sleep(0.01)
