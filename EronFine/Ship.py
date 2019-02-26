@@ -50,14 +50,19 @@ class Ship():  # 训练对象的属性
             self.rudder -= delta_rudder
     
     def setDestination(self):
-        self.destination = self.position + 200 * self.velocity
+        self.destination = self.position + 500 * self.velocity
         self.destination = np.array([self.destination[0]%self.width, self.destination[1]%self.height])
     def dis_Destination(self):
         return np.linalg.norm(self.destination - self.position)
     
     def courseTurn(self, dc):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
-        self.PID_rudder(dc)    # 根据航向偏差啊修改舵角
+        #self.PID_rudder(dc)    # 根据航向偏差啊修改舵角
+#         if dc > 0:
+#             self.rudderChange(0.2)
+#         elif dc < 0:
+#             self.rudderChange(-0.2)
+        self.rudderChange(dc/10.)
         delta_course = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1./self.T))
         
         dc_radius = np.radians(-delta_course)  # 转换成弧度
@@ -76,7 +81,7 @@ class Ship():  # 训练对象的属性
         if self.getSpeed() > 8 or self.getSpeed() < 0:   # 控制速度大小
             self.velocity -= dv
     def speedChange(self, ds):  # 速度变化过快
-        if  self.getSpeed() < 1 or self.getSpeed() > 8:
+        if  self.getSpeed() <= 2 or self.getSpeed() > 8:
             return
         #ds /= 2.0   #速度变化过快
         course = math.radians(self.getCourse())
@@ -86,6 +91,11 @@ class Ship():  # 训练对象的属性
         self.rudder += dr
         if self.rudder > 30 or self.rudder < -30:  # 设定舵角的范围
             self.rudder -= dr
+    def rudderPositiveOn(self):
+        if math.fabs(self.rudder) < 0.5:
+            self.rudder = 0
+        self.rudder += -self.rudder/4
+    
     def getSpeed(self):  # 速度大小
         return np.linalg.norm(self.velocity)
     def getCourse(self): # 运动方向
@@ -124,16 +134,18 @@ class Ship():  # 训练对象的属性
         # 当周边没有无人艇的时候，回航向
         if not self.now_near:
             delta_D = self.destination-self.position
-            delta_angle = self.calAngle(delta_D[0], delta_D[1]) - self.getCourse()  # 偏差航向
+            #delta_angle = self.calAngle(delta_D[0], delta_D[1]) - self.getCourse()  # 偏差航向
             delta_action = np.cross(self.velocity, delta_D)
             #print("全局下的偏差角", delta_angle)
             # 求取偏差航向
             if delta_action > 5:
                 #print("需要左转", delta_action)
-                self.courseTurn(-5)
+                self.courseTurn(-10)
             elif delta_action < -5:
                 #print("需要右转", delta_action)
-                self.courseTurn(5)
+                self.courseTurn(10)
+            else:
+                self.rudderPositiveOn()   #如果没有大偏差就，舵角回正
             #print("当前舵角：", self.rudder)
     
     def storeTrajectories(self):
