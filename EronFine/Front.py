@@ -15,9 +15,9 @@ class Viewer():
     action_dim = 2
 
     course_bound = [-10, 10]    #目标方向偏差
-    speed_bound = [-0.5, 0.5]
+    speed_bound = [-0.2, 0.2]
     # num_iterations = 10000
-    dis = 200
+    dis = 250
     
     def __init__(self):
         self.tk = Tk()
@@ -71,7 +71,6 @@ class Viewer():
     def step(self,  **actions):    # 这里传入每一个对象的动作，每一艘船舶都向前走一步，之后会得到新的环境
         # 这里先做动作，舵角，速度变化等
         # print("在 环境中step打印当前传入的动作   ", actions)
-        self.all_observations.clear()
         train_reward = 0
         done = False
         # 根据action做出动作
@@ -79,7 +78,7 @@ class Viewer():
             s = self.ships[key]
             if s.isDead:       #  如果已经死亡，则不进行动作指导
                 continue
-            
+            print("动作", action)
             action = np.array([np.clip(action[0], self.course_bound[0], self.course_bound[1]), np.clip(action[1], self.speed_bound[0], self.speed_bound[1])])
 #             if key == self.train_id:
 #                 print("action id:", key, ", action:", action)   # -2 2/////-0.2  0.2
@@ -98,24 +97,49 @@ class Viewer():
         #################################################################################################
         # 根据碰撞情况制定惩罚奖励  reward  ################# 规则遵守情况奖励设计
         train_ship = self.ships[self.train_id]
+        self.cur_dis_destination = train_ship.dis_Destination()
+        train_action = actions[self.train_id]
+        train_observation = self.all_observations[self.train_id]
+        #print("提取当前的环境", train_observation)   # 2  7  12  17
         if train_ship.isDead:
             # 如何造成的碰撞，追究原因，给予惩罚
             done = True
             
             speed = train_ship.getSpeed()
-            action = actions[self.train_id]
-            if  speed > 7:
-                train_reward -= speed/3
+            if  speed > 6:
+                train_reward -= speed/2
             
-            self.cur_dis_destination = train_ship.dis_Destination()
-            if self.cur_dis_destination > self.last_dis_destination:
-                train_reward -= 1
-            self.last_dis_destination = self.cur_dis_destination
+            if train_observation[2] < 0:
+                train_reward -= 0.2
+            elif train_observation[7] < 0 and train_action[0] < 0:
+                train_reward += train_action[0]
+            elif train_observation[12] < 0:
+                train_reward -= 0
+            elif train_observation[17] < 0 and train_action[0] > 0:
+                train_reward -= train_action[0]
+            else:
+                train_reward -= 0.5
         else:
             # 会遇态势，如果遵守规则，奖励多一些，否则给予奖励少一些
             done = False
-            train_reward += 1
+            
+            des_dis = self.last_dis_destination - self.cur_dis_destination
+            #print("根据目标距离设置奖励", des_dis)
+            train_reward += des_dis
+            self.last_dis_destination = self.cur_dis_destination
+            if train_observation[2] < 0:
+                train_reward += 0.2
+            elif train_observation[7] < 0 and train_action[0] < 0:
+                train_reward -= train_action[0]
+            elif train_observation[12] < 0:
+                train_reward += 0.2
+            elif train_observation[17] < 0 and train_action[0] > 0:
+                train_reward += train_action[0]
+            else:
+                train_reward += 0.5
+            
         ######################################################更新观察值
+        self.all_observations.clear()
         for k, v in self.ships.items():
             self.all_observations[k] = v.getObservation(self.dis, **self.ships)
         self.render()  #渲染当前画面 =====可以在外层调用，也可以直接放在步进合并渲染
@@ -138,30 +162,30 @@ class Viewer():
         self.all_observations.clear()
         self.canvas.delete("all")
         # 重新生成一个新的环境
-#         for _ in range(self.ships_count):
-#             temp = self.createRandomEntity()
-#             self.ships[temp.id] = temp
+        for _ in range(self.ships_count):
+            temp = self.createRandomEntity()
+            self.ships[temp.id] = temp
 #       
         # 对遇态势
-        temp = Ship(np.array([510.0, 100.0]), np.array([0.0, 2.0]), width=self.window_width, height=self.window_height)
-        self.ships[temp.id] = temp
-        time.sleep(0.01)
-        
-        temp = Ship(np.array([500.0, 500.0]), np.array([0.0, -2.0]), width=self.window_width, height=self.window_height)
-        self.ships[temp.id] = temp
-        time.sleep(0.01)
-        #  对遇和 左舷交叉相遇     3 无人艇会遇
-        temp = Ship(np.array([200.0, 300.0]), np.array([1.2, -1.0]), width=self.window_width, height=self.window_height)
-        self.ships[temp.id] = temp
-        time.sleep(0.01)
-        #  四无人艇   会遇
-        temp = Ship(np.array([700.0, 450.0]), np.array([-2.0, -3.0]), width=self.window_width, height=self.window_height)
-        self.ships[temp.id] = temp
-        time.sleep(0.01)
-        #再来一个追越
-        temp = Ship(np.array([600.0, 20.0]), np.array([-2.0, 1.0]), width=self.window_width, height=self.window_height)
-        self.ships[temp.id] = temp
-        time.sleep(0.01)
+#         temp = Ship(np.array([510.0, 100.0]), np.array([0.0, 2.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         
+#         temp = Ship(np.array([500.0, 500.0]), np.array([0.0, -2.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         #  对遇和 左舷交叉相遇     3 无人艇会遇
+#         temp = Ship(np.array([200.0, 300.0]), np.array([1.2, -1.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         #  四无人艇   会遇
+#         temp = Ship(np.array([700.0, 450.0]), np.array([-2.0, -3.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         #再来一个追越
+#         temp = Ship(np.array([600.0, 20.0]), np.array([-2.0, 1.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
         
         for k, v in self.ships.items():
             if self.train_id is None:
