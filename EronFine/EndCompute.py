@@ -50,7 +50,7 @@ class DDPG(object):
         self.discount = 0.99
         self.depsilon = 1.0 / 50000  # 微分
         
-        self.epsilon = 1.0
+        self.epsilon = 1. #1.0
         self.s_t = None # Most recent state
         self.a_t = None # Most recent action
         self.is_training = True

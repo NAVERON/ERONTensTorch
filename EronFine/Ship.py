@@ -52,7 +52,9 @@ class Ship():  # 训练对象的属性
     def setDestination(self):
         self.destination = self.position + 200 * self.velocity
         self.destination = np.array([self.destination[0]%self.width, self.destination[1]%self.height])
-        pass
+    def dis_Destination(self):
+        return np.linalg.norm(self.destination - self.position)
+    
     def courseTurn(self, dc):  # dc代表变化的方向
         # 返回 新的速度矢量，将事例的速度重新设置
         self.PID_rudder(dc)    # 根据航向偏差啊修改舵角
@@ -76,6 +78,7 @@ class Ship():  # 训练对象的属性
     def speedChange(self, ds):  # 速度变化过快
         if  self.getSpeed() < 1 or self.getSpeed() > 8:
             return
+        #ds /= 2.0   #速度变化过快
         course = math.radians(self.getCourse())
         sx, sy = ds*math.sin(course), ds*math.cos(course)
         self.velocityChange(np.array([sx, sy]))
@@ -115,7 +118,7 @@ class Ship():  # 训练对象的属性
         ##########################################################################################
         self.addHistory([self.position[0], self.position[1]])
         self.trajectories.append([self.position[0], self.position[1], self.getCourse(), self.getSpeed(), self.rudder])
-        if np.linalg.norm(self.position-self.destination) < 5:
+        if np.linalg.norm(self.position-self.destination) < 10:
             self.setDestination()
         
         # 当周边没有无人艇的时候，回航向
@@ -123,14 +126,16 @@ class Ship():  # 训练对象的属性
             delta_D = self.destination-self.position
             delta_angle = self.calAngle(delta_D[0], delta_D[1]) - self.getCourse()  # 偏差航向
             delta_action = np.cross(self.velocity, delta_D)
-            print("全局下的偏差角", delta_angle)
-            if delta_action > 0:
-                print("需要左转", delta_action)
-                self.courseTurn(delta_angle)
-            else:
-                print("需要右转", delta_action)
-                self.courseTurn(delta_angle)
-        
+            #print("全局下的偏差角", delta_angle)
+            # 求取偏差航向
+            if delta_action > 5:
+                #print("需要左转", delta_action)
+                self.courseTurn(-5)
+            elif delta_action < -5:
+                #print("需要右转", delta_action)
+                self.courseTurn(5)
+            #print("当前舵角：", self.rudder)
+    
     def storeTrajectories(self):
         formated_data = pd.DataFrame(data = self.trajectories)
         formated_data.to_csv("../"+self.id+".csv", encoding="utf-8", header=None, index=None)
@@ -155,8 +160,9 @@ class Ship():  # 训练对象的属性
         self.now_near = self.getNear(dis, **ships)
         near_locals = self.warpAxis(self.now_near)   # 可以得到   以本艇为中心的环境图
         #print(near_locals[0].toString())   # 测试环境坐标转换是否正确
+        dis_of_des = self.dis_Destination()
+        observation = [self.getSpeed(), dis_of_des]
         
-        observation = [self.getSpeed()]
         up = []
         right = []
         down = []
@@ -176,10 +182,25 @@ class Ship():  # 训练对象的属性
         down_average_dis = self.getAverageDis(down)
         left_average_dis = self.getAverageDis(left)
         
-        up_observation = [len(up), up_average_dis, 0, 0, 0]
-        right_observation = [len(right), right_average_dis, 0, 0, 0]
-        down_observation = [len(down), down_average_dis, 0, 0, 0]
-        left_observation = [len(left), left_average_dis, 0, 0, 0]
+        up_average_cou = self.getAverageCourse(up)
+        right_average_cou = self.getAverageCourse(right)
+        down_average_cou = self.getAverageCourse(down)
+        left_average_cou = self.getAverageCourse(left)
+        
+        up_average_ratio = self.getAverageRatio(up)
+        right_average_ratio = self.getAverageRatio(right)
+        down_average_ratio = self.getAverageRatio(down)
+        left_average_ratio = self.getAverageRatio(left)
+        
+        up_average_state = self.getAverageState(up)
+        right_average_state = self.getAverageState(right)
+        down_average_state = self.getAverageState(down)
+        left_average_state = self.getAverageState(left)
+        
+        up_observation = [len(up), up_average_dis, up_average_cou, up_average_ratio, up_average_state]
+        right_observation = [len(right), right_average_dis, right_average_cou, right_average_ratio, right_average_state]
+        down_observation = [len(down), down_average_dis, down_average_cou, down_average_ratio, down_average_state]
+        left_observation = [len(left), left_average_dis, left_average_cou, left_average_ratio, left_average_state]
         
         observation.extend(up_observation)
         observation.extend(right_observation)
@@ -224,26 +245,51 @@ class Ship():  # 训练对象的属性
         return near_locals
     def getAverageDis(self, local_ships_list):
         if not local_ships_list:  # 如果是空的
-            return 0
+            return -1
         sum = 0
         for local_ship in local_ships_list:
             sum += local_ship.local_dis
         return sum/len(local_ships_list)
-    
+    def getAverageCourse(self, local_ships_list):
+        if not local_ships_list:  # 如果是空的
+            return -1
+        sum = 0
+        for local_ship in local_ships_list:
+            sum += local_ship.local_course
+        return sum/len(local_ships_list)
+    def getAverageSpeed(self, local_ships_list):
+        pass
+    def getAverageRatio(self, local_ships_list):
+        if not local_ships_list:  # 如果是空的
+            return -1
+        sum = 0
+        for local_ship in local_ships_list:
+            sum += local_ship.local_ratio
+        return sum/len(local_ships_list)
+    def getAverageState(self, local_ships_list):
+        if not local_ships_list:  # 如果是空的
+            return -1
+        local_one = local_ships_list[0]
+        return local_one.getPlus()
+        pass
     def toString(self):
         return "id:" + self.id + " , position:" + str(self.position) + " , velocity:" + str(self.velocity) + ", course:" + str(self.getCourse())
 
 class LocalShip():
     
-    def __init__(self, local_id, local_position, course, speed, ratio, dis):
-        self.local_id = local_id
-        self.local_position = local_position
+    def __init__(self, id, position, course, speed, ratio, dis):
+        self.local_id = id
+        self.local_position = position
         self.local_course = course
         self.local_speed = speed
         self.local_ratio = ratio
         self.local_dis = dis
         pass
-    
+    def getPlus(self):
+        radian = np.radians(self.local_course)
+        vx, vy = self.local_speed*np.sin(radian), self.local_speed*np.cos(radian)
+        velocity = np.array([vx, vy])
+        return np.cross(self.local_position, velocity)
     def toString(self):
         return self.local_id +":"+ str(self.local_position[0]) + ","+str(self.local_position[1]) + "\ncourse" + str(self.local_course) +", ratio and dis:"+str(self.local_ratio)+"=="+str(self.local_dis)  
 

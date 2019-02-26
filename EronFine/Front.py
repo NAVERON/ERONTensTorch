@@ -11,13 +11,13 @@ from EronFine.Ship import Ship
 class Viewer():
     
     ships_count = 10
-    state_dim = 1 + 4*5   # 自身属性 + 4个领域 * 每个领域属性
+    state_dim = 2 + 4*5   # 自身属性(航速和目标距离) + 4个领域 * 每个领域属性
     action_dim = 2
 
     course_bound = [-10, 10]    #目标方向偏差
-    speed_bound = [-0.2, 0.2]
+    speed_bound = [-0.5, 0.5]
     # num_iterations = 10000
-    dis = 2000
+    dis = 200
     
     def __init__(self):
         self.tk = Tk()
@@ -66,7 +66,8 @@ class Viewer():
             
         self.tk.update()
     
-    
+    last_dis_destination = 1000
+    cur_dis_destination = 1000
     def step(self,  **actions):    # 这里传入每一个对象的动作，每一艘船舶都向前走一步，之后会得到新的环境
         # 这里先做动作，舵角，速度变化等
         # print("在 环境中step打印当前传入的动作   ", actions)
@@ -80,7 +81,8 @@ class Viewer():
                 continue
             
             action = np.array([np.clip(action[0], self.course_bound[0], self.course_bound[1]), np.clip(action[1], self.speed_bound[0], self.speed_bound[1])])
-            print("action id:", key, ", action:", action)   # -2 2/////-0.2  0.2
+#             if key == self.train_id:
+#                 print("action id:", key, ", action:", action)   # -2 2/////-0.2  0.2
             # 根据id操作相应的动作，修改数据
             s.courseTurn(action[0])  #动作1是改变舵角   动作2 是改变速度
             s.speedChange(action[1])
@@ -105,15 +107,12 @@ class Viewer():
             if  speed > 7:
                 train_reward -= speed/3
             
+            self.cur_dis_destination = train_ship.dis_Destination()
+            if self.cur_dis_destination > self.last_dis_destination:
+                train_reward -= 1
+            self.last_dis_destination = self.cur_dis_destination
         else:
             # 会遇态势，如果遵守规则，奖励多一些，否则给予奖励少一些
-#             ob = self.ships[self.train_id].getObservation(self.dis, **self.ships)
-#             if ob[0] > 1 and actions[self.train_id]>0:
-#                 train_reward += 1
-#             elif ob[0] > 1 and actions[self.train_id]<0:
-#                 train_reward += 4
-#             else:
-#                 train_reward += 2
             done = False
             train_reward += 1
         ######################################################更新观察值
@@ -133,6 +132,8 @@ class Viewer():
         print("一个回合结束，重新生成新的环境")
         self.train_id = None
         
+        self.last_dis_destination = 1000
+        self.cur_dis_destination = 1000
         self.ships.clear()
         self.all_observations.clear()
         self.canvas.delete("all")
@@ -142,7 +143,7 @@ class Viewer():
 #             self.ships[temp.id] = temp
 #       
         # 对遇态势
-        temp = Ship(np.array([550.0, 100.0]), np.array([0.0, 2.0]), width=self.window_width, height=self.window_height)
+        temp = Ship(np.array([510.0, 100.0]), np.array([0.0, 2.0]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         
