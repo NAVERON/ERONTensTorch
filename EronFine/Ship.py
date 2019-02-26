@@ -277,8 +277,8 @@ class Ship():  # 训练对象的属性
 
 class LocalShip():
     
-    def __init__(self, id, position, course, speed, ratio, dis):
-        self.local_id = id
+    def __init__(self, warp_id, position, course, speed, ratio, dis):
+        self.local_id = warp_id
         self.local_position = position
         self.local_course = course
         self.local_speed = speed
