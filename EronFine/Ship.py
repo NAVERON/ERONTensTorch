@@ -155,7 +155,7 @@ class Ship():  # 训练对象的属性
     def isCollision(self):   # 判断当前是否于与周边碰撞
         for s in self.now_near:
             dis = self.distance(s)
-            if dis < 20:  # 如果碰撞，直接返回结果，结束遍历
+            if dis < 25:  # 如果碰撞，直接返回结果，结束遍历
                 self.isDead = True
                 s.isDead = True
                 

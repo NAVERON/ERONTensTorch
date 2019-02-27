@@ -126,7 +126,7 @@ class Viewer():
             
             des_dis = self.last_dis_destination - self.cur_dis_destination
             if not train_ship.now_near:
-                train_reward += des_dis
+                train_reward += des_dis/10
             # cprint("dis of destination ", des_dis)   #每次1.几左右
             if train_observation[2] > 0 and train_action[0] > 0:
                 train_reward += 0.2
