@@ -62,7 +62,7 @@ class Ship():  # 训练对象的属性
 #             self.rudderChange(0.2)
 #         elif dc < 0:
 #             self.rudderChange(-0.2)
-        self.rudderChange(dc/10.)
+        self.rudderChange(dc)
         delta_course = self.K * self.rudder * (1 - self.T + self.T * math.exp(-1./self.T))
         
         dc_radius = np.radians(-delta_course)  # 转换成弧度

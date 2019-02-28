@@ -15,7 +15,7 @@ from EronFine import util
 
 class Viewer():
     
-    ships_count = 5
+    ships_count = 10
     state_dim = 2 + 4*5   # 自身属性(航速和目标距离) + 4个领域 * 每个领域属性
     action_dim = 2
 
@@ -103,10 +103,10 @@ class Viewer():
                 self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="red")
                 self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str("O"), fill = "red")
             else:
-                self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="black")
+                self.canvas.create_oval(s.position[0]-10, self.window_height-s.position[1]-10, s.position[0]+10, self.window_height-s.position[1]+10, fill="blue")
                 self.canvas.create_text(s.destination[0], self.window_height-s.destination[1], text = str("O"), fill = "green")
             
-            self.canvas.create_line(s.position[0], self.window_height-s.position[1], s.position[0]+s.velocity[0]*10, self.window_height-s.position[1]-s.velocity[1]*10, fill="blue")
+            self.canvas.create_line(s.position[0], self.window_height-s.position[1], s.position[0]+s.velocity[0]*10, self.window_height-s.position[1]-s.velocity[1]*10, fill="black")
             
             # 绘制历史轨迹
             for i in range(len(s.history)):
@@ -216,13 +216,13 @@ class Viewer():
 #             self.ships[temp.id] = temp
         
         # 对遇态势
-        temp = Ship(np.array([500.0, 100.0]), np.array([0.0, 1.5]), width=self.window_width, height=self.window_height)
-        self.ships[temp.id] = temp
-        time.sleep(0.01)
-        
-        temp = Ship(np.array([500.0, 500.0]), np.array([0.0, -1.5]), width=self.window_width, height=self.window_height)
-        self.ships[temp.id] = temp
-        time.sleep(0.01)
+#         temp = Ship(np.array([500.0, 100.0]), np.array([0.0, 1.5]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         
+#         temp = Ship(np.array([500.0, 500.0]), np.array([0.0, -1.5]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
         #  对遇和 左舷交叉相遇     3 无人艇会遇
 #         temp = Ship(np.array([200.0, 350.0]), np.array([1.0, -1.8]), width=self.window_width, height=self.window_height)
 #         self.ships[temp.id] = temp
@@ -237,9 +237,9 @@ class Viewer():
 #         time.sleep(0.01)
         
         # 随机生成避碰环境
-#         for _ in range(self.ships_count):
-#             temp = self.createRandomEntity()
-#             self.ships[temp.id] = temp
+        for _ in range(self.ships_count):
+            temp = self.createRandomEntity()
+            self.ships[temp.id] = temp
         
         for k, v in self.ships.items():
             s = v
@@ -277,7 +277,7 @@ if __name__ == "__main__":
     validate_steps = 1000   # 每一个回合最大步数，验证需要的步数
     
     output = "../output"   # 输出文件夹==========================================新建的场景目录发生变化，那么输出文件也应该变化一下
-    max_episode_length = 500   # 每一个回合最大步数
+    max_episode_length = 200   # 每一个回合最大步数
     
     env = Viewer()
     agent = DDPG(env.state_dim, env.action_dim)   # 环境和动作的维度

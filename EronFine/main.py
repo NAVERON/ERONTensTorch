@@ -20,7 +20,7 @@ def train(agent, env, evaluate):
     step = episode_steps = 0   # episode 当前所处的回合       episode_steps 回合步数     删除了一个episode
     episode_reward = 0.  # 每一个回合的奖励总和
     num_iterations = 100  # 一共训练多少回合
-    max_episode_length = 500   # 每一个回合最大步进长度
+    max_episode_length = 300   # 每一个回合最大步进长度
     
     all_observations = None  # 环境状态，观察值
     done = False
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     validate_steps = 20   # 每一个回合最大步数，验证需要的步数
     
     output = "output"   # 输出文件夹
-    max_episode_length = 500   # 每一个回合最大步数
+    max_episode_length = 300   # 每一个回合最大步数
     
     env = Viewer()
     agent = DDPG(env.state_dim, env.action_dim)   # 环境和动作的维度
