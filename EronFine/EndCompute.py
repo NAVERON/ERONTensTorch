@@ -87,11 +87,11 @@ class DDPG(object):
         util.soft_update(self.critic_target, self.critic, self.tau)
         
         dd_p = util.to_numpy(policy_loss)
-        #dd_v= util.to_numpy(value_loss)
+        dd_v= util.to_numpy(value_loss)
         
         self.t += 1
         self.p_all.append(dd_p)
-        #self.v_all.append(dd_v)
+        self.v_all.append(dd_v)
         
         if self.t > 500:
             plt.cla()
@@ -101,12 +101,12 @@ class DDPG(object):
             plt.plot(range(0, len(self.p_all)), self.p_all, color="red")
             #plt.figure("Value Loss")
             #plt.ion()
-            #plt.plot(range(0, len(self.v_all)), self.v_all, color="blue")
+            plt.plot(range(0, len(self.v_all)), self.v_all, color="blue")
             plt.pause(0.001)
             
             self.t = 0
             self.p_all.clear()
-            #self.v_all.clear()
+            self.v_all.clear()
     
     t=0
     p_all = []

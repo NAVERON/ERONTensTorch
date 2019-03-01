@@ -109,33 +109,33 @@ class Viewer():
             if  speed > 6:
                 train_reward -= 0.1
             
-            if train_observation[2] > 0 and train_action[0] > 0:
-                train_reward -= 0.1
-            elif train_observation[7] > 0 and train_action[0] > 0:
-                train_reward -= train_action[0]
-            elif train_observation[17] > 0 and train_action[0] < 0:
-                train_reward += train_action[0]
-            else:
-                train_reward -= 0.5
+#             if train_observation[2] > 0 and train_action[0] > 0:
+#                 train_reward -= 0.1
+#             elif train_observation[7] > 0 and train_action[0] > 0:
+#                 train_reward -= train_action[0]
+#             elif train_observation[17] > 0 and train_action[0] < 0:
+#                 train_reward += train_action[0]
+#             else:
+#                 train_reward -= 0.5
+            train_reward -= 1
         else:
             # 会遇态势，如果遵守规则，奖励多一些，否则给予奖励少一些
             done = False
-            speed = train_ship.getSpeed()
-            if  3 < speed < 6:
-                train_reward += 0.01
             
             des_dis = self.last_dis_destination - self.cur_dis_destination
-            if not train_ship.now_near:
+            if not train_ship.now_near and des_dis < 100:
                 train_reward += des_dis/10
-            # cprint("dis of destination ", des_dis)   #每次1.几左右
-            if train_observation[2] > 0 and train_action[0] > 0:
-                train_reward += 0.2
-            elif train_observation[7] > 0 and train_action[0] < 0:
-                train_reward -= train_action[0]
-            elif train_observation[17] > 0 and train_action[0] > 0:
-                train_reward += train_action[0]
-            else:
-                train_reward += 0.5
+            
+#             if train_observation[2] > 0 and train_action[0] > 0:
+#                 train_reward += 0.2
+#             elif train_observation[7] > 0 and train_action[0] < 0:
+#                 train_reward -= train_action[0]
+#             elif train_observation[17] > 0 and train_action[0] > 0:
+#                 train_reward += train_action[0]
+#             else:
+#                 train_reward += 0.5
+            train_reward += 0.5
+            
         self.last_dis_destination = self.cur_dis_destination
         ######################################################更新观察值
         self.all_observations.clear()
