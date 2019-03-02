@@ -18,7 +18,7 @@ class Ship():  # 训练对象的属性
     #  位置以左下角为标准原点，这里全部按照实际的坐标系来，绘制的时候再  进一步处理绘制的问题
     #  速度以正上方为 0 ，顺时针旋转    正向
     #  
-    def __init__(self, position=np.array([500, 400], dtype=np.float), velocity=np.array([2, 4], dtype=np.float), width=1000.0, height=600.0):  # 矩阵
+    def __init__(self, position=np.array([500, 400], dtype=np.float), velocity=np.array([1, 2], dtype=np.float), width=1000.0, height=600.0):  # 矩阵
         self.id = datetime.datetime.now().strftime("%d%H%M%S%f")
         self.isDead = False
         
@@ -181,38 +181,44 @@ class Ship():  # 训练对象的属性
         left = []
         for local in near_locals:
             ratio = local.local_ratio
-            if ratio > 350 and ratio < 30:
+            if ratio > 350 and ratio < 10:
                 up.append(local)
-            elif ratio > 30 and ratio < 112.5:
+            elif ratio > 10 and ratio < 90:
                 right.append(local)
-            elif ratio > 112.5 and ratio < 210:
+            elif ratio > 90 and ratio < 247.5:
                 down.append(local)
-            elif ratio > 210 and ratio < 355:
+            elif ratio > 247.5 and ratio < 355:
                 left.append(local)
-        up_average_dis = self.getAverageDis(up)
-        right_average_dis = self.getAverageDis(right)
-        down_average_dis = self.getAverageDis(down)
-        left_average_dis = self.getAverageDis(left)
         
-        up_average_cou = self.getAverageCourse(up)
-        right_average_cou = self.getAverageCourse(right)
-        down_average_cou = self.getAverageCourse(down)
-        left_average_cou = self.getAverageCourse(left)
+#         up_average_dis = self.getAverageDis(up)
+#         right_average_dis = self.getAverageDis(right)
+#         down_average_dis = self.getAverageDis(down)
+#         left_average_dis = self.getAverageDis(left)
+#         
+#         up_average_cou = self.getAverageCourse(up)
+#         right_average_cou = self.getAverageCourse(right)
+#         down_average_cou = self.getAverageCourse(down)
+#         left_average_cou = self.getAverageCourse(left)
+#         
+#         up_average_ratio = self.getAverageRatio(up)
+#         right_average_ratio = self.getAverageRatio(right)
+#         down_average_ratio = self.getAverageRatio(down)
+#         left_average_ratio = self.getAverageRatio(left)
+#         
+#         up_average_state = self.getAverageState(up)
+#         right_average_state = self.getAverageState(right)
+#         down_average_state = self.getAverageState(down)
+#         left_average_state = self.getAverageState(left)
+#         
+#         up_observation = [len(up), up_average_dis, up_average_cou, up_average_ratio, up_average_state]
+#         right_observation = [len(right), right_average_dis, right_average_cou, right_average_ratio, right_average_state]
+#         down_observation = [len(down), down_average_dis, down_average_cou, down_average_ratio, down_average_state]
+#         left_observation = [len(left), left_average_dis, left_average_cou, left_average_ratio, left_average_state]
         
-        up_average_ratio = self.getAverageRatio(up)
-        right_average_ratio = self.getAverageRatio(right)
-        down_average_ratio = self.getAverageRatio(down)
-        left_average_ratio = self.getAverageRatio(left)
-        
-        up_average_state = self.getAverageState(up)
-        right_average_state = self.getAverageState(right)
-        down_average_state = self.getAverageState(down)
-        left_average_state = self.getAverageState(left)
-        
-        up_observation = [len(up), up_average_dis, up_average_cou, up_average_ratio, up_average_state]
-        right_observation = [len(right), right_average_dis, right_average_cou, right_average_ratio, right_average_state]
-        down_observation = [len(down), down_average_dis, down_average_cou, down_average_ratio, down_average_state]
-        left_observation = [len(left), left_average_dis, left_average_cou, left_average_ratio, left_average_state]
+        up_observation = self.getNewObservation(up)
+        right_observation = self.getNewObservation(right)
+        down_observation = self.getNewObservation(down)
+        left_observation = self.getNewObservation(left)
         
         observation.extend(up_observation)
         observation.extend(right_observation)
@@ -220,7 +226,32 @@ class Ship():  # 训练对象的属性
         observation.extend(left_observation)
         
         return observation
-    
+    def getNewObservation(self, local_ships_list):
+        
+        dis = 0
+        min_ratio = -1
+        max_ratio = -1
+        v_x = 0
+        v_y = 0
+        for local_ship in local_ships_list:
+            dis += local_ship.local_dis
+            this_ratio = local_ship.local_ratio
+            if min_ratio < 0 or max_ratio < 0:
+                min_ratio = this_ratio
+                max_ratio = this_ratio
+            else:
+                if this_ratio <= min_ratio:
+                    min_ratio = this_ratio
+                if this_ratio >= max_ratio:
+                    max_ratio = this_ratio
+            
+            velocity = local_ship.getVelocity()
+            v_x += velocity[0]
+            v_y += velocity[1]-self.velocity[1]
+        observation = [dis, min_ratio, max_ratio, v_x, v_y]
+        
+        return observation
+        pass
     def getNear(self, dis, **ships):  # 传入查找对象的引用this_ship，以及距离范围 dis
         self.now_near.clear()   # 清空之前的数据
         
@@ -236,10 +267,10 @@ class Ship():  # 训练对象的属性
         near_locals = []
         for ship in near:
             d_pos = ship.position - self.position
-            d_pos_radius = -np.radians(-self.getCourse())  # 转换成弧度
+            d_pos_radius = -np.radians(self.getCourse())  # 转换成弧度
             c, s = np.cos(d_pos_radius), np.sin(d_pos_radius)
             R = np.array([ [c, -s], [s, c] ])
-            position = np.dot(R, d_pos.T).T
+            position = np.dot(d_pos, R)
             
             dh = ship.getCourse() - self.getCourse()    # dh代表坐标转换后的方向
             while dh >= 360 or dh < 0:
@@ -297,13 +328,20 @@ class LocalShip():
         self.local_ratio = ratio
         self.local_dis = dis
         pass
+    
     def getPlus(self):
         radian = np.radians(self.local_course)
         vx, vy = self.local_speed*np.sin(radian), self.local_speed*np.cos(radian)
         velocity = np.array([vx, vy])
         return np.cross(self.local_position, velocity)
+    def getVelocity(self):
+        radian = np.radians(self.local_course)
+        vx, vy = self.local_speed*np.sin(radian), self.local_speed*np.cos(radian)
+        velocity = np.array([vx, vy])
+        return velocity
+    
     def toString(self):
-        return self.local_id +":"+ str(self.local_position[0]) + ","+str(self.local_position[1]) + "\ncourse" + str(self.local_course) +", ratio and dis:"+str(self.local_ratio)+"=="+str(self.local_dis)  
+        return self.local_id +":\nposition : "+ str(self.local_position[0]) + ","+str(self.local_position[1]) + "\ncourse" + str(self.local_course) +",\nratio and dis:"+str(self.local_ratio)+"=="+str(self.local_dis)  
 
 
 
