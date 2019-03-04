@@ -85,7 +85,7 @@ class Viewer():
         position = np.multiply(position_list, 600)         # 范围是   0到600
         
         velocity_list = np.array(-1 + 2*np.random.random((1, 2))).flatten()         #生成的范围时   -1到1
-        velocity = np.multiply(velocity_list, 2)
+        velocity = np.multiply(velocity_list, 4)
         entity = Ship(position, velocity, self.window_width, self.window_height)
         #print(entity.toString())  ###############################################################################3
         time.sleep(0.01)

@@ -83,7 +83,7 @@ class Ship():  # 训练对象的属性
         if self.getSpeed() > 8 or self.getSpeed() < 0:   # 控制速度大小
             self.velocity -= dv
     def speedChange(self, ds):  # 速度变化过快
-        if  self.getSpeed() <= 2 or self.getSpeed() > 8:
+        if  self.getSpeed() <= 1 or self.getSpeed() > 8:
             return
         #ds /= 2.0   #速度变化过快
         course = math.radians(self.getCourse())
@@ -96,7 +96,8 @@ class Ship():  # 训练对象的属性
     def rudderPositiveOn(self):
         if math.fabs(self.rudder) < 0.5:
             self.rudder = 0
-        self.rudder += -self.rudder/4
+            return
+        self.rudder += -self.rudder/5
     
     def getSpeed(self):  # 速度大小
         return np.linalg.norm(self.velocity)
@@ -134,7 +135,7 @@ class Ship():  # 训练对象的属性
         self.i += 1
         if np.linalg.norm(self.position-self.destination) < 10:
             self.setDestination()
-        
+        #print(self.id + ", rudder : ", self.rudder)
         # 当周边没有无人艇的时候，回航向
         if not self.now_near:
             delta_D = self.destination-self.position
@@ -144,10 +145,10 @@ class Ship():  # 训练对象的属性
             # 求取偏差航向
             if delta_action > 5:
                 #print("需要左转", delta_action)
-                self.courseTurn(-10)
+                self.courseTurn(-5)
             elif delta_action < -5:
                 #print("需要右转", delta_action)
-                self.courseTurn(10)
+                self.courseTurn(5)
             else:
                 self.rudderPositiveOn()   #如果没有大偏差就，舵角回正
             #print("当前舵角：", self.rudder)

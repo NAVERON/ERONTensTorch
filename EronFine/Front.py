@@ -14,7 +14,7 @@ class Viewer():
     state_dim = 2 + 4*5   # 自身属性(航速和目标距离) + 4个领域 * 每个领域属性
     action_dim = 2
 
-    course_bound = [-10, 10]    #目标方向偏差
+    course_bound = [-5, 5]    #目标方向偏差
     speed_bound = [-1, 1]
     # num_iterations = 10000
     dis = 250
@@ -39,7 +39,7 @@ class Viewer():
         position = np.multiply(position_list, self.window_height)
         
         velocity_list = np.array(-1 + 2*np.random.random((1, 2))).flatten()
-        velocity = np.multiply(velocity_list, 4)
+        velocity = np.multiply(velocity_list, 5)
         entity = Ship(position, velocity, self.window_width, self.window_height)
         #print(entity.toString())  ###############################################################################3
         time.sleep(0.01)
