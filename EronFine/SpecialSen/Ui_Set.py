@@ -219,7 +219,7 @@ class Viewer():
         temp = Ship(np.array([500.0, 100.0]), np.array([0.0, 2.5]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
-         
+        
         temp = Ship(np.array([500.0, 500.0]), np.array([0.0, -2.2]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
@@ -235,6 +235,7 @@ class Viewer():
         temp = Ship(np.array([600.0, 15.0]), np.array([-2, 1.0]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
+        
         
         for k, v in self.ships.items():
             s = v
