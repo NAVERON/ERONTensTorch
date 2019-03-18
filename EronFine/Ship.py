@@ -130,8 +130,9 @@ class Ship():  # 训练对象的属性
         self.position += self.velocity  # 这样就更新位置了    ====  可以把界面更新放到数据更新里面同步，更好
         ##########################################################################################
         self.addHistory([self.position[0], self.position[1]])
-        if self.i%4 == 0:
-            self.trajectories.append([self.position[0], self.position[1], self.getCourse(), self.getSpeed(), self.rudder])
+#         if self.i%4 == 0:
+#             self.trajectories.append([self.position[0], self.position[1], self.getCourse(), self.getSpeed(), self.rudder])
+        self.trajectories.append([self.position[0], self.position[1], self.getCourse(), self.getSpeed(), self.rudder])
         self.i += 1
         if np.linalg.norm(self.position-self.destination) < 10:
             self.setDestination()
