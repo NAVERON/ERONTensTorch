@@ -166,45 +166,64 @@ class Viewer():
 #             self.ships[temp.id] = temp
 #       
         # 对遇态势
-        temp = Ship(np.array([500.0, 50.0]), np.array([0.5, 2.0]), width=self.window_width, height=self.window_height)
+        temp = Ship(np.array([500.0, 100.0]), np.array([0.0, 2.5]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
-        
-        temp = Ship(np.array([500.0, 480.0]), np.array([0.0, -2.0]), width=self.window_width, height=self.window_height)
+         
+        temp = Ship(np.array([500.0, 500.0]), np.array([0.0, -2.2]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
-        #  对遇和 左舷交叉相遇     3 无人艇会遇
-        temp = Ship(np.array([200.0, 300.0]), np.array([1.2, -1.1]), width=self.window_width, height=self.window_height)
+        #对遇和 左舷交叉相遇     3 无人艇会遇
+        temp = Ship(np.array([200.0, 300.0]), np.array([1.2, -1.3]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
-        #  四无人艇   会遇
-        temp = Ship(np.array([700.0, 500.0]), np.array([-2.0, -3.0]), width=self.window_width, height=self.window_height)
+        # 四无人艇   会遇
+        temp = Ship(np.array([700.0, 450.0]), np.array([-2.0, -3]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         #再来一个追越
-        temp = Ship(np.array([600.0, 20.0]), np.array([-2.0, 1.0]), width=self.window_width, height=self.window_height)
+        temp = Ship(np.array([600.0, 15.0]), np.array([-2, 1.0]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
-        # 新加的 6号
-        temp = Ship(np.array([200.0, 450.0]), np.array([-0.1, 2.0]), width=self.window_width, height=self.window_height)
-        self.ships[temp.id] = temp
-        time.sleep(0.01)
-        # 7
-        temp = Ship(np.array([750.0, 300.0]), np.array([-3.0, 2.]), width=self.window_width, height=self.window_height)
-        self.ships[temp.id] = temp
-        time.sleep(0.01)
-        # 8
-        temp = Ship(np.array([10.0, 30.0]), np.array([2.0, 2.5]), width=self.window_width, height=self.window_height)
-        self.ships[temp.id] = temp
-        time.sleep(0.01)
-        # 9
-        temp = Ship(np.array([600.0, 150.0]), np.array([1.0, 1.2]), width=self.window_width, height=self.window_height)
-        self.ships[temp.id] = temp
-        time.sleep(0.01)
-        # 10
-        temp = Ship(np.array([321.0, 20.0]), np.array([-0.1, 1.5]), width=self.window_width, height=self.window_height)
-        self.ships[temp.id] = temp
-        time.sleep(0.01)
+#         temp = Ship(np.array([500.0, 50.0]), np.array([0.5, 2.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         
+#         temp = Ship(np.array([500.0, 480.0]), np.array([0.0, -2.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         #  对遇和 左舷交叉相遇     3 无人艇会遇
+#         temp = Ship(np.array([200.0, 300.0]), np.array([1.2, -1.1]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         #  四无人艇   会遇
+#         temp = Ship(np.array([700.0, 500.0]), np.array([-2.0, -3.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         #再来一个追越
+#         temp = Ship(np.array([600.0, 20.0]), np.array([-2.0, 1.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         # 新加的 6号
+#         temp = Ship(np.array([200.0, 450.0]), np.array([-0.1, 2.0]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         # 7
+#         temp = Ship(np.array([750.0, 300.0]), np.array([-3.0, 2.]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         # 8
+#         temp = Ship(np.array([10.0, 30.0]), np.array([2.0, 2.5]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         # 9
+#         temp = Ship(np.array([600.0, 150.0]), np.array([1.0, 1.2]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
+#         # 10
+#         temp = Ship(np.array([321.0, 20.0]), np.array([-0.1, 1.5]), width=self.window_width, height=self.window_height)
+#         self.ships[temp.id] = temp
+#         time.sleep(0.01)
         
         for k, v in self.ships.items():
             if self.train_id is None:

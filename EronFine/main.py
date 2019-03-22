@@ -6,6 +6,7 @@ from EronFine.Front import Viewer
 from EronFine.evaluator import Evaluator
 from copy import deepcopy
 from EronFine import util
+import time
 
 #   在gym环境中observation观测变量   3个值
 #   动作是一个值
@@ -62,6 +63,8 @@ def train(agent, env, evaluate):
             episode_reward += train_reward     # 在一个回合中总共的奖励值，越高越好
             all_observations = next_all_observations
         
+        env.saveAllShips()
+        time.sleep(10)
         # [optional] evaluate          这里检测一下当前的训练结果
         if step % validate_steps == 0:
             policy = lambda x: agent.select_action(x, decay_epsilon=False)
