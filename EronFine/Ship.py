@@ -83,7 +83,7 @@ class Ship():  # 训练对象的属性
         if self.getSpeed() > 8 or self.getSpeed() < 0:   # 控制速度大小
             self.velocity -= dv
     def speedChange(self, ds):  # 速度变化过快
-        if  self.getSpeed() <= 1 or self.getSpeed() > 8:
+        if  self.getSpeed() <= 1 or self.getSpeed() > 5:
             return
         #ds /= 2.0   #速度变化过快
         course = math.radians(self.getCourse())
