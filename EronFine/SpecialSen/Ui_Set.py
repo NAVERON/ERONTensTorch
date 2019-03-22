@@ -243,11 +243,11 @@ class Viewer():
         self.ships[temp.id] = temp
         time.sleep(0.01)
         #  对遇和 左舷交叉相遇     3 无人艇会遇
-        temp = Ship(np.array([200.0, 250.0]), np.array([1.0, -1.8]), width=self.window_width, height=self.window_height)
+        temp = Ship(np.array([100.0, 400.0]), np.array([1.0, -1.5]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         #  四无人艇   会遇
-        temp = Ship(np.array([700.0, 500.0]), np.array([-2.0, -2.0]), width=self.window_width, height=self.window_height)
+        temp = Ship(np.array([700.0, 500.0]), np.array([-2.0, -1.5]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         #再来一个追越
@@ -255,7 +255,7 @@ class Viewer():
         self.ships[temp.id] = temp
         time.sleep(0.01)
         # 新加的 6号
-        temp = Ship(np.array([200.0, 450.0]), np.array([-0.1, 2.0]), width=self.window_width, height=self.window_height)
+        temp = Ship(np.array([250.0, 300.0]), np.array([-0.1, 2.0]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         # 7
