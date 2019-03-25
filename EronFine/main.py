@@ -63,8 +63,8 @@ def train(agent, env, evaluate):
             episode_reward += train_reward     # 在一个回合中总共的奖励值，越高越好
             all_observations = next_all_observations
         
-        env.saveAllShips()
-        time.sleep(10)
+        #env.saveAllShips()
+        #time.sleep(10)
         # [optional] evaluate          这里检测一下当前的训练结果
         if step % validate_steps == 0:
             policy = lambda x: agent.select_action(x, decay_epsilon=False)
