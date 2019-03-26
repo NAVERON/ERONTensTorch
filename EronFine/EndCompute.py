@@ -135,7 +135,7 @@ class DDPG(object):
         ).squeeze(0)     #  从数组的形状中删除单维度条目，即把shape中为1的维度去掉
         
         action += self.is_training * max(self.epsilon, 0) * self.random_process.sample()  # 这里的布尔值可以运算，当作1   有随即动作的成分
-        action = np.clip(action, -2., 2.)
+        action = np.clip(action, -2., 2.)   # 记得这里的动作被剪切了，所有Front里面的修改无效
         
         if decay_epsilon:  # 衰退
             self.epsilon -= self.depsilon
