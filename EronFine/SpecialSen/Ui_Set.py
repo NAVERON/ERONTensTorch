@@ -247,19 +247,19 @@ class Viewer():
         self.ships[temp.id] = temp
         time.sleep(0.01)
         #  四无人艇   会遇
-        temp = Ship(np.array([700.0, 500.0]), np.array([-2.0, -1.5]), width=self.window_width, height=self.window_height)
+        temp = Ship(np.array([700.0, 500.0]), np.array([-2.0, -1.7]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         #再来一个追越
-        temp = Ship(np.array([600.0, 20.0]), np.array([-2.0, 1.0]), width=self.window_width, height=self.window_height)
+        temp = Ship(np.array([650.0, 20.0]), np.array([-1.5, 1.0]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         # 新加的 6号
-        temp = Ship(np.array([250.0, 300.0]), np.array([-0.1, 2.0]), width=self.window_width, height=self.window_height)
+        temp = Ship(np.array([300.0, 300.0]), np.array([-0.1, 2.0]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         # 7
-        temp = Ship(np.array([750.0, 300.0]), np.array([-1.0, 2.]), width=self.window_width, height=self.window_height)
+        temp = Ship(np.array([800.0, 300.0]), np.array([-1.0, 2.]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         # 8
@@ -271,7 +271,7 @@ class Viewer():
         self.ships[temp.id] = temp
         time.sleep(0.01)
         # 10
-        temp = Ship(np.array([321.0, 20.0]), np.array([0.5, 1]), width=self.window_width, height=self.window_height)
+        temp = Ship(np.array([300.0, 20.0]), np.array([0.5, 1]), width=self.window_width, height=self.window_height)
         self.ships[temp.id] = temp
         time.sleep(0.01)
         

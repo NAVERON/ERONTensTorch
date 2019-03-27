@@ -15,12 +15,12 @@ import time
 def train(agent, env, evaluate):
     #validate_episodes = evaluate.interval
     output = evaluate.save_path
-    validate_steps = 20
+    validate_steps = 200
     
     # agent.is_training = True  # 是不是训练状态
     step = episode_steps = 0   # episode 当前所处的回合       episode_steps 回合步数     删除了一个episode
     episode_reward = 0.  # 每一个回合的奖励总和
-    num_iterations = 100  # 一共训练多少回合
+    num_iterations = 10000  # 一共训练多少回合
     max_episode_length = 300   # 每一个回合最大步进长度
     
     all_observations = None  # 环境状态，观察值

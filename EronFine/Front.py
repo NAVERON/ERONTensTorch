@@ -32,6 +32,7 @@ class Viewer():
 #         for _ in range(10):
 #             self.ships.append(self.createRandomEntity())
         self.canvas.pack()
+        self.tk.title("Simulation of USVs")
         self.render()
     
     def createRandomEntity(self):
@@ -73,6 +74,7 @@ class Viewer():
         # print("在 环境中step打印当前传入的动作   ", actions)
         train_reward = 0
         done = False
+        #action = None
         # 根据action做出动作
         for key, action in actions.items():           #  重点：一个是环境获取，一个是惩罚奖励设置函数
             s = self.ships[key]
@@ -145,6 +147,10 @@ class Viewer():
         time.sleep(0.001)
         
         return self.all_observations, train_reward, done   # 观察值， 奖励， 一个回合是否完成
+        pass
+    
+    def setReward(self):
+        
         pass
     
     def saveAllShips(self):
